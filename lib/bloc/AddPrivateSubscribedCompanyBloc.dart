@@ -11,8 +11,11 @@ import 'local_user_bloc.dart';
 class AddPrivateSubscribedCompanyBloc with IAddPrivateSubscribedCompanyBloc {
   final LocalUserBloc _localUserBloc;
   final ApiProvider _apiProvider;
-  AddPrivateSubscribedCompanyBloc({required apiProvider, required localUserBloc,})
-      : _apiProvider = apiProvider, _localUserBloc = localUserBloc;
+  AddPrivateSubscribedCompanyBloc({
+    required apiProvider,
+    required localUserBloc,
+  })  : _apiProvider = apiProvider,
+        _localUserBloc = localUserBloc;
 
   static const String LOG_TAG = 'AddPrivateSubscribedCompanyBloc';
 
@@ -25,22 +28,29 @@ class AddPrivateSubscribedCompanyBloc with IAddPrivateSubscribedCompanyBloc {
     required Function(String message) onError,
   }) async {
     try {
-      final response = await _apiProvider.addPrivateAssetsHolding(addPrivateAssetHoldings: addPrivateAssetHoldings);
-      int addedAssetId = int.parse(response['Private_asset_id']);
+      final response = await _apiProvider.addPrivateAssetsHolding(
+          addPrivateAssetHoldings: addPrivateAssetHoldings);
+      int addedAssetId = response['id'];
       onData(addedAssetId);
     } on FormatException catch (error) {
-      print('$LOG_TAG: addPrivateSubscribedCompany() FormatException: ${error.message}');
+      print(
+          '$LOG_TAG: addPrivateSubscribedCompany() FormatException: ${error.message}');
       onError(error.message);
     } catch (error) {
-      print('$LOG_TAG: addPrivateSubscribedCompany() Exception: ${error.toString()}');
+      print(
+          '$LOG_TAG: addPrivateSubscribedCompany() Exception: ${error.toString()}');
       onError('something_went_wrong');
     }
   }
 
-  final _privateAssetsController = BehaviorSubject<DataResource<List<PrivateAssetModel>>?>();
-  ValueStream<DataResource<List<PrivateAssetModel>>?> get privateAssetsStream => _privateAssetsController.stream;
-  DataResource<List<PrivateAssetModel>>? getPrivateAssets() => _privateAssetsController.valueOrNull;
-  setPrivateAssets(DataResource<List<PrivateAssetModel>>? dataRes) => _privateAssetsController.sink.add(dataRes);
+  final _privateAssetsController =
+      BehaviorSubject<DataResource<List<PrivateAssetModel>>?>();
+  ValueStream<DataResource<List<PrivateAssetModel>>?> get privateAssetsStream =>
+      _privateAssetsController.stream;
+  DataResource<List<PrivateAssetModel>>? getPrivateAssets() =>
+      _privateAssetsController.valueOrNull;
+  setPrivateAssets(DataResource<List<PrivateAssetModel>>? dataRes) =>
+      _privateAssetsController.sink.add(dataRes);
 
   @override
   fetchPrivateAssets() async {
@@ -48,7 +58,8 @@ class AddPrivateSubscribedCompanyBloc with IAddPrivateSubscribedCompanyBloc {
     try {
       setPrivateAssets(DataResource.loading());
       var response = await _apiProvider.getPrivateAssets();
-      List<PrivateAssetModel> assets = PrivateAssetListModel.fromJson(response).assets;
+      List<PrivateAssetModel> assets =
+          PrivateAssetListModel.fromJson(response).assets;
 
       assets.forEach((element) {
         element.initAssetMetasLists();
@@ -57,11 +68,11 @@ class AddPrivateSubscribedCompanyBloc with IAddPrivateSubscribedCompanyBloc {
       dataRes = DataResource.success(assets);
       setPrivateAssets(dataRes);
     } on FormatException catch (error) {
-      dataRes =  DataResource.failure(error.message);
+      dataRes = DataResource.failure(error.message);
       setPrivateAssets(dataRes);
       print('$LOG_TAG fetchPrivateAssets FormatException: ${error.message})');
     } catch (error) {
-      dataRes =  DataResource.failure('something_went_wrong');
+      dataRes = DataResource.failure('something_went_wrong');
       setPrivateAssets(dataRes);
       print('$LOG_TAG fetchPrivateAssets Exception: ${error.toString()})');
     }

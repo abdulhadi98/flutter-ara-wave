@@ -7,10 +7,12 @@ import 'package:wave_flutter/models/add_asset_holding_drop_down_menu_model.dart'
 import 'package:wave_flutter/models/add_public_asset_holding_model.dart';
 import '../base_add_asset_step_controller.dart';
 
-class AddPublicAssetHoldingDialogContentController extends BaseAddAssetStepController {
+class AddPublicAssetHoldingDialogContentController
+    extends BaseAddAssetStepController {
   final AddPublicAssetHoldingBloc _addPublicAssetHoldingBloc;
-  AddPublicAssetHoldingDialogContentController({required addPublicAssetHoldingBloc,})
-      : _addPublicAssetHoldingBloc = addPublicAssetHoldingBloc {
+  AddPublicAssetHoldingDialogContentController({
+    required addPublicAssetHoldingBloc,
+  }) : _addPublicAssetHoldingBloc = addPublicAssetHoldingBloc {
     _addPublicAssetHoldingBloc.fetchPublicAssets();
   }
 
@@ -24,21 +26,27 @@ class AddPublicAssetHoldingDialogContentController extends BaseAddAssetStepContr
 
   @override
   bool validateInputs() {
-    return _validateSelectedCompanyValue()
-        && _validateStockExchangeValue()
-        && _validateOfSharesValue()
-        && _validatePurchaseDateValue();
+    return _validateSelectedCompanyValue() &&
+        _validateStockExchangeValue() &&
+        _validateOfSharesValue() &&
+        _validatePurchaseDateValue();
   }
 
-  final BehaviorSubject<AddAssetHoldingDropDownMenuModel?> _selectedPublicCompanyController = BehaviorSubject<AddAssetHoldingDropDownMenuModel?>();
+  final BehaviorSubject<AddAssetHoldingDropDownMenuModel?>
+      _selectedPublicCompanyController =
+      BehaviorSubject<AddAssetHoldingDropDownMenuModel?>();
   get selectedPublicCompanyStream => _selectedPublicCompanyController.stream;
-  AddAssetHoldingDropDownMenuModel? getSelectedPublicCompany() => _selectedPublicCompanyController.valueOrNull;
-  setSelectedPublicCompany(AddAssetHoldingDropDownMenuModel? company) => _selectedPublicCompanyController.sink.add(company);
+  AddAssetHoldingDropDownMenuModel? getSelectedPublicCompany() =>
+      _selectedPublicCompanyController.valueOrNull;
+  setSelectedPublicCompany(AddAssetHoldingDropDownMenuModel? company) =>
+      _selectedPublicCompanyController.sink.add(company);
 
-  final BehaviorSubject<DateTime?> _purchaseDateController = BehaviorSubject<DateTime?>();
+  final BehaviorSubject<DateTime?> _purchaseDateController =
+      BehaviorSubject<DateTime?>();
   get purchaseDateStream => _purchaseDateController.stream;
   DateTime? getPurchaseDate() => _purchaseDateController.valueOrNull;
-  setPurchaseDate(DateTime? dateTime) => _purchaseDateController.sink.add(dateTime);
+  setPurchaseDate(DateTime? dateTime) =>
+      _purchaseDateController.sink.add(dateTime);
 
   final stockExchangeTextEditingController = TextEditingController();
   final ofSharesTextEditingController = TextEditingController();
@@ -74,12 +82,12 @@ class AddPublicAssetHoldingDialogContentController extends BaseAddAssetStepContr
   }
 
   bool _validatePurchaseDateValue() {
-    return getPurchaseDate()!=null;
+    return getPurchaseDate() != null;
   }
 
   onAddAssetButtonClicked(BuildContext context, VoidCallback onAssetAdded) {
     final addPublicAssetHoldingModel = AddPublicAssetHoldingModel(
-      apiToken: _addPublicAssetHoldingBloc.currentUserApiToken??'',
+      apiToken: _addPublicAssetHoldingBloc.currentUserApiToken ?? '',
       assetId: getSelectedPublicCompany()!.id.toString(),
       stockExchange: stockExchangeTextEditingController.text,
       quantity: ofSharesTextEditingController.text,

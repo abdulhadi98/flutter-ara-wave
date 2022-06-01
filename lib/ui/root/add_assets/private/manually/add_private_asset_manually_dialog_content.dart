@@ -19,7 +19,6 @@ class AddPrivateAssetManuallyDialogContent extends BaseStateFullWidget {
 class _AddPrivateAssetManuallyDialogContentState
     extends BaseStateFullWidgetState<AddPrivateAssetManuallyDialogContent>
     with AddPrivateAssetManuallyDialogContentDi {
-
   @override
   void initState() {
     initScreenDi();
@@ -42,7 +41,7 @@ class _AddPrivateAssetManuallyDialogContentState
         initialData: AddingPrivateAssetStep.COMPANY_INFO,
         stream: uiController.addingPrivateAssetStepStream,
         builder: (context, stepSnapshot) {
-          switch(stepSnapshot.data) {
+          switch (stepSnapshot.data) {
             case AddingPrivateAssetStep.COMPANY_INFO:
               return buildCompanyInfoComponents();
 
@@ -52,26 +51,27 @@ class _AddPrivateAssetManuallyDialogContentState
             case AddingPrivateAssetStep.PRICE_HISTORY:
               return buildPriceHistoryComponents();
 
-            default: return Container();
+            default:
+              return Container();
           }
-        }
-    );
+        });
   }
 
   Widget buildCompanyInfoComponents() {
     return CompanyInfoStepDialogContent(
-        onNextButtonClicked: (companyInfo) => uiController.onCompanyInfoNextClicked(
-          nextStep: AddingPrivateAssetStep.COMPANY_SHARES,
-          companyInfo: companyInfo,
-        )
-    );
+        onNextButtonClicked: (companyInfo) =>
+            uiController.onCompanyInfoNextClicked(
+              nextStep: AddingPrivateAssetStep.COMPANY_SHARES,
+              companyInfo: companyInfo,
+            ));
   }
 
   Widget buildCompanySharesComponents() {
     return CompanySharesStepDialogContent(
       loadingStream: uiController.loadingStream,
       // onPriceHistoryButtonClicked: (sharesStep) => uiController.onNextButtonClicked(AddingPrivateAssetStep.PRICE_HISTORY),
-      onPriceHistoryButtonClicked: (sharesStep) => uiController.onPriceHistoryButtonClicked(
+      onPriceHistoryButtonClicked: (sharesStep) =>
+          uiController.onPriceHistoryButtonClicked(
         context: context,
         nextStep: AddingPrivateAssetStep.PRICE_HISTORY,
         sharesStep: sharesStep,
@@ -83,12 +83,13 @@ class _AddPrivateAssetManuallyDialogContentState
   Widget buildPriceHistoryComponents() {
     return PriceHistoryStepDialogContent(
       assetId: uiController.addedAssetId!,
-      assetType: Utils.enumToString(HoldingsType.PRIVATE).toLowerCase(),
-      currentMarketValue: uiController.companySharesStep!.marketValue.toString(),
-      initialInvestmentYear: uiController.companyInfo?.initialInvestmentYear??0,
+      assetType: 'private-manual',
+      currentMarketValue:
+          uiController.companySharesStep!.marketValue.toString(),
+      initialInvestmentYear:
+          uiController.companyInfo?.initialInvestmentYear ?? 0,
       onFinishButtonClicked: () => uiController.onFinishedClicked(context),
       onSkipButtonClicked: () => Navigator.of(context).pop(),
     );
   }
-
 }

@@ -10,12 +10,15 @@ import 'package:wave_flutter/local/app_local.dart';
 import 'package:wave_flutter/storage/data_store.dart';
 import 'package:collection/collection.dart';
 
-
 class Utils {
-
-  static Widget buildImage({required String? url, double? width , double? height, BoxFit fit=BoxFit.contain}) {
-
-    Widget assetImage(resPath,){
+  static Widget buildImage(
+      {required String? url,
+      double? width,
+      double? height,
+      BoxFit fit = BoxFit.contain}) {
+    Widget assetImage(
+      resPath,
+    ) {
       return Image.asset(
         resPath,
         fit: fit,
@@ -25,7 +28,9 @@ class Utils {
     }
 
     if (url == null || url == '') {
-      return assetImage('assets/images/placeholder.jpg',);
+      return assetImage(
+        'assets/images/placeholder.jpg',
+      );
     }
 
     if (url.startsWith("http")) {
@@ -78,53 +83,63 @@ class Utils {
   }
 
   static String enumToString<T>(T o) => o.toString().split('.').last;
-  static T? enumFromString<T>(String key, List<T> values) => values.firstWhereOrNull((v) => key == enumToString(v!),);
-  static int getEnumItemIndex<T>(Object o, List<T> values) => values.indexWhere((element) => element == o);
+  static T? enumFromString<T>(String key, List<T> values) =>
+      values.firstWhereOrNull(
+        (v) => key == enumToString(v!),
+      );
+  static int getEnumItemIndex<T>(Object o, List<T> values) =>
+      values.indexWhere((element) => element == o);
   static T getEnum<T>(int index, List<T> values) => values[index];
 
   static String getDateTimeValue(Locale local, String timeStamp) {
-    try{
+    try {
       final dateTime = DateTime.parse(timeStamp);
       final format = DateFormat.yMMMd(local.languageCode);
       return format.format(dateTime);
-    } catch(e){
+    } catch (e) {
       return '';
     }
   }
 
   static String getDateTimeSignUpFormat(Locale local) {
-    try{
+    try {
       final format = DateFormat.yMd(local.languageCode);
       return format.format(DateTime.now());
-    } catch(e){
+    } catch (e) {
       return '';
     }
   }
 
-  static String getFormattedCount(var count){
-    if (count < 9999) return count.toString();
-    else if (count >= 9999 && count < 99999) return count.toString().substring(0, 1) + ' K';
-    else return count.toString().substring(0, 2) + ' K';
+  static String getFormattedCount(var count) {
+    if (count < 9999)
+      return count.toString();
+    else if (count >= 9999 && count < 99999)
+      return count.toString().substring(0, 1) + ' K';
+    else
+      return count.toString().substring(0, 2) + ' K';
   }
 
   static launchURL(myUrl) async {
     await launch(myUrl);
   }
 
-  static bool isExist(value){
+  static bool isExist(value) {
     return value != null && value != "";
   }
 
-  static bool isLoggedUserExist() => (GetIt.I<DataStore>().userModel?.apiToken)!=null;
+  static bool isLoggedUserExist() =>
+      (GetIt.I<DataStore>().userModel?.apiToken) != null;
 
   static removeNullMapObjects(Map map) {
     map.removeWhere((key, value) => key == null || value == null);
   }
 
-  static T? findItemById<T>(List? list, id){
-    try{
-      return list?.firstWhereOrNull((element) => element.id.toString()==id.toString(),);
-    } catch(e){
+  static T? findItemById<T>(List? list, id) {
+    try {
+      return list?.firstWhereOrNull(
+        (element) => element.id.toString() == id.toString(),
+      );
+    } catch (e) {
       return null;
     }
   }
@@ -137,8 +152,7 @@ class Utils {
   }
 
   static String getFormattedNum(double? num) {
-    String formattedNum = NumberFormat('###,###.00').format(num??0.0);
+    String formattedNum = NumberFormat('###,###.00').format(num ?? 0.0);
     return formattedNum;
   }
 }
-

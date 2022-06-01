@@ -1,4 +1,6 @@
+import 'package:http/http.dart';
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -12,9 +14,19 @@ import 'helper/app_colors.dart';
 import 'ui/intro/splash_screen.dart';
 
 Future<void> main() async {
+  HttpOverrides.global = MyHttpOverrides();
   RegistrationDiContainer().registerDependencies();
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -39,10 +51,16 @@ class _MyAppState extends State<MyApp> {
         primaryColor: AppColors.mainColor,
       ),
       supportedLocales: <Locale>[const Locale('ar'), const Locale('en')],
-      localizationsDelegates: [const AppLocalizationsDelegate(), GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate],
-      localeResolutionCallback: (Locale? locale, Iterable<Locale> supportedLocales) {
+      localizationsDelegates: [
+        const AppLocalizationsDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      localeResolutionCallback:
+          (Locale? locale, Iterable<Locale> supportedLocales) {
         for (Locale supportedLocale in supportedLocales) {
-          if (locale != null) if (supportedLocale.languageCode == locale.languageCode ||
+          if (locale != null) if (supportedLocale.languageCode ==
+                  locale.languageCode ||
               supportedLocale.countryCode == locale.countryCode) {
             return supportedLocale;
           }
@@ -60,7 +78,8 @@ class InitPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppConstant.screenSize = MediaQuery.of(context).size;
-    print('InitPage : width= ${AppConstant.screenSize.width} height= ${AppConstant.screenSize.height}');
+    print(
+        'InitPage : width= ${AppConstant.screenSize.width} height= ${AppConstant.screenSize.height}');
     AppConstant.context = context;
     return SplashScreen();
   }

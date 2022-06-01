@@ -112,6 +112,11 @@ class AddAssetDialogContentController {
     }
   }
 
+  
+  fetchPersonalAssetTypes() => _holdingsScreenBloc.fetchPersonalAssetTypes();
+  fetchPrivateAssets() => _holdingsScreenBloc.fetchPrivateAssets();
+  fetchPublicAssets() => _holdingsScreenBloc.fetchPublicAssets();
+
   fetchInitialRequiredData(HoldingsType? type) {
     switch(type) {
       case HoldingsType.PERSONAL:
@@ -128,9 +133,6 @@ class AddAssetDialogContentController {
     }
   }
 
-  fetchPersonalAssetTypes() => _holdingsScreenBloc.fetchPersonalAssetTypes();
-  fetchPrivateAssets() => _holdingsScreenBloc.fetchPrivateAssets();
-  fetchPublicAssets() => _holdingsScreenBloc.fetchPublicAssets();
 
   final BehaviorSubject<bool> addingHoldingLoadingStateController = BehaviorSubject.seeded(false);
   get addingHoldingLoadingStateStream => addingHoldingLoadingStateController.stream;
@@ -164,6 +166,7 @@ class AddAssetDialogContentController {
     _holdingsScreenBloc.addPersonalAssetHolding(
       addPersonalAssetHoldings: AddPersonalAssetHoldingModel(
         apiToken: _holdingsScreenBloc.currentUser?.apiToken??'',
+     //   purchasedPrice:'',
         assetTypeId: getSelectedAssetTypes()?.id??-1,
         options: addPersonalAssetOptionList,
         photos: imageUrlList,
@@ -269,6 +272,7 @@ class AddAssetDialogContentController {
     _holdingsScreenBloc.fetchPrivateAssetHoldings(
       onData: () {
         setAddingHoldingLoadingState(false);
+        
         Navigator.of(context).pop();
       },
       onError: (message) {
@@ -276,6 +280,17 @@ class AddAssetDialogContentController {
         Navigator.of(context).pop();
       },
     );
+    //  _holdingsScreenBloc.fetchPrivateAssetHoldings(
+    //   onData: () {
+    //     setAddingHoldingLoadingState(false);
+        
+    //     Navigator.of(context).pop();
+    //   },
+    //   onError: (message) {
+    //     setAddingHoldingLoadingState(false);
+    //     Navigator.of(context).pop();
+    //   },
+    // );
   }
 
   _onPublicHoldingAddingSucceed(context,) {

@@ -20,6 +20,7 @@ abstract class HomeScreenDi {
     holdingsBloc = _getIt<HoldingsScreenBloc>();
     rootScreenController = _getIt<RootScreenController>();
     uiController = _getIt<HomeScreenController>(param1: homeScreenBloc, param2: authBloc,);
+    //holdingUiController=_getIt<HomeScreenController>(param1: homeScreenBloc, param2: authBloc,);
   }
 }
 

@@ -5,11 +5,13 @@ import 'package:wave_flutter/models/confirm_private_asset_acquisition_model.dart
 import 'package:wave_flutter/models/select_company_step_model.dart';
 import 'package:wave_flutter/ui/root/add_assets/private/base_add_private_asset_dialog_content_controller.dart';
 
-class AddPrivateSubscribedCompanyDialogContentController extends BaseAddPrivateAssetDialogContentController<AddPrivateAssetHoldingModel> {
+class AddPrivateSubscribedCompanyDialogContentController
+    extends BaseAddPrivateAssetDialogContentController<
+        AddPrivateAssetHoldingModel> {
   final AddPrivateSubscribedCompanyBloc _addPrivateSubscribedCompanyBloc;
   AddPrivateSubscribedCompanyDialogContentController({
     required addPrivateSubscribedCompanyBloc,
-  }): _addPrivateSubscribedCompanyBloc = addPrivateSubscribedCompanyBloc {
+  }) : _addPrivateSubscribedCompanyBloc = addPrivateSubscribedCompanyBloc {
     _addPrivateSubscribedCompanyBloc.fetchPrivateAssets();
   }
 
@@ -17,7 +19,7 @@ class AddPrivateSubscribedCompanyDialogContentController extends BaseAddPrivateA
   onSelectCompanyNextClicked({
     required AddingPrivateAssetStep nextStep,
     required SelectCompanyStepModel selectCompanyStep,
-  }){
+  }) {
     this.selectCompanyStep = selectCompanyStep;
     onNextButtonClicked(nextStep);
   }
@@ -38,16 +40,16 @@ class AddPrivateSubscribedCompanyDialogContentController extends BaseAddPrivateA
   @override
   createAddAssetModel() {
     return AddPrivateAssetHoldingModel(
-      apiToken: _addPrivateSubscribedCompanyBloc.currentUserApiToken??'',
-      assetId: selectCompanyStep!.company.id,
-      headquarterCity: companyInfo!.headquarterCity,
-      country: companyInfo!.country,
-      purchasedAt: companyInfo!.initialInvestmentYear.toString(),
-      investedCapital: companySharesStep!.investmentCapital,
-      purchasedPrice: companySharesStep!.sharesPurchased,
-      shareClass: companySharesStep!.sharesClass,
-      companySharesOutstanding: companySharesStep!.companySharesOutstanding,
-      quantity: 1000, // TODO
+      apiToken: _addPrivateSubscribedCompanyBloc.currentUserApiToken ?? '', //
+      assetId: selectCompanyStep!.company.id, //
+      headquarterCity: companyInfo!.headquarterCity, //
+      country: companyInfo!.country, //
+      purchasedAt: companyInfo!.initialInvestmentYear.toString() + '-01-01', //
+      investedCapital: companySharesStep!.investmentCapital, //
+      purchasedPrice: '', //
+      shareClass: companySharesStep!.sharesClass, //
+      companySharesOutstanding: companySharesStep!.companySharesOutstanding, //
+      quantity: int.parse(companySharesStep!.sharesPurchased), // TODO
       source: 'test', //TODO
     );
   }

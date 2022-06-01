@@ -4,6 +4,7 @@ class PublicAssetGraphRequestBody {
   final String toDate;
   final String range;
   final int interval;
+  final String? sympol;
 
   PublicAssetGraphRequestBody({
     required this.apiToken,
@@ -11,13 +12,15 @@ class PublicAssetGraphRequestBody {
     required this.toDate,
     required this.range,
     required this.interval,
+    this.sympol
   });
 
   Map<String, dynamic> toJson() => {
-    "api_token": apiToken,
-    "from_date": fromDate,
-    "to_date": toDate,
-    "range": range,
-    "interval": interval,
-  };
+        "api_token": apiToken,
+        "from_date": fromDate,
+        "to_date": toDate,
+        "range": range,
+        "interval": interval,
+        "symbol":sympol
+      };
 }

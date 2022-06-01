@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 showAddAssetDialog({
@@ -9,10 +11,13 @@ showAddAssetDialog({
       context: context,
       barrierDismissible: false,
       builder: (ctx) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: padding,
-          child: dialogContent,
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: Dialog(
+            backgroundColor: Colors.transparent,
+            insetPadding: padding,
+            child: dialogContent,
+          ),
         );
       });
 }

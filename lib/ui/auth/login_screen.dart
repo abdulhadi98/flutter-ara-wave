@@ -20,8 +20,8 @@ class LoginScreen extends BaseStateFullWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen> with LoginScreenDi{
-
+class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen>
+    with LoginScreenDi {
   @override
   void initState() {
     super.initState();
@@ -37,17 +37,17 @@ class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen> with Login
       body: SingleChildScrollView(
         child: Container(
           // height: height,
-          margin: EdgeInsets.symmetric(horizontal: width* .15),
+          margin: EdgeInsets.symmetric(horizontal: width * .15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: mediaQuery.padding.top + height* .08),
+              SizedBox(height: mediaQuery.padding.top + height * .08),
               SvgPicture.asset(
                 'assets/icons/ic_logo.svg',
-                width: width* .125,
-                height: width* .125,
+                width: width * .125,
+                height: width * .125,
               ),
-              SizedBox(height: height* .035),
+              SizedBox(height: height * .035),
               Text(
                 appLocal.trans('login'),
                 style: TextStyle(
@@ -55,16 +55,18 @@ class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen> with Login
                   color: Colors.white,
                 ),
               ),
-              SizedBox(height: height* .050),
+              SizedBox(height: height * .050),
               buildDialogInputField(
                 context,
                 width,
                 uiController.emailTextEditingController,
                 TextInputType.text,
                 hintKey: appLocal.trans('email'),
-                height: height*.070,
+                height: height * .070,
               ),
-              SizedBox(height: height* .030,),
+              SizedBox(
+                height: height * .030,
+              ),
               buildDialogInputField(
                 context,
                 width,
@@ -72,11 +74,14 @@ class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen> with Login
                 TextInputType.text,
                 obscureText: true,
                 hintKey: appLocal.trans('password'),
-                height: height*.070,
+                height: height * .070,
               ),
-              SizedBox(height: height* .030,),
+              SizedBox(
+                height: height * .030,
+              ),
               InkWell(
-                onTap: () => RoutesHelper.navigateTo(classToNavigate: ForgetPasswordScreen(), context: context),
+                onTap: () => RoutesHelper.navigateTo(
+                    classToNavigate: ForgetPasswordScreen(), context: context),
                 child: Text(
                   appLocal.trans('forget_password'),
                   style: TextStyle(
@@ -86,9 +91,12 @@ class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen> with Login
                   ),
                 ),
               ),
-              SizedBox(height: height* .030,),
+              SizedBox(
+                height: height * .030,
+              ),
               InkWell(
-                onTap: () => RoutesHelper.navigateTo(classToNavigate: ResetPasswordScreen(), context: context),
+                onTap: () => RoutesHelper.navigateTo(
+                    classToNavigate: ResetPasswordScreen(), context: context),
                 child: Text(
                   appLocal.trans('reset_password'),
                   style: TextStyle(
@@ -98,34 +106,44 @@ class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen> with Login
                   ),
                 ),
               ),
-              SizedBox(height: height* .030,),
-              StreamBuilder<bool>(
-                initialData: false,
-                stream: uiController.loadingLoginStream,
-                builder: (context, loadingSnapshot) {
-                  if(loadingSnapshot.data!){
-                    return CircularProgressIndicator();
-                  } else {
-                    return buildMainBtn(
-                      context: context,
-                      titleKey: 'login',
-                      height: height,
-                      btnWidth: width* .4,
-                      onClick: () {
-                        if (validateInputs()) {
-                          submitLoginIn(UserModel(
-                            email: uiController.emailTextEditingController.text,
-                            password: uiController.passwordTextEditingController.text,
-                          ));
-                        }
-                      },
-                    );
-                  }
-                }
+              SizedBox(
+                height: height * .030,
               ),
-              SizedBox(height: height* .050,),
-              Divider(thickness: 1, color: Colors.white.withOpacity(.3),),
-              SizedBox(height: height* .050,),
+              StreamBuilder<bool>(
+                  initialData: false,
+                  stream: uiController.loadingLoginStream,
+                  builder: (context, loadingSnapshot) {
+                    if (loadingSnapshot.data!) {
+                      return CircularProgressIndicator();
+                    } else {
+                      return buildMainBtn(
+                        context: context,
+                        titleKey: 'login',
+                        height: height,
+                        btnWidth: width * .4,
+                        onClick: () {
+                          if (validateInputs()) {
+                            submitLoginIn(UserModel(
+                              email:
+                                  uiController.emailTextEditingController.text,
+                              password: uiController
+                                  .passwordTextEditingController.text,
+                            ));
+                          }
+                        },
+                      );
+                    }
+                  }),
+              SizedBox(
+                height: height * .050,
+              ),
+              Divider(
+                thickness: 1,
+                color: Colors.white.withOpacity(.3),
+              ),
+              SizedBox(
+                height: height * .050,
+              ),
               Text(
                 appLocal.trans('no_account_no_problem'),
                 style: TextStyle(
@@ -133,17 +151,22 @@ class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen> with Login
                   color: Colors.white.withOpacity(.3),
                 ),
               ),
-              SizedBox(height: height* .030,),
+              SizedBox(
+                height: height * .030,
+              ),
               buildMainBtn(
                 context: context,
                 titleKey: 'register',
                 height: height,
-                btnWidth: width* .4,
+                btnWidth: width * .4,
                 onClick: () {
-                  RoutesHelper.navigateTo(classToNavigate: SignUpScreen(), context: context);
+                  RoutesHelper.navigateTo(
+                      classToNavigate: SignUpScreen(), context: context);
                 },
               ),
-              SizedBox(height: height* .030,),
+              SizedBox(
+                height: height * .030,
+              ),
               Text(
                 appLocal.trans('login_message'),
                 style: TextStyle(
@@ -152,7 +175,9 @@ class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen> with Login
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: height* .020,),
+              SizedBox(
+                height: height * .020,
+              ),
             ],
           ),
         ),
@@ -163,11 +188,14 @@ class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen> with Login
   bool validateInputs() {
     var validationMessage = '';
 
-    if (uiController.emailTextEditingController.text.isEmpty || !uiController.emailTextEditingController.text.contains('@')) {
-      if (validationMessage.isNotEmpty) validationMessage = validationMessage + '\nInvalid email';
+    if (uiController.emailTextEditingController.text.isEmpty ||
+        !uiController.emailTextEditingController.text.contains('@')) {
+      if (validationMessage.isNotEmpty)
+        validationMessage = validationMessage + '\nInvalid email';
       validationMessage = 'Invalid email';
     }
-    if (uiController.passwordTextEditingController.text.isEmpty || uiController.passwordTextEditingController.text.length < 5) {
+    if (uiController.passwordTextEditingController.text.isEmpty ||
+        uiController.passwordTextEditingController.text.length < 5) {
       if (validationMessage.isNotEmpty)
         validationMessage = validationMessage + '\nPassword is too short!';
       else
@@ -177,7 +205,9 @@ class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen> with Login
     if (validationMessage.isEmpty) {
       return true;
     } else {
-      Fluttertoast.showToast(msg: validationMessage,);
+      Fluttertoast.showToast(
+        msg: validationMessage,
+      );
       return false;
     }
   }
@@ -188,12 +218,12 @@ class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen> with Login
         user: user,
         onData: () {
           uiController.setLoadingLoginState(false);
-          RoutesHelper.navigateTo(classToNavigate: SplashScreen(), context: context);
+          RoutesHelper.navigateReplacementTo(
+              classToNavigate: SplashScreen(), context: context);
         },
         onError: (error) {
           uiController.setLoadingLoginState(false);
           Utils.showTranslatedToast(context, error);
         });
   }
-
 }

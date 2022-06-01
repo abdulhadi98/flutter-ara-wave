@@ -8,14 +8,12 @@ import 'package:wave_flutter/ui/intro/animated_logo.dart';
 import '../auth/login_screen.dart';
 import 'package:wave_flutter/ui/root/root_screen.dart';
 
-
-class SplashScreen extends BaseStateFullWidget{
+class SplashScreen extends BaseStateFullWidget {
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends BaseStateFullWidgetState<SplashScreen>{
-
+class _SplashScreenState extends BaseStateFullWidgetState<SplashScreen> {
   @override
   void initState() {
     // WidgetsBinding.instance?.addPostFrameCallback(_afterLayout);

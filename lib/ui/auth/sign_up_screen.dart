@@ -20,8 +20,8 @@ class SignUpScreen extends BaseStateFullWidget {
   _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen> with SignUpScreenDi{
-
+class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen>
+    with SignUpScreenDi {
   @override
   void initState() {
     super.initState();
@@ -37,17 +37,17 @@ class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen> with Sig
       body: SingleChildScrollView(
         child: Container(
           // height: height,
-          margin: EdgeInsets.symmetric(horizontal: width* .15),
+          margin: EdgeInsets.symmetric(horizontal: width * .15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: mediaQuery.padding.top + height* .08),
+              SizedBox(height: mediaQuery.padding.top + height * .08),
               SvgPicture.asset(
                 'assets/icons/ic_logo.svg',
-                width: width* .125,
-                height: width* .125,
+                width: width * .125,
+                height: width * .125,
               ),
-              SizedBox(height: height* .035),
+              SizedBox(height: height * .035),
               Text(
                 appLocal.trans('register'),
                 style: TextStyle(
@@ -55,16 +55,18 @@ class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen> with Sig
                   color: Colors.white,
                 ),
               ),
-              SizedBox(height: height* .050),
+              SizedBox(height: height * .050),
               buildDialogInputField(
                 context,
                 width,
                 uiController.emailTextEditingController,
                 TextInputType.text,
                 hintKey: appLocal.trans('email'),
-                height: height*.070,
+                height: height * .070,
               ),
-              SizedBox(height: height* .030,),
+              SizedBox(
+                height: height * .030,
+              ),
               buildDialogInputField(
                 context,
                 width,
@@ -72,74 +74,94 @@ class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen> with Sig
                 TextInputType.text,
                 obscureText: true,
                 hintKey: appLocal.trans('set_password'),
-                height: height*.070,
+                height: height * .070,
               ),
-              SizedBox(height: height* .030,),
+              SizedBox(
+                height: height * .030,
+              ),
               buildDialogInputField(
                 context,
                 width,
                 uiController.firstNameTextEditingController,
                 TextInputType.text,
                 hintKey: appLocal.trans('first_name'),
-                height: height*.070,
+                height: height * .070,
               ),
-              SizedBox(height: height* .030,),
+              SizedBox(
+                height: height * .030,
+              ),
               buildDialogInputField(
                 context,
                 width,
                 uiController.lastNameTextEditingController,
                 TextInputType.text,
                 hintKey: appLocal.trans('last_name'),
-                height: height*.070,
+                height: height * .070,
               ),
-              SizedBox(height: height* .030,),
+              SizedBox(
+                height: height * .030,
+              ),
               buildCustomDropDownMenu(
-                  screenWidth: width,
-                  stream: uiController.selectedCountryStream,
-                  hintKey: 'select_country',
-                  menuItems: [
-                    'USA',
-                    'SY',
-                    'JP',
-                    'UAE',
-                    'UK',
-                    'GE',
-                  ],
-                  onChanged: (newValue) => uiController.setSelectedCountry(newValue),
+                screenWidth: width,
+                stream: uiController.selectedCountryStream,
+                hintKey: 'select_country',
+                menuItems: [
+                  'USA',
+                  'SY',
+                  'JP',
+                  'UAE',
+                  'UK',
+                  'GE',
+                ],
+                onChanged: (newValue) =>
+                    uiController.setSelectedCountry(newValue),
               ),
-              SizedBox(height: height* .030,),
+              SizedBox(
+                height: height * .030,
+              ),
               buildDialogInputField(
                 context,
                 width,
                 uiController.phoneTextEditingController,
                 TextInputType.number,
                 hintKey: appLocal.trans('international_phone'),
-                height: height*.070,
+                height: height * .070,
               ),
-              SizedBox(height: height* .030,),
+              SizedBox(
+                height: height * .030,
+              ),
               StreamBuilder<bool>(
                   initialData: false,
                   stream: uiController.loadingSignUpStream,
                   builder: (context, loadingSnapshot) {
-                    if(loadingSnapshot.data!){
+                    if (loadingSnapshot.data!) {
                       return CircularProgressIndicator();
                     } else {
                       return buildMainBtn(
                         context: context,
                         titleKey: 'register',
                         height: height,
-                        btnWidth: width* .4,
+                        btnWidth: width * .4,
                         onClick: () {
                           if (validateInputs()) {
                             submitSignUp(UserModel(
-                              email: uiController.emailTextEditingController.text,
-                              password: uiController.passwordTextEditingController.text,
-                              firstName: uiController.firstNameTextEditingController.text,
-                              lastName: uiController.lastNameTextEditingController.text,
+                              email:
+                                  uiController.emailTextEditingController.text,
+                              password: uiController
+                                  .passwordTextEditingController.text,
+                              firstName: uiController
+                                  .firstNameTextEditingController.text,
+                              lastName: uiController
+                                  .lastNameTextEditingController.text,
                               country: uiController.getSelectedCountry(),
-                              phone: uiController.phoneTextEditingController.text,
+                              phone:
+                                  uiController.phoneTextEditingController.text,
                               //TODO
-                              name: uiController.firstNameTextEditingController.text +' '+ uiController.lastNameTextEditingController.text,
+                              name: uiController
+                                      .firstNameTextEditingController.text +
+                                  ' ' +
+                                  uiController
+                                      .lastNameTextEditingController.text,
                               joinDate: DateTime.now(),
                               city: 'Damas',
                             ));
@@ -147,12 +169,14 @@ class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen> with Sig
                         },
                       );
                     }
-                  }
+                  }),
+              SizedBox(
+                height: height * .030,
               ),
-              SizedBox(height: height* .030,),
               InkWell(
                 onTap: () {
-                  RoutesHelper.navigateTo(classToNavigate: LoginScreen(), context: context);
+                  RoutesHelper.navigateTo(
+                      classToNavigate: LoginScreen(), context: context);
                 },
                 child: Text(
                   appLocal.trans('back_to_login'),
@@ -163,7 +187,9 @@ class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen> with Sig
                   ),
                 ),
               ),
-              SizedBox(height: height* .030,),
+              SizedBox(
+                height: height * .030,
+              ),
             ],
           ),
         ),
@@ -174,37 +200,46 @@ class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen> with Sig
   bool validateInputs() {
     var validationMessage = '';
 
-    if (uiController.emailTextEditingController.text.isEmpty || !uiController.emailTextEditingController.text.contains('@')) {
-      if (validationMessage.isNotEmpty) validationMessage = validationMessage + '\nInvalid email';
+    if (uiController.emailTextEditingController.text.isEmpty ||
+        !uiController.emailTextEditingController.text.contains('@')) {
+      if (validationMessage.isNotEmpty)
+        validationMessage = validationMessage + '\nInvalid email';
       validationMessage = 'Invalid email';
     }
-    if (uiController.passwordTextEditingController.text.isEmpty || uiController.passwordTextEditingController.text.length < 5) {
+    if (uiController.passwordTextEditingController.text.isEmpty ||
+        uiController.passwordTextEditingController.text.length < 5) {
       if (validationMessage.isNotEmpty)
         validationMessage = validationMessage + '\nPassword is too short!';
       else
         validationMessage = 'Password is too short!';
     }
     if (uiController.firstNameTextEditingController.text.isEmpty) {
-      if (validationMessage.isNotEmpty) validationMessage = validationMessage + '\nfirst name required';
+      if (validationMessage.isNotEmpty)
+        validationMessage = validationMessage + '\nfirst name required';
       validationMessage = 'first name required';
     }
     if (uiController.lastNameTextEditingController.text.isEmpty) {
-      if (validationMessage.isNotEmpty) validationMessage = validationMessage + '\nlast name required';
+      if (validationMessage.isNotEmpty)
+        validationMessage = validationMessage + '\nlast name required';
       validationMessage = 'last name required';
     }
     if (uiController.phoneTextEditingController.text.isEmpty) {
-      if (validationMessage.isNotEmpty) validationMessage = validationMessage + '\nphone number required';
+      if (validationMessage.isNotEmpty)
+        validationMessage = validationMessage + '\nphone number required';
       validationMessage = 'phone number required';
     }
-    if(uiController.getSelectedCountry()==null){
-      if (validationMessage.isNotEmpty) validationMessage = validationMessage + '\ncountry required';
+    if (uiController.getSelectedCountry() == null) {
+      if (validationMessage.isNotEmpty)
+        validationMessage = validationMessage + '\ncountry required';
       validationMessage = 'country required';
     }
 
     if (validationMessage.isEmpty) {
       return true;
     } else {
-      Fluttertoast.showToast(msg: validationMessage,);
+      Fluttertoast.showToast(
+        msg: validationMessage,
+      );
       return false;
     }
   }
@@ -215,7 +250,8 @@ class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen> with Sig
         user: user,
         onData: () {
           uiController.setLoadingSignUpState(false);
-          RoutesHelper.navigateTo(classToNavigate: SplashScreen(), context: context);
+          RoutesHelper.navigateReplacementTo(
+              classToNavigate: SplashScreen(), context: context);
         },
         onError: (error) {
           uiController.setLoadingSignUpState(false);
@@ -223,13 +259,18 @@ class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen> with Sig
         });
   }
 
-
-  Widget buildCustomDropDownMenu({required screenWidth,required stream,required hintKey,required menuItems,required onChanged}) {
+  Widget buildCustomDropDownMenu(
+      {required screenWidth,
+      required stream,
+      required hintKey,
+      required menuItems,
+      required onChanged}) {
     return StreamBuilder<String?>(
         stream: stream,
         builder: (context, companySnapshot) {
           return Container(
-            padding: EdgeInsets.only(left: screenWidth * .05, right: screenWidth * .05),
+            padding: EdgeInsets.only(
+                left: screenWidth * .05, right: screenWidth * .05),
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: AppColors.mainColor,
@@ -273,5 +314,4 @@ class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen> with Sig
           );
         });
   }
-
 }

@@ -3,16 +3,18 @@ import 'holding_list_model.dart';
 
 class PublicHoldingListModel {
   final List<HoldingModel> holdingList;
-  PublicHoldingListModel({required this.holdingList,});
+  PublicHoldingListModel({
+    required this.holdingList,
+  });
   factory PublicHoldingListModel.fromJson(List<dynamic> parsedJson) {
     List<HoldingModel> holdingList = <HoldingModel>[];
-    holdingList = parsedJson.map((i) => PublicHoldingModel.fromJson(i)).toList();
+    holdingList =
+        parsedJson.map((i) => PublicHoldingModel.fromJson(i)).toList();
     return new PublicHoldingListModel(holdingList: holdingList);
   }
 }
 
 class PublicHoldingModel extends HoldingModel {
-
   PublicHoldingModel({
     required purchasedPrice,
     required quantity,
@@ -24,10 +26,11 @@ class PublicHoldingModel extends HoldingModel {
     required this.updatedAt,
     required this.userId,
     required this.purchasedAt,
-  }): super(
-    purchasedPrice: purchasedPrice,
-    quantity: quantity,
-  );
+    required this.stockEx,
+  }) : super(
+          purchasedPrice: purchasedPrice,
+          quantity: quantity,
+        );
 
   int id;
   int userId;
@@ -37,22 +40,24 @@ class PublicHoldingModel extends HoldingModel {
   DateTime createdAt;
   DateTime updatedAt;
   DateTime purchasedAt;
+  String? stockEx;
 
-
-  factory PublicHoldingModel.fromJson(Map<String, dynamic> json) => PublicHoldingModel(
-    id: json["id"],
-    userId: json["user_id"],
-    purchasedPrice: json["purchased_price"],
-    quantity: json["quantity"],
-    purchasedAt: DateTime.parse(json["purchased_at"]),
-    verified: json["verified"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-    publicAssetId: json["public_asset_id"],
-    asset: PublicAssetModel.fromJson(json["public_asset"]),
-  );
+  factory PublicHoldingModel.fromJson(Map<String, dynamic> json) =>
+      PublicHoldingModel(
+        stockEx: json['stock_exchange'],
+        id: json["id"],
+        userId: json["user_id"],
+        purchasedPrice: json["purchased_price"],
+        quantity: json["quantity"],
+        purchasedAt: DateTime.parse(json["purchased_at"]),
+        verified: json["verified"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+        publicAssetId: json["public_asset_id"],
+        asset: PublicAssetModel.fromJson(json["public_asset"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "public_asset_id": publicAssetId,
-  };
+        "public_asset_id": publicAssetId,
+      };
 }

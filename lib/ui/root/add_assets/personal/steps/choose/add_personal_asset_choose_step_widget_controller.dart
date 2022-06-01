@@ -70,13 +70,19 @@ class AddPersonalAssetChooseStepWidgetController {
         onDoneCallback,
   }) {
     setLoadingState(true);
+
     addPersonalAssetOptionList.add(AddPersonalAssetOptionModel(
       id: optionValue.typeOptionId,
       type: Utils.enumToString(AddPersonalAssetHoldingTypeOptionType.choose),
       value: optionValue.id.toString(),
     ));
-    print(
-        '/////////////////tepeId = ${optionValue.id} /////////////////\n\n\n///////////////////');
+    print('typeOptionId ' +
+        optionValue.typeOptionId.toString() +
+        ' optionValue.id ' +
+        optionValue.id.toString());
+    addPersonalAssetOptionList.forEach((element) {
+      print('zxzx  ' + element.id.toString() + element.type + element.value);
+    });
 
     int typeId;
     int? optionValueId;
@@ -95,12 +101,17 @@ class AddPersonalAssetChooseStepWidgetController {
         if (children.isNotEmpty) {
           if (children.first.typeEnum ==
               AddPersonalAssetHoldingTypeOptionType.choose) {
+            print('////////initOptionValues////////');
             initOptionValues(children.first);
           } else {
+            print('////////initSteps////////');
+
             initSteps(children);
           }
-        } else
+        } else {
+          print('////////onDoneCallback////////');
           onDoneCallback(addPersonalAssetOptionList, null);
+        }
       },
       onError: (message) => setLoadingState(false),
     );

@@ -32,6 +32,7 @@ class GeneralBloc{
     try {
       setCurrentUser(DataResource.loading());
       var response = await _apiProvider.getUser(token: currentUser?.apiToken);
+      
       UserModel userModel = UserModel.fromJson(response);
       _dataStore.setUser(userModel).then((_) {
         _dataStore.getUser();

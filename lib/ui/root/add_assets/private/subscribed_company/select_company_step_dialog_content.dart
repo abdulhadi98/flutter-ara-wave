@@ -17,7 +17,10 @@ class SelectCompanyStepDialogContent extends BaseStateFullWidget {
   final Function(SelectCompanyStepModel selectCompanyStep) onNextButtonClicked;
   final ValueStream<DataResource<List<PrivateAssetModel>>?> privateAssetsStream;
 
-  SelectCompanyStepDialogContent({required this.onNextButtonClicked, required this.privateAssetsStream,});
+  SelectCompanyStepDialogContent({
+    required this.onNextButtonClicked,
+    required this.privateAssetsStream,
+  });
 
   @override
   createState() => _SelectCompanyStepDialogContentState();
@@ -26,7 +29,6 @@ class SelectCompanyStepDialogContent extends BaseStateFullWidget {
 class _SelectCompanyStepDialogContentState
     extends BaseStateFullWidgetState<SelectCompanyStepDialogContent>
     with SelectCompanyStepDialogContentDi {
-
   @override
   void initState() {
     initScreenDi();
@@ -48,15 +50,17 @@ class _SelectCompanyStepDialogContentState
     return Column(
       children: [
         SizedBox(height: height * .03),
-        buildPrivateAvailableCompanies(),
+        buildPrivateAvailableCompanies(), //GBack
         SizedBox(height: height * .03),
-        buildTextFieldValidationIndicator(titleKey: 'shareholder_passcode',),
+        buildTextFieldValidationIndicator(
+          titleKey: 'shareholder_passcode',
+        ),
         SizedBox(height: height * .03),
         AddAssetsDialogTextField(
           controller: uiController.shareholderPasscodeTextEditingController,
           keyboardType: TextInputType.number,
           hint: 'XXX-XXX-XXX',
-          height: height* .070,
+          height: height * .055, //hEDIT
           onChanged: uiController.onSharesNumTextFieldChanged,
         ),
         SizedBox(height: height * .06),
@@ -89,16 +93,18 @@ class _SelectCompanyStepDialogContentState
                   menuItems: assetsSnapshot.data!.data!,
                   onSelected: uiController.onPrivateCompanySelected,
                 );
-              default: return Container();
+              default:
+                return Container();
             }
           } else {
             return Container();
           }
-        }
-    );
+        });
   }
 
-  Widget buildTextFieldValidationIndicator({required String titleKey,}) {
+  Widget buildTextFieldValidationIndicator({
+    required String titleKey,
+  }) {
     return StreamBuilder<bool>(
         initialData: false,
         stream: uiController.validationShareholderPasscodeStream,
@@ -108,20 +114,24 @@ class _SelectCompanyStepDialogContentState
             padding: EdgeInsets.symmetric(vertical: height * .020),
             decoration: BoxDecoration(
               color: AppColors.mainColor,
-              border: Border.all(color: isValidSnapshot.data! ? Colors.white : AppColors.mainColor, width: .5),
+              border: Border.all(
+                  color: isValidSnapshot.data!
+                      ? Colors.white
+                      : AppColors.mainColor,
+                  width: .5),
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Text(
               appLocal.trans(titleKey),
               style: TextStyle(
-                color: isValidSnapshot.data! ? AppColors.white : AppColors.white.withOpacity(.25),
-                fontSize: AppFonts.getNormalFontSize(context),
+                color: isValidSnapshot.data!
+                    ? AppColors.white
+                    : AppColors.white.withOpacity(.25),
+                fontSize: AppFonts.getMediumFontSize(context),
                 height: 1.0,
               ),
             ),
           );
-        }
-    );
+        });
   }
-
 }

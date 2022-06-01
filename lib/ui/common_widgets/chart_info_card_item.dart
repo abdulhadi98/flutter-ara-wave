@@ -6,23 +6,29 @@ import 'package:wave_flutter/ui/common_widgets/base_statefull_widget.dart';
 class ChartInfoCardItem extends BaseStateFullWidget {
   final title;
   final value;
-  final bottomLabel;
+//  final bottomLabel;
   final itemHeight;
-  ChartInfoCardItem({this.title, this.value, this.bottomLabel, this.itemHeight,});
+  ChartInfoCardItem({
+    this.title,
+    this.value,
+    //  this.bottomLabel,
+    this.itemHeight,
+  });
 
   @override
   _ChartInfoCardItemState createState() => _ChartInfoCardItemState();
 }
 
-class _ChartInfoCardItemState extends BaseStateFullWidgetState<ChartInfoCardItem> {
+class _ChartInfoCardItemState
+    extends BaseStateFullWidgetState<ChartInfoCardItem> {
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Expanded(
       child: Container(
-        height: widget.itemHeight??height* .16,
+        height: widget.itemHeight ?? height * .13,
         alignment: Alignment.center,
-        padding: EdgeInsets.symmetric(horizontal: width* .025),
+        padding: EdgeInsets.symmetric(horizontal: width * .025),
         decoration: BoxDecoration(
           color: AppColors.mainColor,
           borderRadius: BorderRadius.circular(8),
@@ -66,15 +72,17 @@ class _ChartInfoCardItemState extends BaseStateFullWidgetState<ChartInfoCardItem
               ),
             ),
             // if(widget.bottomLabel!=null) SizedBox(height: height* .008,),
-            if(widget.bottomLabel!=null) Text(
-              widget.bottomLabel,
-              style: TextStyle(
-                fontSize: AppFonts.getXXXSmallFontSize(context),
-                color: AppColors.blue,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            if(widget.bottomLabel!=null) SizedBox(height: height* .03),
+            //   if (widget.bottomLabel != null)
+            //     Text(
+            //       widget.bottomLabel,
+            //       style: TextStyle(
+            //         fontSize: AppFonts.getXXXSmallFontSize(context),
+            //         color: AppColors.blue,
+            //       ),
+            //       textAlign: TextAlign.center,
+            //     ),
+            //   if (widget.bottomLabel != null) SizedBox(height: height * .03),
+            //
           ],
         ),
       ),

@@ -17,24 +17,201 @@ import 'package:wave_flutter/ui/common_widgets/card_item_details_screen.dart';
 import 'package:wave_flutter/ui/common_widgets/chart_card_item.dart';
 import 'package:wave_flutter/ui/common_widgets/home_screen_header.dart';
 import 'package:wave_flutter/ui/common_widgets/image_widget.dart';
+import 'package:http/http.dart' as http;
+import 'package:wave_flutter/ui/root/holdings_screen.dart';
+import 'dart:convert';
+import 'home_screen.dart';
 
 class PersonalAssetDetailsScreen extends BaseStateFullWidget {
   final PersonalAssetHoldingModel assetModel;
   PersonalAssetDetailsScreen({required this.assetModel});
 
   @override
-  _PersonalAssetDetailsScreenState createState() => _PersonalAssetDetailsScreenState();
+  _PersonalAssetDetailsScreenState createState() =>
+      _PersonalAssetDetailsScreenState();
 }
 
-class _PersonalAssetDetailsScreenState extends BaseStateFullWidgetState<PersonalAssetDetailsScreen> with PersonalAssetDetailsScreenDi{
-
+class _PersonalAssetDetailsScreenState
+    extends BaseStateFullWidgetState<PersonalAssetDetailsScreen>
+    with PersonalAssetDetailsScreenDi {
   @override
   void initState() {
     super.initState();
-
+    getAssetDetails();
     initScreenDi();
   }
 
+  List<Widget> rowInforList = [
+    // rowInfo('Shares Owned', quantity),
+    // Divider(
+    //   color: AppColors.black.withOpacity(0.6),
+    //   thickness: 1.5,
+    //   height: 10,
+    // ),
+    // rowInfo('Return On Investment (ROI)', profitPercentage),
+    // Divider(
+    //   color: AppColors.black.withOpacity(0.6),
+    //   thickness: 1.5,
+    //   height: 10,
+    // ),
+  ];
+  List<Widget> loadRowList = [];
+
+  List<Widget> propertyRowLis = [];
+
+  bool spinner = false;
+  var created_at = '';
+
+  var assetGrowth = '';
+  var salePrice = ''; //market price
+  var purchasePrice = '';
+  var headQuarterCity = '';
+  var profitPercentage = '';
+  var marketValue = '';
+  var profit = '';
+
+  var quantity = '';
+
+  var rOI = '';
+  var totalA = ''; //quantity
+  var marketCapitaliztion = '';
+  var sharesOutstanding = '';
+  var shareClass = '';
+
+  var totalBalance = '';
+  var stockExchange = '';
+  var primaryExchange = '';
+  var description = '';
+  var name = '';
+  var type = '';
+
+  // var totalBalance = '';
+  List<Map<String, dynamic>> detailsInfoList = [];
+  List<PersonalAssetPhotos> personalAssetPhotos = [];
+  void getAssetDetails() async {
+    rowInforList.clear();
+    setState(() {
+      spinner = true;
+    });
+
+    //  protfolioChartData.clear();
+    print('xxxxx');
+    //  dynamic api = _dataStore!.getApiToken();
+    // String? api = _dataStore!.userModel!.apiToken;
+    // dynamic api = _dataStore!.getApiToken().then((value) => apiToken = value!);
+    String? apiToken = HomeScreen.apiToken;
+    int? assetId = HoldingsScreen.assetId;
+
+    var request;
+    var response;
+    var url = Uri.parse(
+      'https://wave.aratech.co/api/get-personal-asset-details',
+    );
+    print('///////////' +
+        url.toString() +
+        '//tokennnnnn///' +
+        apiToken! +
+        '//////' +
+        assetId.toString());
+
+    request = http.MultipartRequest('POST', url);
+    request.fields['api_token'] = apiToken;
+    request.fields['asset_id'] = assetId.toString();
+
+    response = await request.send();
+    var xx = await http.Response.fromStream(response);
+    var x = jsonDecode(xx.body);
+
+    print('///////////////////////////////////////////////////');
+    print(x.toString());
+    print('///////////////////////////////////////////////////');
+    Map payload = x['data'];
+    Map details = payload['details'];
+    List photos = payload['personal_asset_photos'];
+    type = details['Type'] ?? '12';
+    print('xccxcxc' + type);
+
+    photos.forEach((element) {
+      var link = element['link'].toString();
+      if (link != 'null')
+        personalAssetPhotos.add(PersonalAssetPhotos(
+            id: element['id'],
+            createdAt: DateTime.parse(element['created_at']),
+            updatedAt: DateTime.parse(element['updated_at']),
+            link: 'images/personal_assets/' + link.split('/').last.toString(),
+            personalAssetId: element['personal_asset_id']));
+
+      print('images/personal_assets/' + link.split('/').last.toString());
+      // .split('/')
+      // .last
+      // .toString()
+      // .substring(0, element['link'].split('/').last.toString().length - 2));
+    });
+    // print(personalAssetPhotos.first.id.toString() + 'le');
+    Map pesonalAssetType = payload['personal_asset_type'];
+    headQuarterCity = pesonalAssetType['name'];
+    // var id = payload['id'];
+    setState(() {
+      purchasePrice = payload['purchased_price'].toString();
+
+      if (headQuarterCity == 'Real Estate')
+        totalBalance = details['Market Value'].toString();
+      // else if(headQuarterCity == 'Savings' ||headQuarterCity=='Digital Asset')
+      //   totalBalance = details['Market Value'].toString();
+      else if (headQuarterCity == 'Digital Asset')
+        totalBalance =
+            details['Est Market Value'] ?? details['Amount'].toString();
+      else if (headQuarterCity == 'Savings')
+        totalBalance = details['Account Balance'].toString() == 'null'
+            ? details['Balance'].toString()
+            : details['Account Balance'].toString();
+      else
+        totalBalance = details['Estimated Resale Value'].toString() == 'null'
+            ? details['Est Resale Value'].toString()
+            : details['Estimated Resale Value'].toString();
+      created_at =
+          DateTime.parse(payload["created_at"]).toString().substring(0, 10);
+
+      if (headQuarterCity != 'Real Estate' ||
+          headQuarterCity != 'Digital Asset')
+        description = details['Description'].toString() == 'null'
+            ? ''
+            : details['Description'].toString();
+      //print(stockExchange);
+
+      //    rOI = payload['returnOnInvestment'].toString();
+      //   assetGrowth = payload['profitPercentage'].toString();
+    });
+
+    details.removeWhere((key, value) => (key == 'Estimated Resale Value' ||
+        key == 'Purchased Price' ||
+        key == 'Description' ||
+        key == 'Date of Purchase' ||
+        key == 'Est Resale Value'));
+
+    if (headQuarterCity == 'Real Estate') {
+      details.forEach((key, value) {
+        if (key == 'Loan Amount' ||
+            key == 'Down Payment' ||
+            key == 'Interest Rate' ||
+            key == 'Amortization' ||
+            key == 'Monthly Payment')
+          loadRowList.add(rowInfo(key, value.toString()));
+        else if (key == 'Lot Size' || key == 'Address' || key == 'Year Built')
+          propertyRowLis.add(rowInfo(key, value.toString()));
+        else
+          rowInforList.add(rowInfo(key, value.toString()));
+      });
+    } else
+      details.forEach((key, value) {
+        rowInforList.add(rowInfo(key, value.toString()));
+      });
+    print(details.length);
+
+    setState(() {
+      spinner = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,30 +220,246 @@ class _PersonalAssetDetailsScreenState extends BaseStateFullWidgetState<Personal
       backgroundColor: AppColors.black,
       body: WillPopScope(
         onWillPop: () => _onWillPop(),
-        child: Container(
-          padding: EdgeInsets.only(top: mediaQuery.padding.top, right: width* .05, left: width* .05,),
-          child: Column(
-            children: [
-              SizedBox(height: height* 0.02),
-              buildHeader(),
-              SizedBox(height: height* 0.020),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      if(widget.assetModel.personalAssetPhotos?.isNotEmpty??false) buildGalleryList(),
-                      if(widget.assetModel.personalAssetPhotos?.isNotEmpty??false) SizedBox(height: height* 0.020),
-                      // ChartCardItem(chartType: ChartsType.COLUMN_ROUNDED_CORNER,),
-                      // SizedBox(height: height* 0.020),
-                      buildExpandableCard(),
-                      SizedBox(height: height* 0.020),
-                    ],
-                  ),
+        child: spinner
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Container(
+                padding: EdgeInsets.only(
+                  top: mediaQuery.padding.top,
+                  right: width * .05,
+                  left: width * .05,
+                ),
+                child: Column(
+                  children: [
+                    SizedBox(height: height * 0.02),
+                    buildHeader(),
+                    SizedBox(height: height * 0.020),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            if (personalAssetPhotos.isNotEmpty)
+                              buildGalleryList(),
+                            if (personalAssetPhotos.isNotEmpty)
+                              SizedBox(height: height * 0.020),
+                            // ChartCardItem(chartType: ChartsType.COLUMN_ROUNDED_CORNER,),
+                            // SizedBox(height: height* 0.020),
+                            // buildExpandableCard(),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: width * 0.03,
+                                  vertical: height * 0.03),
+                              // height: height / 4,
+                              decoration: BoxDecoration(
+                                  color: AppColors.mainColor,
+                                  borderRadius: BorderRadius.circular(8)),
+                              child: Column(
+                                children: [
+                                  rowInfo('Purchase Price', purchasePrice),
+                                  rowInfo(
+                                      'Estimated Resale Value', totalBalance),
+                                  rowInfo('Date of Purchase', created_at),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: height * 0.020),
+                            Container(
+                                width: width,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: width * 0.03,
+                                    vertical: height * 0.03),
+                                // height: height / 4,
+                                decoration: BoxDecoration(
+                                  color: AppColors.mainColor,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Details',
+                                      style: TextStyle(
+                                        fontSize:
+                                            AppFonts.getMediumFontSize(context),
+                                        color: Colors.white,
+                                        height: 1.0,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: height * 0.035,
+                                    ),
+                                    Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: rowInforList),
+                                  ],
+                                )),
+                            SizedBox(height: height * 0.020),
+                            if (headQuarterCity != 'Real Estate' &&
+                                type != 'Cryptocurrency' &&
+                                headQuarterCity != 'Savings')
+                              Container(
+                                width: width,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: width * 0.03,
+                                    vertical: height * 0.03),
+                                // height: height / 4,
+                                decoration: BoxDecoration(
+                                  color: AppColors.mainColor,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Description',
+                                      style: TextStyle(
+                                        fontSize:
+                                            AppFonts.getMediumFontSize(context),
+                                        color: Colors.white,
+                                        height: 1.0,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: height * 0.025,
+                                    ),
+                                    Text(
+                                      description,
+                                      style: TextStyle(
+                                        wordSpacing: 2,
+                                        fontSize:
+                                            AppFonts.getSmallFontSize(context),
+                                        color: Colors.white,
+                                        height: 1.6,
+
+                                        //fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            if (headQuarterCity != 'Real Estate' &&
+                                type != 'Cryptocurrency')
+                              SizedBox(height: height * 0.020),
+
+                            if (headQuarterCity == 'Real Estate')
+                              Container(
+                                width: width,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: width * 0.03,
+                                    vertical: height * 0.03),
+                                // height: height / 4,
+                                decoration: BoxDecoration(
+                                  color: AppColors.mainColor,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Loan Metrics',
+                                      style: TextStyle(
+                                        fontSize:
+                                            AppFonts.getMediumFontSize(context),
+                                        color: Colors.white,
+                                        height: 1.0,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: height * 0.025,
+                                    ),
+                                    Column(
+                                      children: loadRowList,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            if (headQuarterCity == 'Real Estate')
+                              SizedBox(height: height * 0.020),
+
+                            if (headQuarterCity == 'Real Estate')
+                              Container(
+                                width: width,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: width * 0.03,
+                                    vertical: height * 0.03),
+                                // height: height / 4,
+                                decoration: BoxDecoration(
+                                  color: AppColors.mainColor,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Property Metrics',
+                                      style: TextStyle(
+                                        fontSize:
+                                            AppFonts.getMediumFontSize(context),
+                                        color: Colors.white,
+                                        height: 1.0,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: height * 0.025,
+                                    ),
+                                    Column(
+                                      children: propertyRowLis,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            if (headQuarterCity == 'Real Estate')
+                              SizedBox(height: height * 0.020),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
+      ),
+    );
+  }
+
+  Padding rowInfo(leftText, rightText) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+          horizontal: width * .005, vertical: height * .01),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                leftText,
+                style: TextStyle(
+                  fontSize: AppFonts.getSmallFontSize(context),
+                  color: Colors.white,
+                  height: 1.0,
+                ),
+              ),
+              Text(
+                rightText,
+                style: TextStyle(
+                  fontSize: AppFonts.getSmallFontSize(context),
+                  color: Colors.white,
+                  height: 1.0,
+                ),
+              )
             ],
           ),
-        ),
+          Divider(
+            color: AppColors.black.withOpacity(0.6),
+            thickness: 1.5,
+            height: 10,
+          ),
+        ],
       ),
     );
   }
@@ -131,29 +524,44 @@ class _PersonalAssetDetailsScreenState extends BaseStateFullWidgetState<Personal
   //   }
   // }
 
-  Widget buildHeader(){
+  Widget buildHeader() {
     return buildHeaderComponents(
       titleWidget: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(width: width* .04),
+          SizedBox(width: width * .025),
           GestureDetector(
               onTap: _onWillPop,
-              child: Icon(Icons.arrow_back_ios_rounded, color: AppColors.gray, size: width* .075,)),
-          SizedBox(width: width* .06),
+              child: Icon(
+                Icons.arrow_back_ios_rounded,
+                color: AppColors.gray,
+                size: width * .075,
+              )),
+          SizedBox(width: width * .03),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   // widget.assetModel.type == 'Collectables' ? widget.assetModel.collection??'':
-                  widget.assetModel.title??'',
+                  widget.assetModel.title ?? '',
                   style: TextStyle(
                     fontSize: AppFonts.getMediumFontSize(context),
                     color: Colors.white,
                     height: 1.0,
                   ),
                 ),
+                Text(
+                  // widget.assetModel.type == 'Collectables' ? widget.assetModel.collection??'':
+                  headQuarterCity,
+                  style: TextStyle(
+                    fontSize: AppFonts.getMediumFontSize(context),
+                    color: Colors.white,
+                    height: 1.0,
+                  ),
+                ),
+
                 // SizedBox(height: height* .01),
                 // Text(
                 //   widget.assetModel.type == 'Collectables' ? widget.assetModel.title??'':  widget.assetModel.state??'',
@@ -188,42 +596,57 @@ class _PersonalAssetDetailsScreenState extends BaseStateFullWidgetState<Personal
           // if(widget.assetModel.type == 'Collectables') SizedBox(width: width* .02),
         ],
       ),
+      netWorth: double.parse(totalBalance).toStringAsFixed(2).toString(),
       height: height,
       width: width,
       context: context,
       appLocal: appLocal,
-      logoTitleKey: 'wave',
+      logoTitleKey: 'personal',
       isAddProgressExist: true,
       addEditIcon: 'assets/icons/ic_edit.svg',
       addEditTitleKey: 'edit_asset',
-      onAddEditClick: () {},
-      totalTextKey: /*widget.assetModel.type == 'Collectables' ? 'estimated_asset_market_value' : */'estimated_total_asset_equity',
+      onAddEditClick: () {
+        getAssetDetails();
+      },
+      totalTextKey: /*widget.assetModel.type == 'Collectables' ? 'estimated_asset_market_value' : */ 'estimated_total_asset_equity',
+    );
+  }
+
+  galleryItem(List<PersonalAssetPhotos> photos, index, itemSize) {
+    List<String> urls = personalAssetPhotos
+        .map((e) => '${UrlsContainer.baseUrl}/${e.link}')
+        .toList(); //ggg
+
+    return GestureDetector(
+      onTap: () => RoutesHelper.navigateToGalleryScreen(
+          gallery: urls, index: index, context: context),
+      child: ClipRRect(
+        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+        child: ImageWidget(
+            url: '${UrlsContainer.baseUrl}/${photos[index].link}',
+            width: itemSize,
+            height: itemSize,
+            fit: BoxFit.cover),
+      ),
     );
   }
 
   Widget buildGalleryList() {
-    galleryItem(List<PersonalAssetPhotos> photos, index, itemSize) {
-      List<String> urls = widget.assetModel.personalAssetPhotos?.map((e) => '${UrlsContainer.baseUrl}/${e.link}').toList()??[];
-      return GestureDetector(
-        onTap: () => RoutesHelper.navigateToGalleryScreen(gallery: urls, index: index, context: context),
-        child: ClipRRect(
-          borderRadius: BorderRadius.all(Radius.circular(8.0)),
-          child: ImageWidget(url: '${UrlsContainer.baseUrl}/${photos[index].link}', width: itemSize, height: itemSize, fit: BoxFit.cover),
-        ),
-      );
-    }
-
     return Container(
-      height: (width- 2*width*.05 - 2*width*.02)/ 3,
+      height: (width - 2 * width * .05 - 2 * width * .02) / 3,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: widget.assetModel.personalAssetPhotos!.length,
+        itemCount: personalAssetPhotos.length,
         padding: EdgeInsets.zero,
         itemBuilder: (context, index) {
           return Row(
             children: [
-              galleryItem(widget.assetModel.personalAssetPhotos??[], index, (width- 2*width*.05 - 2*width*.02)/ 3),
-              if(index != (widget.assetModel.personalAssetPhotos?.length??0)-1) SizedBox(width: width* .02,)
+              galleryItem(personalAssetPhotos, index,
+                  (width - 2 * width * .05 - 2 * width * .02) / 3),
+              if (index != (personalAssetPhotos.length) - 1)
+                SizedBox(
+                  width: width * .02,
+                )
             ],
           );
         },
@@ -246,17 +669,23 @@ class _PersonalAssetDetailsScreenState extends BaseStateFullWidgetState<Personal
           header: Container(
             // height: height*.4,
             width: double.infinity,
-            padding: EdgeInsets.only(top: height* .0185, right: width* .04, left: width* .04, bottom: height* .0185,),
+            padding: EdgeInsets.only(
+              top: height * .0185,
+              right: width * .04,
+              left: width * .04,
+              bottom: height * .0185,
+            ),
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.0/*topLeft: Radius.circular(8), topRight: Radius.circular(8),*/),
+              borderRadius: BorderRadius.circular(
+                  8.0 /*topLeft: Radius.circular(8), topRight: Radius.circular(8),*/),
               color: AppColors.mainColor,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  widget.assetModel.personalAssetType?.name??'',
+                  widget.assetModel.personalAssetType?.name ?? '',
                   style: TextStyle(
                     fontSize: AppFonts.getSmallFontSize(context),
                     color: AppColors.white,
@@ -274,46 +703,62 @@ class _PersonalAssetDetailsScreenState extends BaseStateFullWidgetState<Personal
   }
 
   Widget buildCardWidget() {
-    List<PersonalAssetTypeOptionModel>? typeOptions = widget.assetModel.personalAssetType?.personalAssetTypeOptions;
+    List<PersonalAssetTypeOptionModel>? typeOptions =
+        widget.assetModel.personalAssetType?.personalAssetTypeOptions;
     return Container(
-        padding: EdgeInsets.only(bottom: height* .03, left: width* .04, right: width* .04,),
+        padding: EdgeInsets.only(
+          bottom: height * .03,
+          left: width * .04,
+          right: width * .04,
+        ),
         alignment: Alignment.center,
         color: AppColors.mainColor,
         child: Column(
           children: [
-            Divider(thickness: .75, color: Colors.black,),
+            Divider(
+              thickness: .75,
+              color: Colors.black,
+            ),
             ListView.builder(
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               scrollDirection: Axis.vertical,
-              itemCount: typeOptions?.length??0,
+              itemCount: typeOptions?.length ?? 0,
               padding: EdgeInsets.zero,
               itemBuilder: (context, index) {
                 String title = typeOptions![index].name;
                 String? value;
-                if(typeOptions[index].typeEnum == AddPersonalAssetHoldingTypeOptionType.choose)
-                  value = typeOptions[index].userPersonalAssetTypeOptionValue?.personalAssetTypeOptionValues?.value;
-                else value = typeOptions[index].userPersonalAssetTypeOptionValue?.value;
+                if (typeOptions[index].typeEnum ==
+                    AddPersonalAssetHoldingTypeOptionType.choose)
+                  value = typeOptions[index]
+                      .userPersonalAssetTypeOptionValue
+                      ?.personalAssetTypeOptionValues
+                      ?.value;
+                else
+                  value = typeOptions[index]
+                      .userPersonalAssetTypeOptionValue
+                      ?.value;
 
                 return Column(
                   children: [
                     buildCardItem(
                       title: title,
-                      value: value??'',
+                      value: value ?? '',
                       context: context,
                       width: width,
                     ),
-                    SizedBox(height: height* .008,),
+                    SizedBox(
+                      height: height * .008,
+                    ),
                   ],
                 );
               },
             ),
           ],
-        )
-    );
+        ));
   }
 
-  Widget buildCardItemTitle(titleKey){
+  Widget buildCardItemTitle(titleKey) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -326,11 +771,11 @@ class _PersonalAssetDetailsScreenState extends BaseStateFullWidgetState<Personal
             height: 1.0,
           ),
         ),
-        SizedBox(width: width* .06),
+        SizedBox(width: width * .06),
         SvgPicture.asset(
           'assets/icons/ic_triangle.svg',
-          height: width* .025,
-          width: width* .025,
+          height: width * .025,
+          width: width * .025,
         ),
       ],
     );
@@ -721,7 +1166,7 @@ class _PersonalAssetDetailsScreenState extends BaseStateFullWidgetState<Personal
   //   );
   // }
 
-  _onWillPop(){
+  _onWillPop() {
     rootScreenController.setSharedData(HoldingsType.PERSONAL);
     rootScreenController.setCurrentScreen(AppMainScreens.HOLDINGS_SCREEN);
   }

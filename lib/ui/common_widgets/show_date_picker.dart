@@ -10,9 +10,15 @@ showYearPicker({
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text("Select Year", style: TextStyle(color: Colors.white,),),
+        title: Text(
+          "Select Year",
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
         backgroundColor: AppColors.mainColor,
-        content: Container( // Need to use container to add size constraint.
+        content: Container(
+          // Need to use container to add size constraint.
           width: 300,
           height: 300,
           color: AppColors.mainColor,
@@ -22,7 +28,7 @@ showYearPicker({
               firstDate: DateTime(DateTime.now().year - 100, 1),
               lastDate: DateTime.now(),
               initialDate: DateTime.now(),
-              selectedDate: initialDate??DateTime.now(),
+              selectedDate: initialDate ?? DateTime.now(),
               onChanged: (DateTime dateTime) {
                 onDatePicked(dateTime);
                 Navigator.pop(context);
@@ -43,7 +49,7 @@ Future<DateTime?> showCustomDatePicker({
   return showDatePicker(
     context: context,
     locale: locale,
-    initialDate: initialDate??DateTime.now(),
+    initialDate: initialDate ?? DateTime.now(),
     firstDate: DateTime(DateTime.now().year - 100, 1),
     lastDate: DateTime(DateTime.now().year + 100, 1),
     builder: (BuildContext context, Widget? child) {

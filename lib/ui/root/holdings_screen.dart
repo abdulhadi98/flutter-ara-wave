@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:wave_flutter/di/holdings_screen_di.dart';
 import 'package:wave_flutter/helper/app_colors.dart';
 import 'package:wave_flutter/helper/app_fonts.dart';
@@ -17,6 +20,7 @@ import 'package:wave_flutter/models/asset_list_model.dart';
 import 'package:wave_flutter/models/public_asset_holding_model.dart';
 import 'package:wave_flutter/services/data_resource.dart';
 import 'package:wave_flutter/services/urls_container.dart';
+import 'package:wave_flutter/storage/data_store.dart';
 import 'package:wave_flutter/ui/common_widgets/add_asset_dialog_content.dart';
 import 'package:wave_flutter/ui/common_widgets/base_statefull_widget.dart';
 import 'package:wave_flutter/ui/common_widgets/chart_card_item.dart';
@@ -29,9 +33,16 @@ import 'package:wave_flutter/ui/common_widgets/show_add_asset_dialog.dart';
 import 'package:wave_flutter/ui/root/add_assets/personal/dialog_content/add_personal_asset_dialog_content.dart';
 import 'package:wave_flutter/ui/root/add_assets/private/add_private_asset_dialog_content.dart';
 import 'package:wave_flutter/ui/root/add_assets/public/add_public_asset_holding_dialog_content.dart';
+import 'package:wave_flutter/ui/root/home_screen.dart';
+import 'package:http/http.dart' as http;
 
 class HoldingsScreen extends BaseStateFullWidget {
   final HoldingsType holdingsType;
+  static int? assetId;
+  static dynamic typeId = 0;
+  static dynamic optionValueId = 0;
+
+  static String? stockEx;
   HoldingsScreen({required this.holdingsType});
 
   @override
@@ -40,20 +51,176 @@ class HoldingsScreen extends BaseStateFullWidget {
 
 class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
     with HoldingsScreenDi {
+  bool emptyPrivateChart = false;
+
   double get tabsHeight => height * .035;
   double get headerSliverHeight => height * .4;
   var top = 0.0;
+  Xclass xclass = Xclass(dataStore: DataStore(), chartData: xList);
 
   @override
   void initState() {
     super.initState();
 
     initScreenDi();
-
+    getPrivateChartValue();
     uiController.setHoldingsType(widget.holdingsType);
     uiController.fetchAssetsFinancialsResults();
     uiController.fetchAssetsResults();
     uiController.fetchPublicAssetHistorical();
+    loadingStatus();
+  }
+
+  bool privateChartSpinner = false;
+  List<ChartData> privateChartData = [];
+
+  void getPrivateChartValue() async {
+    setState(() {
+      privateChartSpinner = true;
+      emptyPrivateChart = false;
+    });
+    privateChartData.clear();
+    print('xxxxx');
+    //  dynamic api = _dataStore!.getApiToken();
+    // String? api = _dataStore!.userModel!.apiToken;
+    // dynamic api = _dataStore!.getApiToken().then((value) => apiToken = value!);
+    String? apiToken = HomeScreen.apiToken;
+    var request;
+    var response;
+    var url = Uri.parse(
+      'https://wave.aratech.co/api/get-private-assets-chart',
+    );
+    print('///////////' + url.toString() + '//tokennnnnn///' + apiToken!);
+
+    request = http.MultipartRequest('POST', url);
+    request.fields['api_token'] = apiToken;
+    response = await request.send();
+    var xx = await http.Response.fromStream(response);
+    var x = jsonDecode(xx.body);
+
+    print('///////////////////////////////////////////////////');
+    print(x.toString() + 'sdsdsd');
+    print('///////////////////////////////////////////////////');
+    try {
+      Map<dynamic, dynamic> payload = x['data'];
+      payload.forEach((element, val) {
+        var t = element;
+        if (t.length >= 10)
+          t = t.substring(0, 10);
+        else if (t.length < 5) t = t + '-01-01';
+        //  String temp = t.length >= 10 ? t.substring(0, 10) : t;
+        DateTime acquisitionDate = DateTime.parse(t);
+        print('$acquisitionDate' + '');
+
+        int growth = val.toInt();
+        // int intGrowth = growth.toInt();
+        // print('$growth' + 'aloalo');
+        // if (growth == 0) growth = 0.01;
+        privateChartData.add(ChartData(acquisitionDate, growth));
+
+        print('personalAassetTtype = $acquisitionDate');
+        print('growth = $growth');
+      });
+    } catch (e) {
+      print(e);
+      setState(() {
+        emptyPrivateChart = true;
+        privateChartSpinner = false;
+      });
+    }
+
+    ChartData? other;
+
+    setState(() {
+      privateChartSpinner = false;
+    });
+  }
+
+  Widget protfolioWidget() {
+    return Container(
+      height: height * .22,
+      child: SfCartesianChart(
+        // primaryXAxis: DateTimeAxis(),
+        // margin: EdgeInsets.symmetric(horizontal: width* .025, vertical: height* .025),
+        series: <CartesianSeries<ChartData, DateTime>>[
+          // Renders area chart
+          AreaSeries<ChartData, DateTime>(
+            dataSource: privateChartData,
+            xValueMapper: (ChartData data, _) => data.x,
+            yValueMapper: (ChartData data, _) => data.y,
+            borderDrawMode: BorderDrawMode.excludeBottom,
+            borderColor: AppColors.blue,
+            borderWidth: 1,
+            gradient: LinearGradient(
+              end: Alignment.topCenter,
+              begin: Alignment.bottomCenter,
+              tileMode: TileMode.clamp,
+              colors: [
+                AppColors.blue.withOpacity(.01),
+                AppColors.blue.withOpacity(.25),
+                AppColors.blue.withOpacity(.5),
+              ],
+              stops: [
+                0.0,
+                0.5,
+                1.0,
+              ],
+            ),
+          )
+        ],
+        zoomPanBehavior: ZoomPanBehavior(
+          // enablePinching: true,
+          enablePanning: true,
+          zoomMode: ZoomMode.x,
+        ),
+        plotAreaBorderWidth: 0.0,
+        // primaryXAxis: NumericAxis(
+        //   majorGridLines: MajorGridLines(width: 0),
+        //   axisLine: AxisLine(
+        //     width: 0.0,
+        //   ),
+        //   tickPosition: TickPosition.outside,
+        //   majorTickLines: MajorTickLines(width: 0),
+        //     visibleMinimum: chartData[chartData.length-chartData.length~/2].year,
+        //     visibleMaximum: chartData[chartData.length-chartData.length~/2].year,
+        // ),
+        primaryXAxis: DateTimeAxis(
+          // // intervalType: _getChartIntervalType(filter),
+          // visibleMinimum: chartData.length > 1
+          //     ? chartData[chartData.length - (chartData.length ~/ 2)].x
+          //     : (chartData[chartData.length - 1].x),
+          // visibleMaximum: chartData[chartData.length - 1].x,
+          majorGridLines: MajorGridLines(width: 0),
+          axisLine: AxisLine(
+            width: 0.0,
+          ),
+          tickPosition: TickPosition.outside,
+          majorTickLines: MajorTickLines(width: 0),
+          autoScrollingMode: AutoScrollingMode.end,
+        ),
+        primaryYAxis: NumericAxis(
+          edgeLabelPlacement: EdgeLabelPlacement.shift,
+          labelFormat: '{value}',
+          // numberFormat: NumberFormat.simpleCurrency(decimalDigits: 0),
+          majorGridLines: MajorGridLines(width: .03),
+          axisLine: AxisLine(
+            width: 0.0,
+          ),
+          majorTickLines: MajorTickLines(width: 0),
+        ),
+      ),
+    );
+  }
+
+  bool loading = false;
+  loadingStatus() async {
+    setState(() {
+      loading = true;
+    });
+    await xclass.getPersonalChartValue();
+    setState(() {
+      loading = false;
+    });
   }
 
   @override
@@ -140,10 +307,61 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                   children: [
                     SizedBox(height: height * 0.020),
                     buildHeader(tab),
+                    // MaterialButton(
+                    //   onPressed: () {},
+                    //   height: 50,
+                    //   color: Colors.red,
+                    // ),
                     SizedBox(height: height * 0.020),
                     if (tab == HoldingsType.PERSONAL)
-                      ChartCardItem(chartType: ChartsType.COLUMN),
-                    if (tab != HoldingsType.PERSONAL) buildChartWidget(),
+                      loading
+                          ? Container(
+                              height: height * .22,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircularProgressIndicator(),
+                                ],
+                              ),
+                            )
+                          : ChartCardItem(
+                              chartType: ChartsType.COLUMN,
+                            ),
+                    if (tab == HoldingsType.PUBLIC) buildChartWidget(),
+                    if (tab == HoldingsType.PRIVATE)
+                      privateChartSpinner
+                          ? Container(
+                              height: height * .22,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircularProgressIndicator(),
+                                ],
+                              ),
+                            )
+                          : emptyPrivateChart
+                              ? Container(
+                                  height: height * .22,
+                                  child: Center(
+                                    child: Text(
+                                      'Try to add some assets',
+                                      style: TextStyle(
+                                        fontSize:
+                                            AppFonts.getMediumFontSize(context),
+                                        color: Colors.white,
+                                        height: 1.0,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : protfolioWidget(),
+
+                    // (tab != HoldingsType.PERSONAL && loading == false)
+                    //     ? buildChartWidget()
+                    //     : Center(
+                    //         child: CircularProgressIndicator(
+                    //             color: Colors.transparent),
+                    //       ),
                     SizedBox(height: height * 0.020),
                   ],
                 ),
@@ -169,12 +387,15 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                 ),
               );
             case Status.SUCCESS:
-              return ChartCardItem(
-                chartType: ChartsType.AREA,
-                filter: uiController.chartFilter,
-                historicalDataList: historicalSnapshot.data!.data!,
-                onFilterChanged: (filter) =>
-                    uiController.fetchPublicAssetHistorical(filter: filter),
+              return Container(
+                height: height * .25,
+                child: ChartCardItem(
+                  chartType: ChartsType.AREA,
+                  filter: uiController.chartFilter,
+                  historicalDataList: historicalSnapshot.data!.data!,
+                  onFilterChanged: (filter) =>
+                      uiController.fetchPublicAssetHistorical(filter: filter),
+                ),
               );
             case Status.NO_RESULTS:
               return ErrorMessageWidget(
@@ -196,6 +417,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
   }
 
   Widget buildHeader(HoldingsType type) {
+    print('zxzxzx ${type.toString().split('.').last.toLowerCase()}');
     return StreamBuilder<DataResource<AssetsFinancials>?>(
         stream: uiController.assetsFinancialsStream,
         builder: (context, financialsSnapshot) {
@@ -232,12 +454,14 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
             width: width,
             context: context,
             appLocal: appLocal,
-            logoTitleKey: 'private',
+            logoTitleKey: type.toString().split('.').last.toLowerCase(),
             isAddProgressExist: true,
             addEditIcon: 'assets/icons/ic_add.svg',
             addEditTitleKey: 'new_asset',
             onAddEditClick: () {
               uiController.clearAddAssetInputs();
+              print('HoldingsScreen.typeId = -4');
+              HoldingsScreen.typeId = -4;
               showAddAssetDialog(
                 context: context,
                 padding: EdgeInsets.only(
@@ -258,7 +482,10 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
     switch (type) {
       case HoldingsType.PRIVATE:
         return AddPrivateAssetDialogContent(
-          onAssetAdded: () => uiController.fetchAssetsResults(),
+          onAssetAdded: () {
+            uiController.fetchAssetsResults();
+            getPrivateChartValue();
+          },
         );
 
       case HoldingsType.PUBLIC:
@@ -268,7 +495,16 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
 
       case HoldingsType.PERSONAL:
         return AddPersonalAssetDialogContent(
-          onAssetAdded: () => uiController.fetchAssetsResults(),
+          onAssetAdded: () async {
+            uiController.fetchAssetsResults();
+            setState(() {
+              loading = true;
+            });
+            await xclass.getPersonalChartValue();
+            setState(() {
+              loading = false;
+            });
+          }, //rechart
         );
 
       default:
@@ -281,6 +517,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
       uiController.setHoldingsType(holdingType);
       uiController.fetchAssetsFinancialsResults();
       uiController.fetchAssetsResults();
+      getPrivateChartValue();
     }
 
     return PreferredSize(
@@ -316,7 +553,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Padding(
-          padding: const EdgeInsets.only(right: 16),
+          padding: EdgeInsets.only(right: width * 0.013),
           child: Text(
             appLocal.trans('equity'),
             style: TextStyle(
@@ -327,31 +564,54 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
           ),
         ),
         Divider(
-          thickness: .5,
+          height: 3,
+          thickness: .7,
           color: Colors.white.withOpacity(.4),
         ),
       ],
     );
   }
 
-  Widget buildHoldingResults(type) {
-    switch (type) {
-      case HoldingsType.PRIVATE:
-        return buildPrivateHoldingResult(
-          HoldingsType.PRIVATE,
-        );
+  Widget buildPersonalHoldingResult() {
+    return StreamBuilder<DataResource<List<PersonalAssetHoldingModel>>?>(
+      stream: holdingsBloc.personalAssetHoldingsStream,
+      builder: (context, assetsSnapshot) {
+        if (assetsSnapshot.hasData && assetsSnapshot.data != null) {
+          // print('aass'+assetsSnapshot.data!.data!.isEmpty.toString());
+          //  print('aewe' + assetsSnapshot.data!.data.toString());
+          switch (assetsSnapshot.data!.status) {
+            case Status.LOADING:
+              return Expanded(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            case Status.SUCCESS:
+              {
+                print(assetsSnapshot.data!.data!.first.id);
+                return buildPersonalHoldingList(assetsSnapshot.data!.data!);
+              }
+            case Status.NO_RESULTS:
+              return ErrorMessageWidget(
+                  messageKey: 'no_result_found_message',
+                  image: 'assets/images/ic_not_found.png');
+            case Status.FAILURE:
+              {
+                // print('cya' + assetsSnapshot.data!.data!.length.toString());
 
-      case HoldingsType.PUBLIC:
-        return buildPrivateHoldingResult(
-          HoldingsType.PUBLIC,
-        );
+                return ErrorMessageWidget(
+                    messageKey: assetsSnapshot.data?.message ?? '',
+                    image: 'assets/images/ic_error.png');
+              }
 
-      case HoldingsType.PERSONAL:
-        return buildPersonalHoldingResult();
-
-      default:
-        return Container();
-    }
+            default:
+              return Container();
+          }
+        } else {
+          return Container();
+        }
+      },
+    );
   }
 
   Widget buildPersonalHoldingList(items) {
@@ -378,6 +638,8 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
   ) {
     return InkWell(
       onTap: () {
+        HoldingsScreen.assetId = holdingModel.id;
+        print(HoldingsScreen.assetId.toString());
         // rootScreenController.setSharedData(holdingModel.personalAssetType);
         rootScreenController.setSharedData(holdingModel);
         rootScreenController
@@ -392,7 +654,10 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  holdingModel.title ?? '',
+                  holdingModel.title ??
+                      holdingModel.personalAssetType?.personalAssetTypeOptions
+                          .first.name ??
+                      '',
                   style: TextStyle(
                     fontSize: AppFonts.getNormalFontSize(context),
                     color: Colors.white,
@@ -411,13 +676,13 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                ImageWidget(
-                  url: holdingModel.personalAssetType?.iconUrl ?? '',
-                  width: width * .04,
-                  height: width * .04,
-                  fit: BoxFit.contain,
-                ),
-                SizedBox(width: width * .02),
+                // ImageWidget(
+                //   url: holdingModel.personalAssetType?.iconUrl ?? '',
+                //   width: width * .04,
+                //   height: width * .04,
+                //   fit: BoxFit.contain,
+                // ),
+                // SizedBox(width: width * .02),
                 Text(
                   holdingModel.personalAssetType?.personalAssetTypeOptions.first
                           .name ??
@@ -436,9 +701,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                 ),
                 SizedBox(width: width * .02),
                 Text(
-                  holdingModel.personalAssetType?.personalAssetTypeOptions.first
-                          .type ??
-                      '',
+                  holdingModel.subType ?? 'null',
                   style: TextStyle(
                     fontSize: AppFonts.getMediumFontSize(context),
                     color: AppColors.gray,
@@ -446,21 +709,10 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                   ),
                 ),
                 Spacer(),
-                Text(
-                  '1',
-                  style: TextStyle(
-                    fontSize: AppFonts.getMediumFontSize(context),
-                    color: AppColors.blue,
-                    height: 1.0,
-                  ),
-                ),
+
                 if (holdingModel.purchasedPrice != null)
                   SizedBox(width: width * .02),
-                if (holdingModel.purchasedPrice != null)
-                  Container(
-                      width: width * .0018,
-                      height: height * .018,
-                      color: AppColors.blue),
+
                 if (holdingModel.purchasedPrice != null)
                   SizedBox(width: width * .02),
                 if (holdingModel.purchasedPrice != null)
@@ -480,50 +732,26 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
     );
   }
 
-  Widget buildPersonalHoldingResult() {
-    return StreamBuilder<DataResource<List<PersonalAssetHoldingModel>>?>(
-      stream: holdingsBloc.personalAssetHoldingsStream,
-      builder: (context, assetsSnapshot) {
-        if (assetsSnapshot.hasData && assetsSnapshot.data != null) {
-          switch (assetsSnapshot.data!.status) {
-            case Status.LOADING:
-              return Expanded(
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            case Status.SUCCESS:
-              return buildPersonalHoldingList(assetsSnapshot.data!.data!);
-            case Status.NO_RESULTS:
-              return ErrorMessageWidget(
-                  messageKey: 'no_result_found_message',
-                  image: 'assets/images/ic_not_found.png');
-            case Status.FAILURE:
-              return ErrorMessageWidget(
-                  messageKey: assetsSnapshot.data?.message ?? '',
-                  image: 'assets/images/ic_error.png');
+  Widget buildHoldingResults(type) {
+    switch (type) {
+      case HoldingsType.PRIVATE:
+        return buildPrivateHoldingResult(
+          HoldingsType.PRIVATE,
+        );
 
-            default:
-              return Container();
-          }
-        } else {
-          return Container();
-        }
-      },
-    );
+      case HoldingsType.PUBLIC:
+        return buildPrivateHoldingResult(
+          HoldingsType.PUBLIC,
+        );
+
+      case HoldingsType.PERSONAL:
+        return buildPersonalHoldingResult();
+
+      default:
+        return Container();
+    }
   }
 
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////
   Widget buildPrivateHoldingResult(
     type,
   ) {
@@ -602,6 +830,42 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
     );
   }
 
+  Widget buildPrivateHoldingItem(
+      context, index, itemsCount, PrivateHoldingModel item) {
+    return Column(
+      children: [
+        buildAssetItem(
+            name: item.asset?.name ?? '',
+            city: item.country,
+            country: item.headquarterCity,
+            salePrice: item.asset?.salePrice.toString(),
+            icon:
+                'https://wave.aratech.co/images/private_assets/${item.asset?.icon}',
+            quantity: item.quantity.toString(),
+            purchasedPrice:
+                double.parse(item.purchasedPrice).toStringAsFixed(3).toString(),
+            onClick: () {
+              HoldingsScreen.assetId = item.id;
+              print('zzzzzzz' +
+                  item.id.toString() +
+                  '  ' +
+                  '${item.asset!.assetType!.kind}');
+
+              if (item.asset!.assetType!.kind == 'holding') {
+                rootScreenController.setSharedData(item.asset);
+                rootScreenController.setCurrentScreen(
+                    AppMainScreens.PRIVATE_ASSET_DETAILS_SCREEN);
+              } else {
+                rootScreenController.setSharedData(item.asset);
+                rootScreenController.setCurrentScreen(
+                    AppMainScreens.PERSONAL_ASSET_MANUAL_DETAILS_SCREEN);
+              }
+            }),
+        ...getListDividerItems(index, itemsCount),
+      ],
+    );
+  }
+
   Widget buildPublicHoldingList(
     items,
   ) {
@@ -612,44 +876,31 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
     );
   }
 
-  Widget buildPrivateHoldingItem(
-      context, index, itemsCount, PrivateHoldingModel item) {
-    return Column(
-      children: [
-        buildAssetItem(
-            name: item.asset?.name ?? '',
-            salePrice: item.asset?.salePrice.toString(),
-            icon: '${UrlsContainer.baseUrl}/${item.asset?.iconUrl}',
-            quantity: item.quantity.toString(),
-            purchasedPrice: item.purchasedPrice,
-            onClick: () {
-              AssetsFinancials? financialsModel =
-                  uiController.getAssetsFinancials()?.data;
-              item.asset?.assetNetworth = financialsModel?.assetNetworth;
-              item.asset?.assetGrowth =
-                  financialsModel?.getAssetGrowthRounded();
-
-              rootScreenController.setSharedData(item.asset);
-              rootScreenController.setCurrentScreen(
-                  AppMainScreens.PRIVATE_ASSET_DETAILS_SCREEN);
-            }),
-        ...getListDividerItems(index, itemsCount),
-      ],
-    );
-  }
-
   Widget buildPublicHoldingItem(
       context, index, itemsCount, PublicHoldingModel item) {
     return Column(
       children: [
         buildAssetItem(
-          name: item.asset.name ?? '',
-          salePrice: item.asset.salePrice.toString(),
-          country: item.asset.stockSymbol ?? '',
-          // city: item.asset.serialNumber??'',
-          quantity: item.quantity.toString(),
-          purchasedPrice: item.purchasedPrice,
-        ),
+            name: item.asset.name ?? '',
+            salePrice: item.asset.salePrice.toString(),
+            country: item.asset.stockSymbol ?? '',
+            city: item.stockEx ?? '',
+            quantity: item.quantity.toString(),
+            purchasedPrice:
+                double.parse(item.purchasedPrice).toStringAsFixed(2).toString(),
+            onClick: () {
+              HoldingsScreen.assetId = item.id;
+
+              HoldingsScreen.stockEx = item.asset.stockSymbol;
+              print('zzzzzzz' +
+                  item.id.toString() +
+                  '  ' +
+                  item.asset.stockSymbol!);
+
+              rootScreenController.setSharedData(item.asset);
+              rootScreenController
+                  .setCurrentScreen(AppMainScreens.PUBLIC_ASSET_DETAILS_SCREEN);
+            }),
         ...getListDividerItems(index, itemsCount),
       ],
     );
@@ -683,6 +934,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                   ),
                 ),
                 Text(
+                  //privateValue
                   Utils.getFormattedNum(
                       double.parse(purchasedPrice.toString()) *
                           int.parse(quantity.toString())),
@@ -703,7 +955,10 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                     width: width * .04,
                     height: width * .04,
                   ),
-                if (icon != null) SizedBox(width: width * .02),
+                if (icon != null &&
+                    icon != 'https://wave.aratech.co/images/private_assets/123')
+                  SizedBox(width: width * .02),
+                // if (icon == '123') SizedBox(width: width * .02),
                 Text(
                   country ?? '',
                   style: TextStyle(
@@ -745,7 +1000,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                     color: AppColors.blue),
                 SizedBox(width: width * .02),
                 Text(
-                  purchasedPrice,
+                  '\$' + purchasedPrice,
                   style: TextStyle(
                     fontSize: AppFonts.getSmallFontSize(context),
                     color: AppColors.blue,

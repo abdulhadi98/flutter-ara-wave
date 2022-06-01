@@ -23,7 +23,8 @@ class _NewsItemState extends BaseStateFullWidgetState<NewsItem> {
       onTap: () => Utils.launchURL(widget.newsItem.url),
       child: Container(
         // height: height* .1,
-        padding: EdgeInsets.symmetric(horizontal: width* .04, vertical: height* .035),
+        padding: EdgeInsets.symmetric(
+            horizontal: width * .04, vertical: height * .035),
         decoration: BoxDecoration(
           color: AppColors.mainColor,
           borderRadius: BorderRadius.circular(8),
@@ -45,7 +46,7 @@ class _NewsItemState extends BaseStateFullWidgetState<NewsItem> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: height* .02),
+                    SizedBox(height: height * .02),
                     Text(
                       widget.newsItem.description,
                       style: TextStyle(
@@ -63,7 +64,8 @@ class _NewsItemState extends BaseStateFullWidgetState<NewsItem> {
                       children: [
                         Expanded(
                           child: Text(
-                            Utils.getDateTimeValue(appLocal.locale, widget.newsItem.createdAt.toString()),
+                            widget.newsItem.createdAt.substring(
+                                0, widget.newsItem.createdAt.length - 13),
                             style: TextStyle(
                               fontSize: AppFonts.getXSmallFontSize(context),
                               color: AppColors.white,
@@ -88,15 +90,14 @@ class _NewsItemState extends BaseStateFullWidgetState<NewsItem> {
                   ],
                 ),
               ),
-              SizedBox(width: width* .04),
+              SizedBox(width: width * .04),
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Utils.buildImage(
-                    url: widget.newsItem.enclosure?.url??'',
-                    width: width* .3,
-                    height: width* .32,
-                  fit: BoxFit.cover
-                ),
+                    url: widget.newsItem.enclosure?.url ?? '',
+                    width: width * .3,
+                    height: width * .32,
+                    fit: BoxFit.cover),
               )
             ],
           ),

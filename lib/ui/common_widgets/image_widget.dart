@@ -10,24 +10,41 @@ class ImageWidget extends StatelessWidget {
   final double height;
   final Color? color;
   final BoxFit fit;
+  final String? type;
 
   ImageWidget({
     required this.url,
     required this.width,
     required this.height,
     this.color,
+    this.type,
     this.fit = BoxFit.cover,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (url == '') return buildPlaceHolderWidget();
+    // String? imageType;
+    // if (type == 'public') imageType = 'public_assets';
+    // else if (type == 'personal') imageType = 'personal_assets';
 
+    // else if (type == 'private_holding' || type == 'private_manual')
+    //   imageType = 'private_assets';
+
+    if (url.split('/').last == '')
+      return Image.network(
+        'https://wave.aratech.co/images/company_placeholder.png',
+        width: width,
+        height: height,
+        fit: fit,
+        errorBuilder: (context, url, _) => Container(
+            // width: width / 2,
+            ),
+      );
+    // print('//////////////////////$url/////////////////');
     if (url.startsWith("http")) {
       if (url.split('.').last == 'svg') return buildNetworkSvgImage();
       return buildCachedNetworkImage();
-    }
-    else if (url.startsWith("assets")) {
+    } else if (url.startsWith("assets")) {
       if (url.split('.').last == 'svg') return buildAssetSvgImage();
       return buildImageAsset();
     } else
@@ -40,8 +57,9 @@ class ImageWidget extends StatelessWidget {
       width: width,
       height: height,
       fit: fit,
-      errorBuilder: (context, url, _) => buildErrorWidget(),
-      loadingBuilder: (context, child, loadingProgress) => buildPlaceHolderWidget(),
+      errorBuilder: (context, url, _) => Container(
+          // width: width / 2,
+          ),
     );
   }
 

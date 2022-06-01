@@ -24,11 +24,13 @@ import 'package:wave_flutter/ui/controllers/holdings_screen_controller.dart';
 import 'package:wave_flutter/ui/root/holdings_screen.dart';
 
 import '../../bloc/holdings_screen_bloc.dart';
+import '../common_widgets/chart_card_item.dart';
 import 'add_assets/personal/dialog_content/add_personal_asset_dialog_content.dart';
 import 'add_assets/private/add_private_asset_dialog_content.dart';
 import 'add_assets/public/add_public_asset_holding_dialog_content.dart';
 
 class HomeScreen extends BaseStateFullWidget {
+  static String? apiToken;
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -36,6 +38,7 @@ class HomeScreen extends BaseStateFullWidget {
 class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
     with HomeScreenDi {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  DataStore? _dataStore = DataStore();
 
   @override
   void initState() {
@@ -46,7 +49,8 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
     homeScreenBloc.fetchMe();
     homeScreenBloc.fetchUserPortfolioFinancials();
     homeScreenBloc.fetchTopPerformingGainersLoosersAssets();
-    homeScreenBloc.fetchTopNews();
+    homeScreenBloc.fetchNewsFromXml();
+    _dataStore!.getApiToken();
   }
 
   @override
@@ -63,15 +67,21 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
         ),
         child: Column(
           children: [
+            // MaterialButton(
+            //   onPressed: () {
+            //     homeScreenBloc.fetchNewsFromXml();
+            //   },
+            //   child: Text('aaaaaaaa'),
+            //   height: height / 4,
+            //   color: Colors.red,
+            // ),
             SizedBox(height: height * 0.02),
             buildHeaderComponents(),
             SizedBox(height: height * 0.020),
             buildGridButtons(),
-            SizedBox(height: height * 0.060),
             buildTopPerformingGainersLoosersResult(),
             // SizedBox(height: height* 0.060),
             // buildGainersLosersResult(),
-            SizedBox(height: height * 0.060),
             buildTopNewsResult(),
             SizedBox(height: height * 0.060),
           ],
@@ -127,7 +137,7 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
                     Expanded(
                       child: Container(
                         padding: EdgeInsets.symmetric(
-                            vertical: height * 0.02, horizontal: width * .05),
+                            vertical: height * 0.02, horizontal: width * .03),
                         decoration: BoxDecoration(
                           color: AppColors.mainColor,
                           borderRadius: BorderRadius.circular(8),
@@ -186,8 +196,11 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
               ),
               Container(
                 width: double.infinity,
-                padding: EdgeInsets.symmetric(
-                    vertical: height * 0.02, horizontal: width * .05),
+                padding: EdgeInsets.only(
+                    top: height * 0.02,
+                    bottom: height * 0.02,
+                    left: width * .033,
+                    right: width * .023),
                 decoration: BoxDecoration(
                   color: AppColors.mainColor,
                   borderRadius: BorderRadius.circular(8),
@@ -219,7 +232,7 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
                           ),
                           SizedBox(height: height * .015),
                           Padding(
-                            padding: EdgeInsets.only(left: width * .02),
+                            padding: const EdgeInsets.only(left: 0),
                             child: Text(
                               'Total NET Balance in USD',
                               style: TextStyle(
@@ -317,71 +330,264 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
               width: width * .035,
             ),
             Expanded(
-              child: buttonItem('new_assets', image: 'assets/icons/ic_add.svg',
-                  onClick: () {
+              child: buttonItem('new_assets',
+                  image: 'assets/icons/add_asset_icon.svg', onClick: () {
+                print('HoldingsScreen.typeId = -4');
+                HoldingsScreen.typeId = -4;
                 showAddAssetDialog(
-                  context: context,
-                  padding: EdgeInsets.only(
-                    right: width * .1,
-                    left: width * .1,
-                    top: height * .15,
-                  ),
-                  dialogContent: Container(
-                      child: Column(
-                    children: [
-                      SizedBox(height: height * .03),
-                      Container(
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.symmetric(vertical: height * .020),
-                        decoration: BoxDecoration(
-                          color: AppColors.mainColor,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Text(
-                          appLocal.trans('choose_asset_type'),
-                          style: TextStyle(
-                            color: AppColors.white,
-                            fontSize: AppFonts.getNormalFontSize(context),
-                            height: 1.0,
+                    context: context,
+                    padding: EdgeInsets.only(
+                      right: width * .1,
+                      left: width * .1,
+                      top: height * .15,
+                    ),
+                    dialogContent: Stack(
+                      children: [
+                        Positioned(
+                          top: width * .075 / 2,
+                          right: width * .075 / 2,
+                          left: 0,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.mainColor,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(height: height * .025),
+                                Text(
+                                  appLocal.trans('new_asset'),
+                                  style: TextStyle(
+                                    color: AppColors.white,
+                                    fontSize:
+                                        AppFonts.getLargeFontSize(context),
+                                    height: 1.0,
+                                  ),
+                                ),
+                                SizedBox(height: height * .020),
+                                Container(
+                                    margin: const EdgeInsets.all(1),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: width * .08),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.black,
+                                      borderRadius: BorderRadius.only(
+                                        bottomRight: Radius.circular(12),
+                                        bottomLeft: Radius.circular(12),
+                                      ),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        SizedBox(
+                                          height: height * .02,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            showAddAssetDialog(
+                                                context: context,
+                                                padding: EdgeInsets.only(
+                                                  right: width * .1,
+                                                  left: width * .1,
+                                                  top: height * .15,
+                                                ),
+                                                dialogContent:
+                                                    AddPrivateAssetDialogContent(
+                                                  onAssetAdded: () {
+                                                    HoldingsScreen.typeId = -4;
+                                                    Navigator.pop(context);
+                                                  },
+                                                ));
+                                          },
+                                          child: Container(
+                                            height: height * .07,
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                              color: AppColors.mainColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                            ),
+                                            child: Text(
+                                              appLocal.trans('private_asset'),
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize:
+                                                    AppFonts.getMediumFontSize(
+                                                        context),
+                                                height: 1.0,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: height * .02,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () async {
+                                            showAddAssetDialog(
+                                                context: context,
+                                                padding: EdgeInsets.only(
+                                                  right: width * .1,
+                                                  left: width * .1,
+                                                  top: height * .15,
+                                                ),
+                                                dialogContent:
+                                                    AddPublicAssetHoldingDialogContent(
+                                                  onAssetAdded: () {
+                                                    print('qweqw');
+                                                    Navigator.pop(context);
+                                                  },
+                                                ));
+                                          },
+                                          child: Container(
+                                            height: height * .07,
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                              color: AppColors.mainColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                            ),
+                                            child: Text(
+                                              appLocal.trans('public_asset'),
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize:
+                                                    AppFonts.getMediumFontSize(
+                                                        context),
+                                                height: 1.0,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: height * .02,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () async {
+                                            showAddAssetDialog(
+                                                context: context,
+                                                padding: EdgeInsets.only(
+                                                  right: width * .1,
+                                                  left: width * .1,
+                                                  top: height * .15,
+                                                ),
+                                                dialogContent:
+                                                    AddPersonalAssetDialogContent(
+                                                  onAssetAdded: () {
+                                                    Navigator.pop(context);
+
+                                                    print('qweqw');
+                                                  },
+                                                ));
+                                          },
+                                          child: Container(
+                                            height: height * .07,
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                              color: AppColors.mainColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                            ),
+                                            child: Text(
+                                              appLocal.trans('personal_asset'),
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize:
+                                                    AppFonts.getMediumFontSize(
+                                                        context),
+                                                height: 1.0,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: height * .02,
+                                        ),
+                                      ],
+                                    )),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(height: height * .02),
-                      Container(
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.symmetric(vertical: height * .020),
-                        decoration: BoxDecoration(
-                          color: AppColors.mainColor,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: MaterialButton(
-                          onPressed: () {
-                            // showAddAssetDialog(
-                            //   context: context,
-                            //   padding: EdgeInsets.only(
-                            //     right: width * .1,
-                            //     left: width * .1,
-                            //     top: height * .05, /*bottom: height* .05,*/
-                            //   ),
-                            //   dialogContent:
-                            //       getAddAssetDialogContent(HoldingsType.PUBLIC),
-                            // ); /////
-                            /////
-                            ///////
-                            ////////
-                            ///////
-                            //////
-                          },
-                          color: AppColors.gray,
-                          child: Text(
-                            'Public',
-                            style: TextStyle(color: AppColors.blue),
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: GestureDetector(
+                            onTap: () {
+                              //    uiController.clearAddAssetInputs();
+                              Navigator.of(context).pop();
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: AppColors.gray, width: .5),
+                                shape: BoxShape.circle,
+                                color: AppColors.mainColor,
+                              ),
+                              child: Icon(
+                                Icons.close,
+                                color: AppColors.gray,
+                                size: width * .055,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  )), // TODO:
-                );
+                      ],
+                    )
+                    // AddPublicAssetHoldingDialogContent(
+                    //   onAssetAdded: () {
+                    //     print('qweqw');
+                    //   },
+                    // )
+                    // Container(
+                    //     child: Column(
+                    //   children: [
+                    //     SizedBox(height: height * .03),
+                    //     Container(
+                    //       alignment: Alignment.center,
+                    //       padding: EdgeInsets.symmetric(vertical: height * .020),
+                    //       decoration: BoxDecoration(
+                    //         color: AppColors.mainColor,
+                    //         borderRadius: BorderRadius.circular(8.0),
+                    //       ),
+                    //       child: Text(
+                    //         appLocal.trans('choose_asset_type'),
+                    //         style: TextStyle(
+                    //           color: AppColors.white,
+                    //           fontSize: AppFonts.getNormalFontSize(context),
+                    //           height: 1.0,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     SizedBox(height: height * .02),
+                    //     Container(
+                    //       alignment: Alignment.center,
+                    //       padding: EdgeInsets.symmetric(vertical: height * .020),
+                    //       decoration: BoxDecoration(
+                    //         color: AppColors.mainColor,
+                    //         borderRadius: BorderRadius.circular(8.0),
+                    //       ),
+                    //       child: MaterialButton(
+                    //         onPressed: () {
+
+                    //           /////
+                    //           ///////
+                    //           ////////
+                    //           ///////
+                    //           //////
+                    //         },
+                    //         color: AppColors.gray,
+                    //         child: Text(
+                    //           'Public',
+                    //           style: TextStyle(color: AppColors.blue),
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // )), // TODO:
+                    );
               }),
             ),
           ],
@@ -430,19 +636,36 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
               case Status.SUCCESS:
                 return Column(
                   children: [
-                    buildSectionTitle('top_performing_assets'),
-                    SizedBox(height: height * .025),
-                    buildAssetList(
-                        assets: topPerformingGainersLoosersSnapshot
-                            .data!.data!.topPerforming,
-                        isGainers: false),
-                    SizedBox(height: height * 0.060),
-                    buildSectionTitle('gainers_losers'),
-                    SizedBox(height: height * .025),
-                    buildAssetList(
-                        assets: topPerformingGainersLoosersSnapshot
-                            .data!.data!.gainersLoosers,
-                        isGainers: true),
+                    topPerformingGainersLoosersSnapshot
+                            .data!.data!.topPerforming.isNotEmpty
+                        ? Column(
+                            children: [
+                              SizedBox(height: height * 0.03),
+                              buildSectionTitle('top_performing_assets'),
+                              SizedBox(height: height * .025),
+                              buildAssetList(
+                                assets: topPerformingGainersLoosersSnapshot
+                                    .data!.data!.topPerforming,
+                                isGainers: false,
+                              )
+                            ],
+                          )
+                        : Container(),
+                    SizedBox(height: height * 0.030),
+                    topPerformingGainersLoosersSnapshot
+                            .data!.data!.gainersLoosers.isNotEmpty
+                        ? Column(
+                            children: [
+                              buildSectionTitle('gainers_losers'),
+                              SizedBox(height: height * .025),
+                              buildAssetList(
+                                  assets: topPerformingGainersLoosersSnapshot
+                                      .data!.data!.gainersLoosers,
+                                  isGainers: true),
+                              SizedBox(height: height * 0.025),
+                            ],
+                          )
+                        : Container(),
                   ],
                 );
               // case Status.NO_MORE_RESULTS:
@@ -474,12 +697,17 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            //Text(asset.type!),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (!isGainers)
                   ImageWidget(
-                    url: '${UrlsContainer.baseApiUrl}/${asset.icon}',
+                    url: asset.type == 'public'
+                        ? '${UrlsContainer.baseUrl}/${UrlsContainer.imagesUrl}/public_assets/${asset.icon}'
+                        : asset.type == 'personal'
+                            ? '${UrlsContainer.baseUrl}/${UrlsContainer.imagesUrl}/personal_assets/${asset.icon}'
+                            : '${UrlsContainer.baseUrl}/${UrlsContainer.imagesUrl}/private_assets/${asset.icon}',
                     width: width * .12,
                     height: width * .12,
                   ),
@@ -661,7 +889,7 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(width: width * .06),
+          SizedBox(width: width * .03),
           SvgPicture.asset(
             image,
             width: width * iconSizeFactor,
@@ -692,13 +920,14 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: height * .1,
+                height: height * .07,
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   SizedBox(
-                    width: width * .06,
+                    width: width * .025,
                   ),
                   buildUserProfileImage(),
                   SizedBox(width: 8),
@@ -720,17 +949,26 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
                     ),
                   ),
                   Spacer(),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: SvgPicture.asset('assets/icons/ic_cross.svg',
-                        width: width * .05, height: width * .05),
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    alignment: Alignment.topRight,
-                  ),
+                  // IconButton(
+                  //   onPressed: () => Navigator.pop(context),
+                  //   icon: SvgPicture.asset('assets/icons/ic_cross.svg',
+                  //       width: width * .035, height: width * .035),
+                  //   alignment: Alignment.topRight,
+                  // ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: width * .03),
+                    child: InkWell(
+                        onTap: () => Navigator.pop(context),
+                        child: Icon(
+                          Icons.close_outlined,
+                          color: AppColors.white,
+                          size: height * .033,
+                        )),
+                  )
                 ],
               ),
               SizedBox(
-                height: height * .1,
+                height: height * .07,
               ),
               buildDrawerItem('assets/icons/ic_user.svg', 'profile'),
               SizedBox(
@@ -786,7 +1024,7 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
                 height: height * .05,
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: width * .06),
+                padding: EdgeInsets.symmetric(horizontal: width * .035),
                 child: Text(
                   appLocal.trans('settings_privacy'),
                   style: TextStyle(
@@ -799,7 +1037,7 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
                 height: height * .025,
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: width * .06),
+                padding: EdgeInsets.symmetric(horizontal: width * .035),
                 child: Text(
                   appLocal.trans('help_center'),
                   style: TextStyle(

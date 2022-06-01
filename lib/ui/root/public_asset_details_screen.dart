@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:wave_flutter/di/private_asset_setails_screen_di.dart';
 import 'package:wave_flutter/helper/app_colors.dart';
 import 'package:wave_flutter/helper/app_fonts.dart';
@@ -22,18 +21,34 @@ import 'package:http/http.dart' as http;
 import 'package:wave_flutter/ui/root/holdings_screen.dart';
 import 'package:wave_flutter/ui/root/home_screen.dart';
 
-class PrivateAssetDetailsScreen extends BaseStateFullWidget {
-  final PrivateAssetModel assetModel;
-  PrivateAssetDetailsScreen({required this.assetModel});
+import '../../di/public_assset_details_di.dart';
+import '../../models/public_asset_graph_model.dart';
+import '../../models/public_asset_model.dart';
+
+class PublicAssetDetailsScreen extends BaseStateFullWidget {
+  final PublicAssetModel assetModel;
+  PublicAssetDetailsScreen({required this.assetModel});
 
   @override
-  _PrivateAssetDetailsScreenState createState() =>
-      _PrivateAssetDetailsScreenState();
+  _PublicAssetDetailsScreenState createState() =>
+      _PublicAssetDetailsScreenState();
 }
 
-class _PrivateAssetDetailsScreenState
-    extends BaseStateFullWidgetState<PrivateAssetDetailsScreen>
-    with PrivateAssetDetailsScreenDi {
+class _PublicAssetDetailsScreenState
+    extends BaseStateFullWidgetState<PublicAssetDetailsScreen>
+    with PublicAssetDetailsScreenDi {
+  @override
+  void initState() {
+    super.initState();
+    getAssetDetails();
+    initScreenDi();
+    uiController.fetchPublicAssetHistoricalDetails();
+
+    //uiController.fetchResult();
+  }
+
+  bool spinner = false;
+
   var assetGrowth = '';
   var salePrice = ''; //market price
   var purchasePrice = '';
@@ -51,153 +66,12 @@ class _PrivateAssetDetailsScreenState
   var shareClass = '';
 
   var totalBalance = '';
+  var stockExchange = '';
+  var primaryExchange = '';
+  var description = '';
+  var name = '';
+  // var totalBalance = '';
 
-  @override
-  void initState() {
-    super.initState();
-    initScreenDi();
-    getAssetDetails();
-    getPersonalChartValue();
-    // getPersonalChartValue();
-
-    //uiController.fetchResult();
-  }
-
-  bool chartSpinner = false;
-
-  List<ChartData> privateDetailsChart = [];
-  void getPersonalChartValue() async {
-    setState(() {
-      chartSpinner = true;
-    });
-    privateDetailsChart.clear();
-    print('xxxxx');
-    //  dynamic api = _dataStore!.getApiToken();
-    // String? api = _dataStore!.userModel!.apiToken;
-    // dynamic api = _dataStore!.getApiToken().then((value) => apiToken = value!);
-    String? apiToken = HomeScreen.apiToken;
-    var request;
-    var response;
-    var url = Uri.parse(
-      'https://wave.aratech.co/api/get-asset-price-history',
-    );
-    print('///////////' + url.toString() + '//tokennnnnn///' + apiToken!);
-
-    request = http.MultipartRequest('POST', url);
-    request.fields['api_token'] = apiToken;
-    request.fields['asset_id'] = HoldingsScreen.assetId.toString();
-    request.fields['type'] = 'private';
-
-    response = await request.send();
-    var xx = await http.Response.fromStream(response);
-    var x = jsonDecode(xx.body);
-
-    print('///////////////////////////////////////////////////');
-    print(x.toString());
-    print('///////////////////////////////////////////////////');
-    List payload = x['data'];
-
-    ChartData? other;
-    payload.forEach((element) {
-      var t = element['year'].toString();
-      if (t.length >= 10)
-        t = t.substring(0, 10);
-      else if (t.length < 5) t = t + '-01-01';
-      //  String temp = t.length >= 10 ? t.substring(0, 10) : t;
-      DateTime acquisitionDate = DateTime.parse(t);
-      print('$acquisitionDate' + '');
-
-      int growth = element['price'];
-      // int intGrowth = growth.toInt();
-      // print('$growth' + 'aloalo');
-      // if (growth == 0) growth = 0.01;
-      privateDetailsChart.add(ChartData(acquisitionDate, growth));
-
-      print('personalAassetTtype = $acquisitionDate');
-      print('growth = $growth');
-    });
-    setState(() {
-      chartSpinner = false;
-    });
-  }
-
-  Widget protfolioWidget() {
-    return Container(
-      height: height * .22,
-      child: SfCartesianChart(
-        // primaryXAxis: DateTimeAxis(),
-        // margin: EdgeInsets.symmetric(horizontal: width* .025, vertical: height* .025),
-        series: <CartesianSeries<ChartData, DateTime>>[
-          // Renders area chart
-          AreaSeries<ChartData, DateTime>(
-            dataSource: privateDetailsChart,
-            xValueMapper: (ChartData data, _) => data.x,
-            yValueMapper: (ChartData data, _) => data.y,
-            borderDrawMode: BorderDrawMode.excludeBottom,
-            borderColor: AppColors.blue,
-            borderWidth: 1,
-            gradient: LinearGradient(
-              end: Alignment.topCenter,
-              begin: Alignment.bottomCenter,
-              tileMode: TileMode.clamp,
-              colors: [
-                AppColors.blue.withOpacity(.01),
-                AppColors.blue.withOpacity(.25),
-                AppColors.blue.withOpacity(.5),
-              ],
-              stops: [
-                0.0,
-                0.5,
-                1.0,
-              ],
-            ),
-          )
-        ],
-        zoomPanBehavior: ZoomPanBehavior(
-          // enablePinching: true,
-          enablePanning: true,
-          zoomMode: ZoomMode.x,
-        ),
-        plotAreaBorderWidth: 0.0,
-        // primaryXAxis: NumericAxis(
-        //   majorGridLines: MajorGridLines(width: 0),
-        //   axisLine: AxisLine(
-        //     width: 0.0,
-        //   ),
-        //   tickPosition: TickPosition.outside,
-        //   majorTickLines: MajorTickLines(width: 0),
-        //     visibleMinimum: chartData[chartData.length-chartData.length~/2].year,
-        //     visibleMaximum: chartData[chartData.length-chartData.length~/2].year,
-        // ),
-        primaryXAxis: DateTimeAxis(
-          // // intervalType: _getChartIntervalType(filter),
-          // visibleMinimum: chartData.length > 1
-          //     ? chartData[chartData.length - (chartData.length ~/ 2)].x
-          //     : (chartData[chartData.length - 1].x),
-          // visibleMaximum: chartData[chartData.length - 1].x,
-          majorGridLines: MajorGridLines(width: 0),
-          axisLine: AxisLine(
-            width: 0.0,
-          ),
-          tickPosition: TickPosition.outside,
-          majorTickLines: MajorTickLines(width: 0),
-          autoScrollingMode: AutoScrollingMode.end,
-        ),
-        primaryYAxis: NumericAxis(
-          edgeLabelPlacement: EdgeLabelPlacement.shift,
-          labelFormat: '\${value}',
-          // numberFormat: NumberFormat.simpleCurrency(decimalDigits: 0),
-          majorGridLines: MajorGridLines(width: .03),
-          axisLine: AxisLine(
-            width: 0.0,
-          ),
-          majorTickLines: MajorTickLines(width: 0),
-        ),
-      ),
-    );
-  }
-
-  bool spinner = false;
   void getAssetDetails() async {
     setState(() {
       spinner = true;
@@ -214,7 +88,7 @@ class _PrivateAssetDetailsScreenState
     var request;
     var response;
     var url = Uri.parse(
-      'https://wave.aratech.co/api/get-private-holding-details',
+      'https://wave.aratech.co/api/get-public-asset-holding',
     );
     print('///////////' +
         url.toString() +
@@ -235,22 +109,94 @@ class _PrivateAssetDetailsScreenState
     print(x.toString());
     print('///////////////////////////////////////////////////');
     Map payload = x['data'];
+    Map publicAsset = payload['public_asset'];
     // var id = payload['id'];
     setState(() {
-      headQuarterCity = payload['headquarter_city'];
-      totalBalance = payload['totalBalance'].toString();
-      profitPercentage = payload['profitPercentage'].toString();
-
-      purchasePrice = payload['purchased_price'].toString();
       quantity = payload['quantity'].toString();
+      stockExchange = payload['stock_exchange'].toString();
+      totalBalance = payload['netWorth'].toString();
+      purchasePrice = payload['purchased_price'].toString();
+      profit = payload['profit'].toString(); //check
+      profitPercentage = payload['profitPercentage'].toString();
+      name = publicAsset['name'].toString(); //change
+      primaryExchange = publicAsset['primary_exchange'].toString(); //add
+      marketCapitaliztion = publicAsset['market_cap'].toString();
+      sharesOutstanding = publicAsset['shares_outstanding'].toString();
+      shareClass = publicAsset['share_class'].toString();
+      description = publicAsset['description'].toString();
 
-      marketValue = payload['marketValue'].toString();
+      headQuarterCity = publicAsset['stock_symbol'];
 
-      rOI = payload['returnOnInvestment'].toString();
+      marketValue = publicAsset['purchase_price'];
+
+      //    rOI = payload['returnOnInvestment'].toString();
       //   assetGrowth = payload['profitPercentage'].toString();
-      marketCapitaliztion = payload['marketCapitalization'].toString();
-      sharesOutstanding = payload['shares_outstanding'].toString();
-      shareClass = payload['share_class'].toString();
+    });
+
+    setState(() {
+      spinner = false;
+    });
+  }
+
+  void getChart() async {
+    setState(() {
+      spinner = true;
+    });
+
+    //  protfolioChartData.clear();
+    print('xxxxx');
+    //  dynamic api = _dataStore!.getApiToken();
+    // String? api = _dataStore!.userModel!.apiToken;
+    // dynamic api = _dataStore!.getApiToken().then((value) => apiToken = value!);
+    String? apiToken = HomeScreen.apiToken;
+    int? assetId = HoldingsScreen.assetId;
+
+    var request;
+    var response;
+    var url = Uri.parse(
+      'https://wave.aratech.co/api/get-public-asset-holding',
+    );
+    print('///////////' +
+        url.toString() +
+        '//tokennnnnn///' +
+        apiToken! +
+        '//////' +
+        assetId.toString());
+
+    request = http.MultipartRequest('POST', url);
+    request.fields['api_token'] = apiToken;
+    request.fields['asset_id'] = assetId.toString();
+
+    response = await request.send();
+    var xx = await http.Response.fromStream(response);
+    var x = jsonDecode(xx.body);
+
+    print('///////////////////////////////////////////////////');
+    print(x.toString());
+    print('///////////////////////////////////////////////////');
+    Map payload = x['data'];
+    Map publicAsset = payload['public_asset'];
+    // var id = payload['id'];
+    setState(() {
+      quantity = payload['quantity'].toString();
+      stockExchange = payload['stock_exchange'].toString();
+      totalBalance = payload['netWorth'].toString();
+      purchasePrice = payload['purchased_price'].toString();
+      profit = payload['profit'].toString(); //check
+      profitPercentage = payload['profitPercentage'].toString();
+      name = publicAsset['name'].toString(); //change
+      primaryExchange = publicAsset['primary_exchange'].toString(); //add
+      marketCapitaliztion = publicAsset['market_cap'].toString();
+      sharesOutstanding = publicAsset['shares_outstanding'].toString();
+      shareClass = publicAsset['share_class'].toString();
+      description = publicAsset['description'].toString();
+
+      headQuarterCity = publicAsset['stock_symbol'];
+
+      marketValue = publicAsset['purchase_price'];
+
+      //    rOI = payload['returnOnInvestment'].toString();
+      //   assetGrowth = payload['profitPercentage'].toString();
     });
 
     setState(() {
@@ -284,7 +230,7 @@ class _PrivateAssetDetailsScreenState
 
   // Widget buildAssetResults() {
   //   return StreamBuilder<DataResource<List<PrivateAssetModel>>?>(
-  //       stream: privateAssetDetailsScreenBloc.privateAssetsStream,
+  //       stream: PublicAssetDetailsScreenBloc.privateAssetsStream,
   //       builder: (context, assetsSnapshot) {
   //         if (assetsSnapshot.hasData && assetsSnapshot.data != null) {
   //           switch (assetsSnapshot.data!.status) {
@@ -324,7 +270,49 @@ class _PrivateAssetDetailsScreenState
           child: SingleChildScrollView(
             child: Column(
               children: [
-                chartSpinner ? CircularProgressIndicator() : protfolioWidget(),
+                Container(
+                  height: height * .25,
+                  child:
+                      StreamBuilder<DataResource<List<PublicAssetGraphModel>>?>(
+                    stream: holdingsBloc.publicAssetGraphStream,
+                    builder: (context, historicalSnapshot) {
+                      if (historicalSnapshot.hasData &&
+                          historicalSnapshot.data != null) {
+                        switch (historicalSnapshot.data!.status) {
+                          case Status.LOADING:
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          case Status.SUCCESS:
+                            return ChartCardItem(
+                              chartType: ChartsType.AREA,
+                              filter: uiController.chartFilter,
+                              historicalDataList:
+                                  historicalSnapshot.data!.data!,
+                              onFilterChanged: (filter) => uiController
+                                  .fetchPublicAssetHistoricalDetails(
+                                      filter: filter),
+                            );
+                          case Status.NO_RESULTS:
+                            return ErrorMessageWidget(
+                                messageKey: 'no_result_found_message',
+                                image: 'assets/images/ic_not_found.png');
+                          case Status.FAILURE:
+                            return ErrorMessageWidget(
+                                messageKey:
+                                    historicalSnapshot.data?.message ?? '',
+                                image: 'assets/images/ic_error.png');
+
+                          default:
+                            return Container();
+                        }
+                      } else {
+                        return Container();
+                      }
+                    },
+                  ),
+                ),
+                // ChartCardItem(chartType: ChartsType.AREA),
                 SizedBox(height: height * 0.020),
                 Row(
                   children: [
@@ -338,7 +326,7 @@ class _PrivateAssetDetailsScreenState
                       width: width * 0.025,
                     ),
                     ChartInfoCardItem(
-                      title: appLocal.trans('market_price'),
+                      title: appLocal.trans('Market Value'),
                       value:
                           "\$${double.parse(marketValue).toStringAsFixed(2).toString()}",
                       //   bottomLabel: appLocal.trans('current_share_price'),
@@ -347,7 +335,7 @@ class _PrivateAssetDetailsScreenState
                       width: width * 0.025,
                     ),
                     ChartInfoCardItem(
-                      title: appLocal.trans('Profit %'),
+                      title: appLocal.trans('Profit'),
                       value:
                           '\$${double.parse(profitPercentage.substring(0, profitPercentage.length - 1)).toStringAsFixed(2).toString()}',
                       //   bottomLabel: widget.assetModel.assetGrowth ?? '312'),
@@ -380,7 +368,7 @@ class _PrivateAssetDetailsScreenState
                         thickness: 1.5,
                         height: 10,
                       ),
-                      rowInfo('Return On Investment (ROI)', rOI),
+                      rowInfo('Return On Investment (ROI)', profitPercentage),
                       Divider(
                         color: AppColors.black.withOpacity(0.6),
                         thickness: 1.5,
@@ -408,6 +396,46 @@ class _PrivateAssetDetailsScreenState
                     ],
                   ),
                 ),
+                SizedBox(height: height * 0.020),
+                Container(
+                  width: width,
+                  padding: EdgeInsets.symmetric(
+                      horizontal: width * 0.03, vertical: height * 0.03),
+                  // height: height / 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.mainColor,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Description',
+                        style: TextStyle(
+                          fontSize: AppFonts.getMediumFontSize(context),
+                          color: Colors.white,
+                          height: 1.0,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      SizedBox(
+                        height: height * 0.025,
+                      ),
+                      Text(
+                        description,
+                        style: TextStyle(
+                          wordSpacing: 2,
+                          fontSize: AppFonts.getSmallFontSize(context),
+                          color: Colors.white,
+                          height: 1.6,
+
+                          //fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
                 SizedBox(height: height * 0.020),
               ],
             ),
@@ -452,38 +480,62 @@ class _PrivateAssetDetailsScreenState
         children: [
           GestureDetector(
             onTap: _onWillPop,
-            child: Row(
-              children: [
-                SizedBox(width: width * .04),
-                Icon(
-                  Icons.arrow_back_ios_rounded,
-                  color: AppColors.gray,
-                  size: width * .075,
-                ),
-                SizedBox(width: width * .06),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.assetModel.name ?? '',
-                      style: TextStyle(
-                        fontSize: AppFonts.getMediumFontSize(context),
-                        color: Colors.white,
-                        height: 1.0,
+            child: Container(
+              child: Row(
+                children: [
+                  SizedBox(width: width * .015),
+                  Icon(
+                    Icons.arrow_back_ios_rounded,
+                    color: AppColors.grayXLight,
+                    size: width * .075,
+                  ),
+                  SizedBox(width: width * .02),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.assetModel.name ?? '',
+                        style: TextStyle(
+                          overflow: TextOverflow.ellipsis,
+                          fontSize: AppFonts.getMediumFontSize(context),
+                          color: Colors.white,
+                          height: 1.0,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: height * .01),
-                    Text(
-                      headQuarterCity,
-                      style: TextStyle(
-                        fontSize: AppFonts.getXSmallFontSize(context),
-                        color: Colors.white,
-                        height: 1.0,
+                      SizedBox(height: height * .01),
+                      Row(
+                        children: [
+                          Text(
+                            headQuarterCity,
+                            style: TextStyle(
+                              fontSize: AppFonts.getXSmallFontSize(context),
+                              color: Colors.white,
+                              height: 1.0,
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                EdgeInsets.symmetric(horizontal: width * 0.013),
+                            child: Container(
+                              width: width * 0.003,
+                              height: height * 0.012,
+                              color: AppColors.white,
+                            ),
+                          ),
+                          Text(
+                            stockExchange,
+                            style: TextStyle(
+                              fontSize: AppFonts.getXSmallFontSize(context),
+                              color: Colors.white,
+                              height: 1.0,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -492,15 +544,14 @@ class _PrivateAssetDetailsScreenState
       width: width,
       context: context,
       appLocal: appLocal,
-      logoTitleKey: 'private',
+      logoTitleKey: 'public',
       isAddProgressExist: true,
       addEditIcon: 'assets/icons/ic_edit.svg',
       addEditTitleKey: 'edit_asset',
       onAddEditClick: () {},
       totalTextKey: 'estimated_total_asset_equity',
-      netWorth: double.parse(totalBalance.substring(0, totalBalance.length - 1))
-          .toStringAsFixed(2)
-          .toString(),
+      netWorth:
+          '${double.parse(totalBalance).toStringAsFixed(2).toString()} ', //netWorth from api
       growth: double.parse(
                   profitPercentage.substring(0, profitPercentage.length - 1))
               .toStringAsFixed(2)
@@ -651,8 +702,8 @@ class _PrivateAssetDetailsScreenState
             Align(
               alignment: Alignment.centerRight,
               child: buildDialogDropDownMenu(
-                uiController.incomeAnalysisYearsStream,
-                (newValue) => uiController.setIncomeAnalysisYears(newValue),
+                uiiController.incomeAnalysisYearsStream,
+                (newValue) => uiiController.setIncomeAnalysisYears(newValue),
               ),
             ),
             Divider(
@@ -738,7 +789,7 @@ class _PrivateAssetDetailsScreenState
   }
 
   _onWillPop() {
-    rootScreenController.setSharedData(HoldingsType.PRIVATE);
+    rootScreenController.setSharedData(HoldingsType.PUBLIC);
     rootScreenController.setCurrentScreen(AppMainScreens.HOLDINGS_SCREEN);
   }
 }

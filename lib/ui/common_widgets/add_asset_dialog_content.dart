@@ -18,9 +18,11 @@ import 'package:wave_flutter/models/private_asset_model.dart';
 import 'package:wave_flutter/models/public_asset_model.dart';
 import 'package:wave_flutter/services/data_resource.dart';
 import 'package:wave_flutter/ui/common_widgets/base_statefull_widget.dart';
+import 'package:wave_flutter/ui/common_widgets/chart_card_item.dart';
 import 'package:wave_flutter/ui/root/add_assets/custom_drop_down.dart';
 import 'package:wave_flutter/ui/controllers/holdings_screen_controller.dart';
 
+import '../../storage/data_store.dart';
 import 'add_asset_text_field.dart';
 
 class AddAssetDialogContent extends BaseStateFullWidget {
@@ -36,9 +38,9 @@ class AddAssetDialogContent extends BaseStateFullWidget {
   _AddAssetDialogContentState createState() => _AddAssetDialogContentState();
 }
 
-class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialogContent> with AddAssetDialogContentDi {
-
-
+class _AddAssetDialogContentState
+    extends BaseStateFullWidgetState<AddAssetDialogContent>
+    with AddAssetDialogContentDi {
   @override
   void initState() {
     super.initState();
@@ -54,80 +56,80 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.transparent,
       body: StreamBuilder<bool>(
-        initialData: false,
-        stream: uiController.addingHoldingLoadingStateStream,
-        builder: (context, loadingSnapshot) {
-          return IgnorePointer(
-            ignoring: loadingSnapshot.data!,
-            child: Stack(
-              children: [
-                Positioned(
-                  top: width * .075 / 2,
-                  right: width * .075 / 2,
-                  left: 0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.mainColor,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(height: height * .025),
-                        Text(
-                          appLocal.trans('add_new_asset'),
-                          style: TextStyle(
-                            color: AppColors.white,
-                            fontSize: AppFonts.getLargeFontSize(context),
-                            height: 1.0,
-                          ),
-                        ),
-                        SizedBox(height: height * .020),
-                        Container(
-                          margin: const EdgeInsets.all(1),
-                          padding: EdgeInsets.symmetric(horizontal: width * .08),
-                          decoration: BoxDecoration(
-                            color: AppColors.black,
-                            borderRadius: BorderRadius.only(
-                              bottomRight: Radius.circular(12),
-                              bottomLeft: Radius.circular(12),
+          initialData: false,
+          stream: uiController.addingHoldingLoadingStateStream,
+          builder: (context, loadingSnapshot) {
+            return IgnorePointer(
+              ignoring: loadingSnapshot.data!,
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: width * .075 / 2,
+                    right: width * .075 / 2,
+                    left: 0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.mainColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(height: height * .025),
+                          Text(
+                            appLocal.trans('add_new_asset'),
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: AppFonts.getLargeFontSize(context),
+                              height: 1.0,
                             ),
                           ),
-                          child: buildDialogContent(loadingSnapshot.data!),
+                          SizedBox(height: height * .020),
+                          Container(
+                            margin: const EdgeInsets.all(1),
+                            padding:
+                                EdgeInsets.symmetric(horizontal: width * .08),
+                            decoration: BoxDecoration(
+                              color: AppColors.black,
+                              borderRadius: BorderRadius.only(
+                                bottomRight: Radius.circular(12),
+                                bottomLeft: Radius.circular(12),
+                              ),
+                            ),
+                            child: buildDialogContent(loadingSnapshot.data!),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: GestureDetector(
+                      onTap: () {
+                        uiController.clearAddAssetInputs();
+                        Navigator.of(context).pop();
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColors.gray, width: .5),
+                          shape: BoxShape.circle,
+                          color: AppColors.mainColor,
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: GestureDetector(
-                    onTap: () {
-                      uiController.clearAddAssetInputs();
-                      Navigator.of(context).pop();
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.gray, width: .5),
-                        shape: BoxShape.circle,
-                        color: AppColors.mainColor,
-                      ),
-                      child: Icon(
-                        Icons.close,
-                        color: AppColors.gray,
-                        size: width * .055,
+                        child: Icon(
+                          Icons.close,
+                          color: AppColors.gray,
+                          size: width * .055,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          );
-        }
-      ),
+                ],
+              ),
+            );
+          }),
     );
   }
 
@@ -135,8 +137,10 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
     return StreamBuilder<HoldingsType?>(
       stream: uiController.holdingsTypeStream,
       builder: (context, typeSnapshot) {
-        if(typeSnapshot.data!=null) return buildAddNewAssetContent(typeSnapshot.data!, isLoading);
-        else return buildAddAssetTypeSelectorResult();
+        if (typeSnapshot.data != null)
+          return buildAddNewAssetContent(typeSnapshot.data!, isLoading);
+        else
+          return buildAddAssetTypeSelectorResult();
       },
     );
   }
@@ -152,7 +156,8 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
       case HoldingsType.PUBLIC:
         return buildPublicContentResult(isLoading);
 
-      default: return buildAddAssetTypeSelectorResult();
+      default:
+        return buildAddAssetTypeSelectorResult();
     }
   }
 
@@ -160,22 +165,32 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
     return Column(
       children: [
         SizedBox(height: height * .03),
-        buildAddAssetTypeSelectorItem(titleKey: 'private', type: HoldingsType.PRIVATE,),
+        buildAddAssetTypeSelectorItem(
+          titleKey: 'private',
+          type: HoldingsType.PRIVATE,
+        ),
         SizedBox(height: height * .02),
-        buildAddAssetTypeSelectorItem(titleKey: 'public', type: HoldingsType.PUBLIC,),
+        buildAddAssetTypeSelectorItem(
+          titleKey: 'public',
+          type: HoldingsType.PUBLIC,
+        ),
         SizedBox(height: height * .02),
-        buildAddAssetTypeSelectorItem(titleKey: 'personal', type: HoldingsType.PERSONAL,),
+        buildAddAssetTypeSelectorItem(
+          titleKey: 'personal',
+          type: HoldingsType.PERSONAL,
+        ),
         SizedBox(height: height * .03),
       ],
     );
   }
 
-  Widget buildAddAssetTypeSelectorItem({required titleKey, required HoldingsType type}) {
+  Widget buildAddAssetTypeSelectorItem(
+      {required titleKey, required HoldingsType type}) {
     return GestureDetector(
       onTap: () {
         uiController.setHoldingsType(type);
         uiController.fetchInitialRequiredData(type);
-        },
+      },
       child: Container(
         alignment: Alignment.center,
         padding: EdgeInsets.symmetric(vertical: height * .020),
@@ -222,20 +237,22 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
           uiController.privatePurchasedPriceTextEditingController,
           TextInputType.number,
           hintKey: appLocal.trans('purchased_price'),
-          height: height*.070,
+          height: height * .070,
         ),
         SizedBox(height: height * .03),
         buildDialogInputField(
           uiController.privateSharesNumTextEditingController,
           TextInputType.number,
           hintKey: appLocal.trans('num_of_shares'),
-          height: height*.070,
+          height: height * .070,
         ),
         SizedBox(height: height * .06),
-        if(!isLoading) buildDialogAddAssetBtn(
-          onClicked: () => uiController.onAddingPrivateHoldingClicked(context),
-        ),
-        if(isLoading) buildLoadingIndicator(),
+        if (!isLoading)
+          buildDialogAddAssetBtn(
+            onClicked: () =>
+                uiController.onAddingPrivateHoldingClicked(context),
+          ),
+        if (isLoading) buildLoadingIndicator(),
         SizedBox(height: height * .04),
       ],
     );
@@ -263,8 +280,7 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
           } else {
             return Container();
           }
-        }
-    );
+        });
   }
 
   Widget buildPersonalContentResult(isLoading) {
@@ -280,11 +296,13 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
                     case Status.LOADING:
                       return buildLoadingIndicator();
                     case Status.SUCCESS:
-                      return buildPersonalContent(typesSnapshot.data!.data!, stageSnapshot.data!, isLoading: isLoading);
-                  // case Status.NO_RESULTS:
-                  //   return ErrorMessageWidget(messageKey: 'no_result_found_message', image: 'assets/images/ic_not_found.png');
-                  // case Status.FAILURE:
-                  //   return ErrorMessageWidget(messageKey: assetsSnapshot.data?.message??'', image: 'assets/images/ic_error.png');
+                      return buildPersonalContent(
+                          typesSnapshot.data!.data!, stageSnapshot.data!,
+                          isLoading: isLoading);
+                    // case Status.NO_RESULTS:
+                    //   return ErrorMessageWidget(messageKey: 'no_result_found_message', image: 'assets/images/ic_not_found.png');
+                    // case Status.FAILURE:
+                    //   return ErrorMessageWidget(messageKey: assetsSnapshot.data?.message??'', image: 'assets/images/ic_error.png');
 
                     default:
                       return Container();
@@ -293,8 +311,7 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
           } else {
             return Container();
           }
-        }
-    );
+        });
   }
 
   Widget buildPublicContentResult(bool isLoading) {
@@ -324,20 +341,21 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
           uiController.publicSharesNumTextEditingController,
           TextInputType.number,
           hintKey: appLocal.trans('amount_of_shares_purchased'),
-          height: height*.070,
+          height: height * .070,
         ),
         SizedBox(height: height * .03),
         buildDialogInputField(
           uiController.publicPurchasedPriceTextEditingController,
           TextInputType.number,
           hintKey: appLocal.trans('purchased_price'),
-          height: height*.070,
+          height: height * .070,
         ),
         SizedBox(height: height * .06),
-        if(!isLoading) buildDialogAddAssetBtn(
-          onClicked: () => uiController.onAddingPublicHoldingClicked(context),
-        ),
-        if(isLoading) buildLoadingIndicator(),
+        if (!isLoading)
+          buildDialogAddAssetBtn(
+            onClicked: () => uiController.onAddingPublicHoldingClicked(context),
+          ),
+        if (isLoading) buildLoadingIndicator(),
         SizedBox(height: height * .04),
       ],
     );
@@ -365,11 +383,14 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
           } else {
             return Container();
           }
-        }
-    );
+        });
   }
 
-  Widget buildPersonalContent(List<PersonalAssetTypeModel> personalAssetTypes, AddingPersonalAssetStages stage, {isLoading = false,}) {
+  Widget buildPersonalContent(
+    List<PersonalAssetTypeModel> personalAssetTypes,
+    AddingPersonalAssetStages stage, {
+    isLoading = false,
+  }) {
     switch (stage) {
       case AddingPersonalAssetStages.TYPE:
         return Column(
@@ -397,7 +418,8 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
               menuItems: getDropDownMenuModel(personalAssetTypes),
               onSelected: (selectedItem) {
                 uiController.setSelectedAssetTypes(selectedItem);
-                uiController.setAddingPersonalAssetStages(AddingPersonalAssetStages.INFO);
+                uiController.setAddingPersonalAssetStages(
+                    AddingPersonalAssetStages.INFO);
               },
             ),
             SizedBox(height: height * .03),
@@ -413,14 +435,13 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
                 SizedBox(height: height * .03),
                 Container(
                   alignment: Alignment.center,
-                  padding:
-                  EdgeInsets.symmetric(vertical: height * .020),
+                  padding: EdgeInsets.symmetric(vertical: height * .020),
                   decoration: BoxDecoration(
                     color: AppColors.mainColor,
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   child: Text(
-                    uiController.getSelectedAssetTypes()?.name??'',
+                    uiController.getSelectedAssetTypes()?.name ?? '',
                     style: TextStyle(
                       color: AppColors.white,
                       fontSize: AppFonts.getNormalFontSize(context),
@@ -429,36 +450,47 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
                   ),
                 ),
                 SizedBox(height: height * .03),
-                buildPersonalInfoGrid(personalAssetTypes.firstWhere((element) => element.id == uiController.getSelectedAssetTypes()?.id).personalAssetTypeOptions),
+                buildPersonalInfoGrid(personalAssetTypes
+                    .firstWhere((element) =>
+                        element.id == uiController.getSelectedAssetTypes()?.id)
+                    .personalAssetTypeOptions),
                 SizedBox(height: height * .03),
                 StreamBuilder<bool?>(
                     initialData: false,
                     stream: uiController.validateAddPersonalAssetInfoStream,
                     builder: (context, validateSnapshot) {
                       return GestureDetector(
-                        onTap: () =>
-                          uiController.onAddingPersonalAssetHoldingClicked(context),
-                        child: isLoading ? buildLoadingIndicator() : Container(
-                          width: double.infinity,
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.symmetric(vertical: height * .020),
-                          decoration: BoxDecoration(
-                            color: AppColors.mainColor,
-                            borderRadius: BorderRadius.circular(8.0),
-                            border: Border.all(
-                              color: validateSnapshot.data! ? Colors.white : AppColors.mainColor,
-                              width: validateSnapshot.data! ? 1.0 : 0.0,
-                            ),
-                          ),
-                          child: Text(
-                            appLocal.trans('add_asset'),
-                            style: TextStyle(
-                              color: validateSnapshot.data! ? AppColors.white : AppColors.white.withOpacity(.3),
-                              fontSize: AppFonts.getNormalFontSize(context),
-                              height: 1.0,
-                            ),
-                          ),
-                        ),
+                        onTap: () => uiController
+                            .onAddingPersonalAssetHoldingClicked(context),
+                        child: isLoading
+                            ? buildLoadingIndicator()
+                            : Container(
+                                width: double.infinity,
+                                alignment: Alignment.center,
+                                padding: EdgeInsets.symmetric(
+                                    vertical: height * .020),
+                                decoration: BoxDecoration(
+                                  color: AppColors.mainColor,
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  border: Border.all(
+                                    color: validateSnapshot.data!
+                                        ? Colors.white
+                                        : AppColors.mainColor,
+                                    width: validateSnapshot.data! ? 1.0 : 0.0,
+                                  ),
+                                ),
+                                child: Text(
+                                  appLocal.trans('add_asset'),
+                                  style: TextStyle(
+                                    color: validateSnapshot.data!
+                                        ? AppColors.white
+                                        : AppColors.white.withOpacity(.3),
+                                    fontSize:
+                                        AppFonts.getNormalFontSize(context),
+                                    height: 1.0,
+                                  ),
+                                ),
+                              ),
                       );
                     }),
                 SizedBox(height: height * .03),
@@ -467,25 +499,32 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
                     stream: uiController.validateAddPersonalAssetInfoStream,
                     builder: (context, validateSnapshot) {
                       return GestureDetector(
-                        onTap: isLoading ? null : () {
-                          if(uiController.validateAddPersonalAssetInfo()){
-                            validateSnapshot.data!
-                                ? uiController.setAddingPersonalAssetStages(AddingPersonalAssetStages.IMAGES)
-                                : Utils.showTranslatedToast(context, 'add_personal_asset_message');
-                          } else Utils.showTranslatedToast(context, 'add_personal_asset_message');
-                        },
+                        onTap: isLoading
+                            ? null
+                            : () {
+                                if (uiController
+                                    .validateAddPersonalAssetInfo()) {
+                                  validateSnapshot.data!
+                                      ? uiController
+                                          .setAddingPersonalAssetStages(
+                                              AddingPersonalAssetStages.IMAGES)
+                                      : Utils.showTranslatedToast(context,
+                                          'add_personal_asset_message');
+                                } else
+                                  Utils.showTranslatedToast(
+                                      context, 'add_personal_asset_message');
+                              },
                         child: Container(
                           width: double.infinity,
                           alignment: Alignment.center,
-                          padding: EdgeInsets.symmetric(
-                              vertical: height * .020),
+                          padding:
+                              EdgeInsets.symmetric(vertical: height * .020),
                           decoration: BoxDecoration(
                             color: AppColors.mainColor,
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           child: Row(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Expanded(
                                 child: Text(
@@ -493,11 +532,9 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
                                   style: TextStyle(
                                     color: validateSnapshot.data!
                                         ? AppColors.white
-                                        : AppColors.white
-                                        .withOpacity(.3),
+                                        : AppColors.white.withOpacity(.3),
                                     fontSize:
-                                    AppFonts.getNormalFontSize(
-                                        context),
+                                        AppFonts.getNormalFontSize(context),
                                     height: 1.0,
                                   ),
                                   textAlign: TextAlign.center,
@@ -524,7 +561,7 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
 
       case AddingPersonalAssetStages.IMAGES:
         return Container(
-          height: height* .6,
+          height: height * .6,
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -552,11 +589,17 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
                   uiController.personalPropertyAddressTextEditingController,
                   TextInputType.text,
                   hintKey: appLocal.trans('enter_property_address'),
-                  height: height* .085,
+                  height: height * .085,
                 ),
                 SizedBox(height: height * .03),
                 GestureDetector(
-                  onTap: () => uiController.onAddingPersonalAssetHoldingClicked(context),
+                  onTap: () async {
+                    print('finished');
+                    Xclass xclass =
+                        Xclass(dataStore: DataStore(), chartData: xList);
+                    await xclass.getPersonalChartValue();
+                    uiController.onAddingPersonalAssetHoldingClicked(context);
+                  },
                   child: Container(
                     width: double.infinity,
                     alignment: Alignment.center,
@@ -573,8 +616,7 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
                       appLocal.trans('finished'),
                       style: TextStyle(
                         color: AppColors.white,
-                        fontSize:
-                        AppFonts.getNormalFontSize(context),
+                        fontSize: AppFonts.getNormalFontSize(context),
                         height: 1.0,
                       ),
                     ),
@@ -604,7 +646,7 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
       ),
       itemBuilder: (context, index) {
         PersonalAssetTypeOptionModel option = options[index];
-        switch(option.typeEnum) {
+        switch (option.typeEnum) {
           // case AddPersonalAssetHoldingTypeOptionType.select:
           //   return CustomDropDownWidget(
           //     title: option.name,
@@ -629,26 +671,32 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
             return AddAssetTextField(
                 hintKey: option.name,
                 onChanged: (value) {
-                  AddPersonalAssetOptionModel? repetedOption = Utils.findItemById<AddPersonalAssetOptionModel?>(uiController.addPersonalAssetOptionList, option.id);
-                  if(repetedOption!=null){
-                    uiController.addPersonalAssetOptionList.remove(repetedOption);
+                  AddPersonalAssetOptionModel? repetedOption =
+                      Utils.findItemById<AddPersonalAssetOptionModel?>(
+                          uiController.addPersonalAssetOptionList, option.id);
+                  if (repetedOption != null) {
+                    uiController.addPersonalAssetOptionList
+                        .remove(repetedOption);
                   }
 
-                  uiController.addPersonalAssetOptionList.add(AddPersonalAssetOptionModel(
-                    id: option.id,
-                    type: Utils.enumToString(AddPersonalAssetHoldingTypeOptionType.text),
-                    value: value,
-                  ),);
+                  uiController.addPersonalAssetOptionList.add(
+                    AddPersonalAssetOptionModel(
+                      id: option.id,
+                      type: Utils.enumToString(
+                          AddPersonalAssetHoldingTypeOptionType.text),
+                      value: value,
+                    ),
+                  );
 
-                  uiController.setValidateAddPersonalAssetInfo(uiController.validateAddPersonalAssetInfo());
-                }
-              );
+                  uiController.setValidateAddPersonalAssetInfo(
+                      uiController.validateAddPersonalAssetInfo());
+                });
 
-          default: return SizedBox();
+          default:
+            return SizedBox();
         }
-        },
+      },
     );
-
 
     // return GridView.count(
     //   physics: NeverScrollableScrollPhysics(),
@@ -785,9 +833,10 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
     // );
   }
 
-  Widget buildDialogInputField(controller, keyboardType, {hintKey, labelKey, height}) {
+  Widget buildDialogInputField(controller, keyboardType,
+      {hintKey, labelKey, height}) {
     return Container(
-      height: height??double.infinity,
+      height: height ?? double.infinity,
       alignment: Alignment.center,
       // padding: EdgeInsets.only(top: height* .008,),
       decoration: BoxDecoration(
@@ -801,7 +850,8 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
           enabled: true,
           onChanged: (v) {
             if (v != null) {
-              uiController.setValidateAddPersonalAssetInfo(uiController.validateAddPersonalAssetInfo());
+              uiController.setValidateAddPersonalAssetInfo(
+                  uiController.validateAddPersonalAssetInfo());
             }
           },
           textInputAction: TextInputAction.next,
@@ -817,21 +867,27 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
           maxLines: 1,
           controller: controller,
           decoration: InputDecoration(
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: width * .02, vertical: 0.0,),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: width * .02,
+              vertical: 0.0,
+            ),
             fillColor: AppColors.mainColor,
             filled: true,
             labelText: labelKey,
             // alignLabelWithHint: true,
-            labelStyle: labelKey!= null ? TextStyle(
-              color: AppColors.white.withOpacity(.3),
-              fontSize: AppFonts.getSmallFontSize(context),
-            ): null,
+            labelStyle: labelKey != null
+                ? TextStyle(
+                    color: AppColors.white.withOpacity(.3),
+                    fontSize: AppFonts.getSmallFontSize(context),
+                  )
+                : null,
             hintText: hintKey,
-            hintStyle: hintKey!= null ? TextStyle(
-              color: AppColors.white.withOpacity(.3),
-              fontSize: AppFonts.getSmallFontSize(context),
-            ): null,
+            hintStyle: hintKey != null
+                ? TextStyle(
+                    color: AppColors.white.withOpacity(.3),
+                    fontSize: AppFonts.getSmallFontSize(context),
+                  )
+                : null,
             border: InputBorder.none,
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,
@@ -841,9 +897,10 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
     );
   }
 
-  Widget buildDialogRowInputField(controller, keyboardType, prefixTitle, {hintKey, labelKey, height}){
+  Widget buildDialogRowInputField(controller, keyboardType, prefixTitle,
+      {hintKey, labelKey, height}) {
     return Container(
-      height: height??double.infinity,
+      height: height ?? double.infinity,
       alignment: Alignment.center,
       // padding: EdgeInsets.only(top: height* .008,),
       decoration: BoxDecoration(
@@ -876,7 +933,8 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
                 enabled: true,
                 onChanged: (v) {
                   if (v != null) {
-                    uiController.setValidateAddPersonalAssetInfo(uiController.validateAddPersonalAssetInfo());
+                    uiController.setValidateAddPersonalAssetInfo(
+                        uiController.validateAddPersonalAssetInfo());
                   }
                 },
                 textInputAction: TextInputAction.next,
@@ -892,21 +950,27 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
                 maxLines: 1,
                 controller: controller,
                 decoration: InputDecoration(
-                  contentPadding:
-                  EdgeInsets.symmetric(horizontal: width * .02, vertical: 0.0,),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: width * .02,
+                    vertical: 0.0,
+                  ),
                   fillColor: AppColors.mainColor,
                   filled: true,
                   labelText: labelKey,
                   // alignLabelWithHint: true,
-                  labelStyle: labelKey!= null ? TextStyle(
-                    color: AppColors.white.withOpacity(.3),
-                    fontSize: AppFonts.getSmallFontSize(context),
-                  ): null,
+                  labelStyle: labelKey != null
+                      ? TextStyle(
+                          color: AppColors.white.withOpacity(.3),
+                          fontSize: AppFonts.getSmallFontSize(context),
+                        )
+                      : null,
                   hintText: hintKey,
-                  hintStyle: hintKey!= null ? TextStyle(
-                    color: AppColors.white.withOpacity(.3),
-                    fontSize: AppFonts.getSmallFontSize(context),
-                  ): null,
+                  hintStyle: hintKey != null
+                      ? TextStyle(
+                          color: AppColors.white.withOpacity(.3),
+                          fontSize: AppFonts.getSmallFontSize(context),
+                        )
+                      : null,
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
@@ -957,18 +1021,23 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
             onTap: () async {
               Utils.getImagesFromGallery(
                 onData: (List<XFile>? xFiles) {
-                  if(xFiles!=null && xFiles.isNotEmpty){
-                    if(uiController.getPickedPhotoAssets()!=null) uiController.setPickedPhotoAssets(uiController.getPickedPhotoAssets()?..addAll(xFiles));
-                    else uiController.setPickedPhotoAssets(xFiles);
+                  print(xFile!.path);
+                  if (xFiles != null && xFiles.isNotEmpty) {
+                    if (uiController.getPickedPhotoAssets() != null)
+                      uiController.setPickedPhotoAssets(
+                          uiController.getPickedPhotoAssets()?..addAll(xFiles));
+                    else
+                      uiController.setPickedPhotoAssets(xFiles);
                   }
-                  },
-                onError: () {
-
                 },
+                onError: () {},
               );
             },
             child: Container(
-              margin: EdgeInsets.only(left: width* .02, top: height* .01,),
+              margin: EdgeInsets.only(
+                left: width * .02,
+                top: height * .01,
+              ),
               width: double.infinity,
               height: double.infinity,
               alignment: Alignment.center,
@@ -983,31 +1052,34 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
               ),
             ),
           ),
-          if (xFile != null) Positioned(
-            top: height* .01,
-            left: width* .02,
-            bottom: 0,
-            right: 0,
-            child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(6.0)),
-              child: Image.file(
-                File(xFile.path),
-                fit: BoxFit.cover,
-                // width: double.infinity,
-                // height: double.infinity,
+          if (xFile != null)
+            Positioned(
+              top: height * .01,
+              left: width * .02,
+              bottom: 0,
+              right: 0,
+              child: ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(6.0)),
+                child: Image.file(
+                  File(xFile.path),
+                  fit: BoxFit.cover,
+                  // width: double.infinity,
+                  // height: double.infinity,
+                ),
               ),
             ),
-          ),
-          if(xFile!=null) GestureDetector(
-            onTap: () {
-              uiController.setPickedPhotoAssets(uiController.getPickedPhotoAssets()?..remove(xFile));
-            },
-            child: Icon(
-              Icons.cancel,
-              color: Colors.red.shade400,
-              size: width* .075,
+          if (xFile != null)
+            GestureDetector(
+              onTap: () {
+                uiController.setPickedPhotoAssets(
+                    uiController.getPickedPhotoAssets()?..remove(xFile));
+              },
+              child: Icon(
+                Icons.cancel,
+                color: Colors.red.shade400,
+                size: width * .075,
+              ),
             ),
-          ),
         ],
       );
     }
@@ -1015,9 +1087,10 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
     return StreamBuilder<List<XFile?>?>(
       stream: uiController.pickedPhotoAssetsStream,
       builder: (context, photosSnapshot) {
-        int gridItemsLength=6;
-        if(photosSnapshot.hasData&&photosSnapshot.data!=null){
-          if(photosSnapshot.data!.length >= 6) gridItemsLength=photosSnapshot.data!.length+1;
+        int gridItemsLength = 6;
+        if (photosSnapshot.hasData && photosSnapshot.data != null) {
+          if (photosSnapshot.data!.length >= 6)
+            gridItemsLength = photosSnapshot.data!.length + 1;
         }
         return GridView.builder(
           physics: NeverScrollableScrollPhysics(),
@@ -1032,15 +1105,21 @@ class _AddAssetDialogContentState extends BaseStateFullWidgetState<AddAssetDialo
           itemCount: gridItemsLength,
           itemBuilder: (context, index) {
             XFile? photoAsset;
-            if(index < (photosSnapshot.data?.length??-1)) photoAsset = photosSnapshot.data![index];
+            if (index < (photosSnapshot.data?.length ?? -1))
+              photoAsset = photosSnapshot.data![index];
             return photoComponentItem(xFile: photoAsset);
           },
         );
-        },
+      },
     );
   }
 
   List<AddAssetHoldingDropDownMenuModel> getDropDownMenuModel(List list) {
-     return list.map((e) => AddAssetHoldingDropDownMenuModel(id: e.id??'', name: e.name??'',)).toList();
+    return list
+        .map((e) => AddAssetHoldingDropDownMenuModel(
+              id: e.id ?? '',
+              name: e.name ?? '',
+            ))
+        .toList();
   }
 }

@@ -18,6 +18,12 @@
   "help_center": "Help Center",
   "portfolio_total": "Portfolio Total",
   "equity": "Equity",
+  "public_asset": "Public Asset",
+  "private_asset": "Private Asset",
+
+  "personal_asset": "Personal Asset",
+
+
   "invested": "Invested",
   "profit": "Profit",
   "private_holdings": "Private Holdings",
@@ -221,6 +227,11 @@
   "add_public_asset": "Add Public Asset",
   "add_private_asset": "Add Private Asset",
   "select_asset_type": "Select Asset Type",
+  "Profit %":"Profit %",
+  "Profit":"Profit",
+  "Market Value":"Market Value",
+  
+  
 
 
 

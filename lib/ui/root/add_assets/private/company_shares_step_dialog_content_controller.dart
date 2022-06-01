@@ -3,12 +3,14 @@ import 'package:rxdart/rxdart.dart';
 import 'package:wave_flutter/models/company_shares_step_model.dart';
 import '../base_add_asset_step_controller.dart';
 
-class CompanySharesStepDialogContentController extends BaseAddAssetStepController {
+class CompanySharesStepDialogContentController
+    extends BaseAddAssetStepController {
   final investmentCapitalTextEditingController = TextEditingController();
   final sharedPurchasesTextEditingController = TextEditingController();
   final sharesClassTextEditingController = TextEditingController();
   final companySharesOutstandingTextEditingController = TextEditingController();
   final marketValueTextEditingController = TextEditingController();
+  final purchasedPriceTextEditingController = TextEditingController();
 
   onInvestmentCapitalTextFieldChanged(String value) {
     updateValidationState();
@@ -30,11 +32,19 @@ class CompanySharesStepDialogContentController extends BaseAddAssetStepControlle
     updateValidationState();
   }
 
+  onPurchasedPriceTextFieldChanged(String value) {
+    updateValidationState();
+  }
+
   bool _validateInvestmentCapitalValue() {
     return investmentCapitalTextEditingController.text.isNotEmpty;
   }
 
   bool _validateSharedPurchasesValue() {
+    return sharedPurchasesTextEditingController.text.isNotEmpty;
+  }
+
+  bool _validatePurchasedPriceValue() {
     return sharedPurchasesTextEditingController.text.isNotEmpty;
   }
 
@@ -50,12 +60,16 @@ class CompanySharesStepDialogContentController extends BaseAddAssetStepControlle
     return marketValueTextEditingController.text.isNotEmpty;
   }
 
-  onPriceHistoryButtonClicked({required Function(CompanySharesStepModel sharesStepModel) onDoneCallback}) {
+  onPriceHistoryButtonClicked(
+      {required Function(CompanySharesStepModel sharesStepModel)
+          onDoneCallback}) {
     CompanySharesStepModel companyInfoStepModel = CompanySharesStepModel(
-      investmentCapital:investmentCapitalTextEditingController.text,
+      investmentCapital: investmentCapitalTextEditingController.text,
       sharesPurchased: sharedPurchasesTextEditingController.text,
+      //purchasedPrice: purchasedPriceTextEditingController.text,
       sharesClass: sharesClassTextEditingController.text,
-      companySharesOutstanding: companySharesOutstandingTextEditingController.text,
+      companySharesOutstanding:
+          companySharesOutstandingTextEditingController.text,
       marketValue: int.parse(marketValueTextEditingController.text),
     );
 
@@ -72,10 +86,11 @@ class CompanySharesStepDialogContentController extends BaseAddAssetStepControlle
 
   @override
   bool validateInputs() {
-    return _validateInvestmentCapitalValue()
-        && _validateSharedPurchasesValue()
-        && _validateSharesClassValue()
-        && _validateCompanySharesOutstandingValue()
-        && _validateMarketValue();
+    return _validateInvestmentCapitalValue() &&
+        _validateSharedPurchasesValue() &&
+        _validateSharesClassValue() &&
+        _validateCompanySharesOutstandingValue() &&
+        _validatePurchasedPriceValue() &&
+        _validateMarketValue();
   }
 }

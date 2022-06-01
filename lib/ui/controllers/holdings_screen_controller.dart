@@ -11,82 +11,130 @@ import 'package:wave_flutter/models/private_asset_holding_model.dart';
 import 'package:wave_flutter/models/private_asset_model.dart';
 import 'package:wave_flutter/models/public_asset_graph_request_body.dart';
 import 'package:wave_flutter/services/data_resource.dart';
+import 'package:wave_flutter/ui/root/holdings_screen.dart';
 
 class HoldingsScreenController {
-
   final HoldingsScreenBloc _holdingsScreenBloc;
-  HoldingsScreenController({required holdingsScreenBloc, }):
-        _holdingsScreenBloc = holdingsScreenBloc;
+  HoldingsScreenController({
+    required holdingsScreenBloc,
+  }) : _holdingsScreenBloc = holdingsScreenBloc;
 
-  final BehaviorSubject<HoldingsType> holdingsTypeController = BehaviorSubject<HoldingsType>.seeded(HoldingsType.PRIVATE);
+  final BehaviorSubject<HoldingsType> holdingsTypeController =
+      BehaviorSubject<HoldingsType>.seeded(HoldingsType.PRIVATE);
   get holdingsTypeStream => holdingsTypeController.stream;
   HoldingsType getHoldingsType() => holdingsTypeController.value;
   setHoldingsType(HoldingsType type) => holdingsTypeController.sink.add(type);
 
-  final BehaviorSubject<String?> selectedPrivateCompanyController = BehaviorSubject<String?>();
+  final BehaviorSubject<String?> selectedPrivateCompanyController =
+      BehaviorSubject<String?>();
   get selectedPrivateCompanyStream => selectedPrivateCompanyController.stream;
   String? getSelectedPrivateCompany() => selectedPrivateCompanyController.value;
-  setSelectedPrivateCompany(String? company) => selectedPrivateCompanyController.sink.add(company);
+  setSelectedPrivateCompany(String? company) =>
+      selectedPrivateCompanyController.sink.add(company);
 
-  final BehaviorSubject<String?> selectedAssetTypesController = BehaviorSubject<String?>();
+  final BehaviorSubject<String?> selectedAssetTypesController =
+      BehaviorSubject<String?>();
   get selectedAssetTypesStream => selectedAssetTypesController.stream;
   String? getSelectedAssetTypes() => selectedAssetTypesController.valueOrNull;
-  setSelectedAssetTypes(String? company) => selectedAssetTypesController.sink.add(company);
+  setSelectedAssetTypes(String? company) =>
+      selectedAssetTypesController.sink.add(company);
 
-  final BehaviorSubject<AddingPersonalAssetStages?> addingPersonalAssetStagesController = BehaviorSubject<AddingPersonalAssetStages?>();
-  get addingPersonalAssetStagesStream => addingPersonalAssetStagesController.stream;
-  AddingPersonalAssetStages? getAddingPersonalAssetStages() => addingPersonalAssetStagesController.valueOrNull;
-  setAddingPersonalAssetStages(AddingPersonalAssetStages? stage) => addingPersonalAssetStagesController.sink.add(stage);
+  final BehaviorSubject<AddingPersonalAssetStages?>
+      addingPersonalAssetStagesController =
+      BehaviorSubject<AddingPersonalAssetStages?>();
+  get addingPersonalAssetStagesStream =>
+      addingPersonalAssetStagesController.stream;
+  AddingPersonalAssetStages? getAddingPersonalAssetStages() =>
+      addingPersonalAssetStagesController.valueOrNull;
+  setAddingPersonalAssetStages(AddingPersonalAssetStages? stage) =>
+      addingPersonalAssetStagesController.sink.add(stage);
 
-  final BehaviorSubject<String?> selectedPersonalAssetCategoryController = BehaviorSubject<String?>();
-  get selectedPersonalAssetCategoryStream => selectedPersonalAssetCategoryController.stream;
-  String? getSelectedPersonalAssetCategory() => selectedPersonalAssetCategoryController.valueOrNull;
-  setSelectedPersonalAssetCategory(String? category) => selectedPersonalAssetCategoryController.sink.add(category);
+  final BehaviorSubject<String?> selectedPersonalAssetCategoryController =
+      BehaviorSubject<String?>();
+  get selectedPersonalAssetCategoryStream =>
+      selectedPersonalAssetCategoryController.stream;
+  String? getSelectedPersonalAssetCategory() =>
+      selectedPersonalAssetCategoryController.valueOrNull;
+  setSelectedPersonalAssetCategory(String? category) =>
+      selectedPersonalAssetCategoryController.sink.add(category);
 
-  final BehaviorSubject<String?> selectedPersonalAssetProperetyTypeController = BehaviorSubject<String?>();
-  get selectedPersonalAssetProperetyTypeStream => selectedPersonalAssetProperetyTypeController.stream;
-  String? getSelectedPersonalAssetProperetyType() => selectedPersonalAssetProperetyTypeController.valueOrNull;
-  setSelectedPersonalAssetProperetyType(String? category) => selectedPersonalAssetProperetyTypeController.sink.add(category);
+  final BehaviorSubject<String?> selectedPersonalAssetProperetyTypeController =
+      BehaviorSubject<String?>();
+  get selectedPersonalAssetProperetyTypeStream =>
+      selectedPersonalAssetProperetyTypeController.stream;
+  String? getSelectedPersonalAssetProperetyType() =>
+      selectedPersonalAssetProperetyTypeController.valueOrNull;
+  setSelectedPersonalAssetProperetyType(String? category) =>
+      selectedPersonalAssetProperetyTypeController.sink.add(category);
 
-  final BehaviorSubject<DateTime?> personalAcquisitionDateController = BehaviorSubject<DateTime?>();
+  final BehaviorSubject<DateTime?> personalAcquisitionDateController =
+      BehaviorSubject<DateTime?>();
   get personalAcquisitionDateStream => personalAcquisitionDateController.stream;
-  DateTime? getPersonalAcquisitionDate() => personalAcquisitionDateController.valueOrNull;
-  setPersonalAcquisitionDate(DateTime? date) => personalAcquisitionDateController.sink.add(date);
+  DateTime? getPersonalAcquisitionDate() =>
+      personalAcquisitionDateController.valueOrNull;
+  setPersonalAcquisitionDate(DateTime? date) =>
+      personalAcquisitionDateController.sink.add(date);
 
-  final BehaviorSubject<bool?> validateAddPersonalAssetInfoController = BehaviorSubject<bool?>();
-  get validateAddPersonalAssetInfoStream => validateAddPersonalAssetInfoController.stream;
-  bool? getValidateAddPersonalAssetInfo() => validateAddPersonalAssetInfoController.valueOrNull;
-  setValidateAddPersonalAssetInfo(bool? state) => validateAddPersonalAssetInfoController.sink.add(state);
+  final BehaviorSubject<bool?> validateAddPersonalAssetInfoController =
+      BehaviorSubject<bool?>();
+  get validateAddPersonalAssetInfoStream =>
+      validateAddPersonalAssetInfoController.stream;
+  bool? getValidateAddPersonalAssetInfo() =>
+      validateAddPersonalAssetInfoController.valueOrNull;
+  setValidateAddPersonalAssetInfo(bool? state) =>
+      validateAddPersonalAssetInfoController.sink.add(state);
 
-  final BehaviorSubject<List<XFile?>?> pickedPhotoAssetsController = BehaviorSubject<List<XFile?>?>();
+  final BehaviorSubject<List<XFile?>?> pickedPhotoAssetsController =
+      BehaviorSubject<List<XFile?>?>();
   get pickedPhotoAssetsStream => pickedPhotoAssetsController.stream;
-  List<XFile?>? getPickedPhotoAssets() => pickedPhotoAssetsController.valueOrNull;
-  setPickedPhotoAssets(List<XFile?>? photoAssets) => pickedPhotoAssetsController.sink.add(photoAssets);
+  List<XFile?>? getPickedPhotoAssets() =>
+      pickedPhotoAssetsController.valueOrNull;
+  setPickedPhotoAssets(List<XFile?>? photoAssets) =>
+      pickedPhotoAssetsController.sink.add(photoAssets);
 
-  final BehaviorSubject<String?> selectedPersonalAssetController = BehaviorSubject<String?>();
+  final BehaviorSubject<String?> selectedPersonalAssetController =
+      BehaviorSubject<String?>();
   get selectedPersonalAssetStream => selectedPersonalAssetController.stream;
-  String? getSelectedPersonalAsset() => selectedPersonalAssetController.valueOrNull;
-  setSelectedPersonalAsset(String? asset) => selectedPersonalAssetController.sink.add(asset);
+  String? getSelectedPersonalAsset() =>
+      selectedPersonalAssetController.valueOrNull;
+  setSelectedPersonalAsset(String? asset) =>
+      selectedPersonalAssetController.sink.add(asset);
 
-  final BehaviorSubject<String?> selectedPersonalAssetNftSecuredController = BehaviorSubject<String?>();
-  get selectedPersonalAssetNftSecuredStream => selectedPersonalAssetNftSecuredController.stream;
-  String? getSelectedPersonalAssetNftSecured() => selectedPersonalAssetNftSecuredController.valueOrNull;
-  setSelectedPersonalAssetNftSecured(String? asset) => selectedPersonalAssetNftSecuredController.sink.add(asset);
+  final BehaviorSubject<String?> selectedPersonalAssetNftSecuredController =
+      BehaviorSubject<String?>();
+  get selectedPersonalAssetNftSecuredStream =>
+      selectedPersonalAssetNftSecuredController.stream;
+  String? getSelectedPersonalAssetNftSecured() =>
+      selectedPersonalAssetNftSecuredController.valueOrNull;
+  setSelectedPersonalAssetNftSecured(String? asset) =>
+      selectedPersonalAssetNftSecuredController.sink.add(asset);
 
-  final BehaviorSubject<String?> selectedPersonalAssetCollectionController = BehaviorSubject<String?>();
-  get selectedPersonalAssetCollectionStream => selectedPersonalAssetCollectionController.stream;
-  String? getSelectedPersonalAssetCollection() => selectedPersonalAssetCollectionController.valueOrNull;
-  setSelectedPersonalAssetCollection(String? asset) => selectedPersonalAssetCollectionController.sink.add(asset);
+  final BehaviorSubject<String?> selectedPersonalAssetCollectionController =
+      BehaviorSubject<String?>();
+  get selectedPersonalAssetCollectionStream =>
+      selectedPersonalAssetCollectionController.stream;
+  String? getSelectedPersonalAssetCollection() =>
+      selectedPersonalAssetCollectionController.valueOrNull;
+  setSelectedPersonalAssetCollection(String? asset) =>
+      selectedPersonalAssetCollectionController.sink.add(asset);
 
-  final BehaviorSubject<String?> selectedPersonalAssetTierController = BehaviorSubject<String?>();
-  get selectedPersonalAssetTierStream => selectedPersonalAssetTierController.stream;
-  String? getSelectedPersonalAssetTier() => selectedPersonalAssetTierController.valueOrNull;
-  setSelectedPersonalAssetTier(String? asset) => selectedPersonalAssetTierController.sink.add(asset);
+  final BehaviorSubject<String?> selectedPersonalAssetTierController =
+      BehaviorSubject<String?>();
+  get selectedPersonalAssetTierStream =>
+      selectedPersonalAssetTierController.stream;
+  String? getSelectedPersonalAssetTier() =>
+      selectedPersonalAssetTierController.valueOrNull;
+  setSelectedPersonalAssetTier(String? asset) =>
+      selectedPersonalAssetTierController.sink.add(asset);
 
-  final BehaviorSubject<String?> selectedPersonalAssetSetSeriesController = BehaviorSubject<String?>();
-  get selectedPersonalAssetSetSeriesStream => selectedPersonalAssetSetSeriesController.stream;
-  String? getSelectedPersonalAssetSetSeries() => selectedPersonalAssetSetSeriesController.valueOrNull;
-  setSelectedPersonalAssetSetSeries(String? asset) => selectedPersonalAssetSetSeriesController.sink.add(asset);
+  final BehaviorSubject<String?> selectedPersonalAssetSetSeriesController =
+      BehaviorSubject<String?>();
+  get selectedPersonalAssetSetSeriesStream =>
+      selectedPersonalAssetSetSeriesController.stream;
+  String? getSelectedPersonalAssetSetSeries() =>
+      selectedPersonalAssetSetSeriesController.valueOrNull;
+  setSelectedPersonalAssetSetSeries(String? asset) =>
+      selectedPersonalAssetSetSeriesController.sink.add(asset);
 
   final privatePurchasedPriceTextEditingController = TextEditingController();
   final privateSharesNumTextEditingController = TextEditingController();
@@ -107,7 +155,7 @@ class HoldingsScreenController {
   final personalEstMarketPriceTextEditingController = TextEditingController();
   final personalSerialNumberTextEditingController = TextEditingController();
 
-  void clearAddAssetInputs(){
+  void clearAddAssetInputs() {
     setSelectedPrivateCompany(null);
     setSelectedAssetTypes(null);
     privatePurchasedPriceTextEditingController.text = '';
@@ -119,33 +167,31 @@ class HoldingsScreenController {
   }
 
   bool validateAddPersonalAssetInfo() {
-    if(getSelectedAssetTypes()=='Collectables'){
-      if(getSelectedPersonalAsset()!=null &&
-          getSelectedPersonalAssetNftSecured()!=null &&
-          getSelectedPersonalAssetCollection()!=null &&
-          getSelectedPersonalAssetCategory()!=null &&
-          getSelectedPersonalAssetTier()!=null &&
-          getSelectedPersonalAssetSetSeries()!=null &&
+    if (getSelectedAssetTypes() == 'Collectables') {
+      if (getSelectedPersonalAsset() != null &&
+          getSelectedPersonalAssetNftSecured() != null &&
+          getSelectedPersonalAssetCollection() != null &&
+          getSelectedPersonalAssetCategory() != null &&
+          getSelectedPersonalAssetTier() != null &&
+          getSelectedPersonalAssetSetSeries() != null &&
           personalTitleTextEditingController.text.isNotEmpty &&
           personalPurchasePriceTextEditingController.text.isNotEmpty &&
           personalEstMarketPriceTextEditingController.text.isNotEmpty &&
-          personalSerialNumberTextEditingController.text.isNotEmpty
-      ){
+          personalSerialNumberTextEditingController.text.isNotEmpty) {
         return true;
       }
     } else {
-      if(getSelectedPersonalAssetCategory()!=null &&
-          getSelectedPersonalAssetProperetyType()!=null &&
-          getSelectedPersonalAssetProperetyType()!=null &&
-          getPersonalAcquisitionDate()!=null &&
+      if (getSelectedPersonalAssetCategory() != null &&
+          getSelectedPersonalAssetProperetyType() != null &&
+          getSelectedPersonalAssetProperetyType() != null &&
+          getPersonalAcquisitionDate() != null &&
           personalMarketValueTextEditingController.text.isNotEmpty &&
           personalDownPaymentTextEditingController.text.isNotEmpty &&
           personalPurchasePriceTextEditingController.text.isNotEmpty &&
           personalLoanAmountTextEditingController.text.isNotEmpty &&
           personalInterestRateTextEditingController.text.isNotEmpty &&
           personalAmortizationTextEditingController.text.isNotEmpty &&
-          personalAssetNameTextEditingController.text.isNotEmpty
-      ){
+          personalAssetNameTextEditingController.text.isNotEmpty) {
         return true;
       }
     }
@@ -153,7 +199,7 @@ class HoldingsScreenController {
   }
 
   get assetsFinancialsStream {
-    switch(getHoldingsType()){
+    switch (getHoldingsType()) {
       case HoldingsType.PRIVATE:
         return _holdingsScreenBloc.privateAssetsFinancialsStream;
 
@@ -164,8 +210,9 @@ class HoldingsScreenController {
         return _holdingsScreenBloc.personalAssetsFinancialsStream;
     }
   }
+
   DataResource<AssetsFinancials>? getAssetsFinancials() {
-    switch(getHoldingsType()){
+    switch (getHoldingsType()) {
       case HoldingsType.PRIVATE:
         return _holdingsScreenBloc.getPrivateAssetsFinancials();
 
@@ -178,7 +225,7 @@ class HoldingsScreenController {
   }
 
   void fetchAssetsFinancialsResults() {
-    switch(getHoldingsType()){
+    switch (getHoldingsType()) {
       case HoldingsType.PRIVATE:
         _holdingsScreenBloc.fetchPrivateAssetsFinancials();
         break;
@@ -194,9 +241,10 @@ class HoldingsScreenController {
   }
 
   void fetchAssetsResults() {
-    switch(getHoldingsType()){
+    switch (getHoldingsType()) {
       case HoldingsType.PRIVATE:
         _holdingsScreenBloc.fetchPrivateAssetHoldings();
+        // _holdingsScreenBloc.fetchPrivateAssetMaualEntreis();
         break;
 
       case HoldingsType.PUBLIC:
@@ -209,8 +257,8 @@ class HoldingsScreenController {
     }
   }
 
-  String getScreenTitle(appLocal){
-    switch(getHoldingsType()){
+  String getScreenTitle(appLocal) {
+    switch (getHoldingsType()) {
       case HoldingsType.PRIVATE:
         return appLocal.trans('private_holdings');
       case HoldingsType.PUBLIC:
@@ -218,24 +266,43 @@ class HoldingsScreenController {
       case HoldingsType.PERSONAL:
         return appLocal.trans('personal_holdings');
 
-      default: return appLocal.trans('personal_holdings');
+      default:
+        return appLocal.trans('personal_holdings');
     }
   }
 
   fetchPersonalAssetTypes() => _holdingsScreenBloc.fetchPersonalAssetTypes();
 
   ChartFilters? chartFilter;
-  fetchPublicAssetHistorical({ChartFilters filter=ChartFilters.xALL}) {
+  fetchPublicAssetHistorical({ChartFilters filter = ChartFilters.xALL}) {
     chartFilter = filter;
     _holdingsScreenBloc.setPublicAssetGraph(DataResource.loading());
     _holdingsScreenBloc.fetchPublicAssetMainGraph(
-        publicAssetGraphRequestBody: _createPublicAssetGraphRequestBody()
+        publicAssetGraphRequestBody: _createPublicAssetGraphRequestBody());
+  }
+
+  fetchPublicAssetHistoricalDetails({ChartFilters filter = ChartFilters.xALL}) {
+    chartFilter = filter;
+    _holdingsScreenBloc.setPublicAssetGraph(DataResource.loading());
+    _holdingsScreenBloc.fetchPublicAssetMainGraphDetails(
+        publicAssetGraphRequestBody:
+            _createPublicAssetGraphRequestBodyDetails());
+  }
+
+  PublicAssetGraphRequestBody _createPublicAssetGraphRequestBodyDetails() {
+    return PublicAssetGraphRequestBody(
+      apiToken: _holdingsScreenBloc.currentUser?.apiToken ?? '',
+      fromDate: _getChartFromTime(),
+      toDate: DateTime.now().toString().substring(0, 10),
+      interval: 1,
+      sympol: HoldingsScreen.stockEx ?? '',
+      range: Utils.enumToString(_getChartRange()),
     );
   }
 
   PublicAssetGraphRequestBody _createPublicAssetGraphRequestBody() {
     return PublicAssetGraphRequestBody(
-      apiToken: _holdingsScreenBloc.currentUser?.apiToken??'',
+      apiToken: _holdingsScreenBloc.currentUser?.apiToken ?? '',
       fromDate: _getChartFromTime(),
       toDate: DateTime.now().toString().substring(0, 10),
       interval: 1,
@@ -245,29 +312,47 @@ class HoldingsScreenController {
 
   String _getChartFromTime() {
     DateTime nowDateTime = DateTime.now();
-    switch(chartFilter){
+    switch (chartFilter) {
       case ChartFilters.x24H:
-        return DateTime(nowDateTime.year, nowDateTime.month, nowDateTime.day, nowDateTime.hour-24).toString().substring(0, 10);
+        return DateTime(nowDateTime.year, nowDateTime.month, nowDateTime.day,
+                nowDateTime.hour - 24)
+            .toString()
+            .substring(0, 10);
 
       case ChartFilters.x7D:
-        return DateTime(nowDateTime.year, nowDateTime.month, nowDateTime.day- 7).toString().substring(0, 10);
+        return DateTime(
+                nowDateTime.year, nowDateTime.month, nowDateTime.day - 7)
+            .toString()
+            .substring(0, 10);
 
       case ChartFilters.x1M:
-        return DateTime(nowDateTime.year, nowDateTime.month-1, nowDateTime.day).toString().substring(0, 10);
+        return DateTime(
+                nowDateTime.year, nowDateTime.month - 1, nowDateTime.day)
+            .toString()
+            .substring(0, 10);
 
       case ChartFilters.x3M:
-        return DateTime(nowDateTime.year, nowDateTime.month-3, nowDateTime.day).toString().substring(0, 10);
+        return DateTime(
+                nowDateTime.year, nowDateTime.month - 3, nowDateTime.day)
+            .toString()
+            .substring(0, 10);
 
       case ChartFilters.x1Y:
-        return DateTime(nowDateTime.year-1, nowDateTime.month, nowDateTime.day).toString().substring(0, 10);
+        return DateTime(
+                nowDateTime.year - 1, nowDateTime.month, nowDateTime.day)
+            .toString()
+            .substring(0, 10);
 
       default:
-        return DateTime(nowDateTime.year-5, nowDateTime.month, nowDateTime.day).toString().substring(0, 10);
+        return DateTime(
+                nowDateTime.year - 5, nowDateTime.month, nowDateTime.day)
+            .toString()
+            .substring(0, 10);
     }
   }
 
   PublicAssetHistoricalDataRanges _getChartRange() {
-    switch(chartFilter){
+    switch (chartFilter) {
       case ChartFilters.x24H:
         return PublicAssetHistoricalDataRanges.hour;
 
@@ -283,28 +368,32 @@ class HoldingsScreenController {
       case ChartFilters.x1Y:
         return PublicAssetHistoricalDataRanges.month;
 
-      default: return PublicAssetHistoricalDataRanges.quarter;
+      default:
+        return PublicAssetHistoricalDataRanges.quarter;
     }
   }
 
-  final BehaviorSubject<bool> addingHoldingLoadingStateController = BehaviorSubject.seeded(false);
-  get addingHoldingLoadingStateStream => addingHoldingLoadingStateController.stream;
-  bool getAddingHoldingLoadingState() => addingHoldingLoadingStateController.value;
-  setAddingHoldingLoadingState(bool state) => addingHoldingLoadingStateController.sink.add(state);
+  final BehaviorSubject<bool> addingHoldingLoadingStateController =
+      BehaviorSubject.seeded(false);
+  get addingHoldingLoadingStateStream =>
+      addingHoldingLoadingStateController.stream;
+  bool getAddingHoldingLoadingState() =>
+      addingHoldingLoadingStateController.value;
+  setAddingHoldingLoadingState(bool state) =>
+      addingHoldingLoadingStateController.sink.add(state);
 
   onAddingPrivateHoldingClicked(context) {
-    if(_validateAddPrivateHolding(context))
-      _addPrivateAssetHolding(context);
+    if (_validateAddPrivateHolding(context)) _addPrivateAssetHolding(context);
   }
 
   bool _validateAddPrivateHolding(context) {
     //ToDo
     String message = '';
-    if(privatePurchasedPriceTextEditingController.text.isEmpty) {
+    if (privatePurchasedPriceTextEditingController.text.isEmpty) {
       message = 'purchased price is required field!';
     }
 
-    if(message.isEmpty) return true;
+    if (message.isEmpty) return true;
 
     Utils.showTranslatedToast(context, message);
     return false;
@@ -329,6 +418,16 @@ class HoldingsScreenController {
 
   _onHoldingAddingSucceed(context, PrivateAssetModel holding) {
     _holdingsScreenBloc.fetchPrivateAssetHoldings(
+      onData: () {
+        setAddingHoldingLoadingState(false);
+        Navigator.of(context).pop();
+      },
+      onError: (message) {
+        setAddingHoldingLoadingState(false);
+        Navigator.of(context).pop();
+      },
+    );
+    _holdingsScreenBloc.fetchPrivateAssetMaualEntreis(
       onData: () {
         setAddingHoldingLoadingState(false);
         Navigator.of(context).pop();

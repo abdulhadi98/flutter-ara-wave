@@ -5,19 +5,26 @@ import 'private_asset_model.dart';
 
 class PrivateHoldingListModel {
   final List<HoldingModel> holdingList;
-  PrivateHoldingListModel({required this.holdingList,});
+  PrivateHoldingListModel({
+    required this.holdingList,
+  });
   factory PrivateHoldingListModel.fromJson(List<dynamic> parsedJson) {
     List<HoldingModel> holdingList = <HoldingModel>[];
-    holdingList = parsedJson.map((i) => PrivateHoldingModel.fromJson(i)).toList();
+    holdingList =
+        parsedJson.map((i) => PrivateHoldingModel.fromJson(i)).toList();
     return new PrivateHoldingListModel(holdingList: holdingList);
   }
 }
 
-List<PrivateHoldingModel> privateHoldingListFromJson(json) => List<PrivateHoldingModel>.from(json.map((x) => PrivateHoldingModel.fromJson(x)));
+List<PrivateHoldingModel> privateHoldingListFromJson(json) =>
+    List<PrivateHoldingModel>.from(
+        json.map((x) => PrivateHoldingModel.fromJson(x)));
+List<PrivateMaunalModel> privateManualListFromJson(json) =>
+    List<PrivateMaunalModel>.from(
+        json.map((x) => PrivateMaunalModel.fromJson(x)));
 
-class PrivateHoldingModel extends BasePrivateAssetHoldingModel {
-
-  PrivateHoldingModel({
+class PrivateMaunalModel extends BasePrivateAssetHoldingModel {
+  PrivateMaunalModel({
     required purchasedPrice,
     required quantity,
     required privateAssetId,
@@ -27,23 +34,89 @@ class PrivateHoldingModel extends BasePrivateAssetHoldingModel {
     required investedCapital,
     required shareClass,
     required this.verified,
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.userId,
+    required this.purchasedAt,
+  }) : super(
+          purchasedPrice: purchasedPrice,
+          quantity: quantity,
+          companySharesOutstanding: companySharesOutstanding,
+          country: country,
+          headquarterCity: headquarterCity,
+          investedCapital: investedCapital,
+          privateAssetId: privateAssetId,
+          shareClass: shareClass,
+        );
+
+  int userId;
+  int id;
+  PrivateMaunalModel? asset;
+  int verified;
+  DateTime createdAt;
+  DateTime updatedAt;
+  DateTime purchasedAt;
+
+  factory PrivateMaunalModel.fromJson(Map<String, dynamic> json) =>
+      PrivateMaunalModel(
+        //asset: json["private_asset"] == null ? null : PrivateMaunalModel.fromJson(json["private_asset"]),
+        userId: json["user_id"] == null ? null : json["user_id"],
+        privateAssetId:
+            json["private_asset_id"] == null ? null : json["private_asset_id"],
+        quantity: json["quantity"] == null ? null : json["quantity"],
+        purchasedAt: DateTime.parse(json["purchased_at"]),
+        headquarterCity:
+            json["headquarter_city"] == null ? null : json["headquarter_city"],
+        country: json["country"] == null ? null : json["country"],
+        investedCapital:
+            json["invested_capital"] == null ? null : json["invested_capital"],
+        shareClass: json["share_class"] == null ? null : json["share_class"],
+        companySharesOutstanding: json["shares_outstanding"] == null
+            ? null
+            : json["shares_outstanding"],
+        purchasedPrice:
+            json["purchased_price"] == null ? null : json["purchased_price"],
+        verified: json["verified"] == null ? null : json["verified"],
+        updatedAt: DateTime.parse(json["updated_at"]),
+        createdAt: DateTime.parse(json["created_at"]),
+        id: json["id"] == null ? null : json["id"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "private_asset_id": privateAssetId,
+      };
+}
+
+class PrivateHoldingModel extends BasePrivateAssetHoldingModel {
+  PrivateHoldingModel({
+    kind,
+    purchasedPrice,
+    quantity,
+    privateAssetId,
+    companySharesOutstanding,
+    country,
+    headquarterCity,
+    investedCapital,
+    shareClass,
+    required this.verified,
     this.asset,
     required this.id,
     required this.createdAt,
     required this.updatedAt,
     required this.userId,
     required this.purchasedAt,
-  }): super(
-    purchasedPrice: purchasedPrice,
-    quantity: quantity,
-    companySharesOutstanding: companySharesOutstanding,
-    country: country,
-    headquarterCity: headquarterCity,
-    investedCapital: investedCapital,
-    privateAssetId: privateAssetId,
-    shareClass: shareClass,
-  );
-
+  }) : super(
+          purchasedPrice: purchasedPrice,
+          quantity: quantity,
+          companySharesOutstanding: companySharesOutstanding,
+          country: country,
+          headquarterCity: headquarterCity,
+          investedCapital: investedCapital,
+          privateAssetId: privateAssetId,
+          shareClass: shareClass,
+        );
+  String? companyName;
   int userId;
   int id;
   PrivateAssetModel? asset;
@@ -51,26 +124,37 @@ class PrivateHoldingModel extends BasePrivateAssetHoldingModel {
   DateTime createdAt;
   DateTime updatedAt;
   DateTime purchasedAt;
+  String? kind;
 
-  factory PrivateHoldingModel.fromJson(Map<String, dynamic> json) => PrivateHoldingModel(
-    asset: json["private_asset"] == null ? null : PrivateAssetModel.fromJson(json["private_asset"]),
-    userId: json["user_id"] == null ? null : json["user_id"],
-    privateAssetId: json["private_asset_id"] == null ? null : json["private_asset_id"],
-    quantity: json["quantity"] == null ? null : json["quantity"],
-    purchasedAt: DateTime.parse(json["purchased_at"]),
-    headquarterCity: json["headquarter_city"] == null ? null : json["headquarter_city"],
-    country: json["country"] == null ? null : json["country"],
-    investedCapital: json["invested_capital"] == null ? null : json["invested_capital"],
-    shareClass: json["share_class"] == null ? null : json["share_class"],
-    companySharesOutstanding: json["shares_outstanding"] == null ? null : json["shares_outstanding"],
-    purchasedPrice: json["purchased_price"] == null ? null : json["purchased_price"],
-    verified: json["verified"] == null ? null : json["verified"],
-    updatedAt: DateTime.parse(json["updated_at"]),
-    createdAt: DateTime.parse(json["created_at"]),
-    id: json["id"] == null ? null : json["id"],
-  );
+  factory PrivateHoldingModel.fromJson(Map<String, dynamic> json) =>
+      PrivateHoldingModel(
+        kind: 'holding',
+        asset: json["private_asset"] == null
+            ? null
+            : PrivateAssetModel.fromJson(json["private_asset"]),
+        userId: json["user_id"] == null ? null : json["user_id"],
+        privateAssetId:
+            json["private_asset_id"] == null ? null : json["private_asset_id"],
+        quantity: json["quantity"] == null ? null : json["quantity"],
+        purchasedAt: DateTime.parse(json["purchased_at"]),
+        headquarterCity:
+            json["headquarter_city"] == null ? null : json["headquarter_city"],
+        country: json["country"] == null ? null : json["country"],
+        investedCapital:
+            json["invested_capital"] == null ? null : json["invested_capital"],
+        shareClass: json["share_class"] == null ? null : json["share_class"],
+        companySharesOutstanding: json["shares_outstanding"] == null
+            ? null
+            : json["shares_outstanding"],
+        purchasedPrice:
+            json["purchased_price"] == null ? null : json["purchased_price"],
+        verified: json["verified"] == null ? null : json["verified"],
+        updatedAt: DateTime.parse(json["updated_at"]),
+        createdAt: DateTime.parse(json["created_at"]),
+        id: json["id"] == null ? null : json["id"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "private_asset_id": privateAssetId,
-  };
+        "private_asset_id": privateAssetId,
+      };
 }

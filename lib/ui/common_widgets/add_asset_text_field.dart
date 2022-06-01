@@ -7,7 +7,8 @@ class AddAssetTextField extends StatelessWidget {
   final String hintKey;
   final onChanged;
 
-  AddAssetTextField({required this.hintKey, required this.onChanged, key}): super(key: key);
+  AddAssetTextField({required this.hintKey, required this.onChanged, key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,7 @@ class AddAssetTextField extends StatelessWidget {
           style: TextStyle(
             color: AppColors.white,
             fontSize: AppFonts.getSmallFontSize(context),
-            height: 1.1,
+            height: 1,
           ),
           keyboardType: TextInputType.text,
           cursorColor: AppColors.blue,
@@ -41,8 +42,10 @@ class AddAssetTextField extends StatelessWidget {
           maxLines: 1,
           // controller: controller,
           decoration: InputDecoration(
-            contentPadding:
-            EdgeInsets.symmetric(horizontal: width * .02, vertical: 0.0,),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: width * .02,
+              vertical: 0.0,
+            ),
             fillColor: AppColors.mainColor,
             filled: true,
             // labelText: labelKey,

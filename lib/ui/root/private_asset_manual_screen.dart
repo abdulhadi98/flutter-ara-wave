@@ -10,6 +10,7 @@ import 'package:wave_flutter/di/private_asset_setails_screen_di.dart';
 import 'package:wave_flutter/helper/app_colors.dart';
 import 'package:wave_flutter/helper/app_fonts.dart';
 import 'package:wave_flutter/helper/enums.dart';
+import 'package:wave_flutter/main.dart';
 import 'package:wave_flutter/models/private_asset_model.dart';
 import 'package:wave_flutter/services/data_resource.dart';
 import 'package:wave_flutter/ui/common_widgets/base_statefull_widget.dart';
@@ -22,9 +23,9 @@ import 'package:http/http.dart' as http;
 import 'package:wave_flutter/ui/root/holdings_screen.dart';
 import 'package:wave_flutter/ui/root/home_screen.dart';
 
-class PrivateAssetDetailsScreen extends BaseStateFullWidget {
+class PrivateManualDetailsScreen extends BaseStateFullWidget {
   final PrivateAssetModel assetModel;
-  PrivateAssetDetailsScreen({required this.assetModel});
+  PrivateManualDetailsScreen({required this.assetModel});
 
   @override
   _PrivateAssetDetailsScreenState createState() =>
@@ -32,7 +33,7 @@ class PrivateAssetDetailsScreen extends BaseStateFullWidget {
 }
 
 class _PrivateAssetDetailsScreenState
-    extends BaseStateFullWidgetState<PrivateAssetDetailsScreen>
+    extends BaseStateFullWidgetState<PrivateManualDetailsScreen>
     with PrivateAssetDetailsScreenDi {
   var assetGrowth = '';
   var salePrice = ''; //market price
@@ -55,16 +56,27 @@ class _PrivateAssetDetailsScreenState
   @override
   void initState() {
     super.initState();
+
     initScreenDi();
     getAssetDetails();
     getPersonalChartValue();
-    // getPersonalChartValue();
-
     //uiController.fetchResult();
   }
 
-  bool chartSpinner = false;
+  void iniPage() async {
+    setState(() {
+      spinner = true;
+    });
+    await getAssetDetails().then((_) {
+      getPersonalChartValue();
+    });
 
+    setState(() {
+      spinner = false;
+    });
+  }
+
+  bool chartSpinner = false;
   List<ChartData> privateDetailsChart = [];
   void getPersonalChartValue() async {
     setState(() {
@@ -86,7 +98,7 @@ class _PrivateAssetDetailsScreenState
     request = http.MultipartRequest('POST', url);
     request.fields['api_token'] = apiToken;
     request.fields['asset_id'] = HoldingsScreen.assetId.toString();
-    request.fields['type'] = 'private';
+    request.fields['type'] = 'private-manual';
 
     response = await request.send();
     var xx = await http.Response.fromStream(response);
@@ -198,7 +210,7 @@ class _PrivateAssetDetailsScreenState
   }
 
   bool spinner = false;
-  void getAssetDetails() async {
+  Future getAssetDetails() async {
     setState(() {
       spinner = true;
     });
@@ -214,7 +226,7 @@ class _PrivateAssetDetailsScreenState
     var request;
     var response;
     var url = Uri.parse(
-      'https://wave.aratech.co/api/get-private-holding-details',
+      'https://wave.aratech.co/api/get-private-manual-details',
     );
     print('///////////' +
         url.toString() +
@@ -242,7 +254,7 @@ class _PrivateAssetDetailsScreenState
       profitPercentage = payload['profitPercentage'].toString();
 
       purchasePrice = payload['purchased_price'].toString();
-      quantity = payload['quantity'].toString();
+      quantity = payload['shares_purchased'].toString();
 
       marketValue = payload['marketValue'].toString();
 
@@ -253,6 +265,7 @@ class _PrivateAssetDetailsScreenState
       shareClass = payload['share_class'].toString();
     });
 
+    //getPersonalChartValue();
     setState(() {
       spinner = false;
     });
@@ -266,18 +279,18 @@ class _PrivateAssetDetailsScreenState
       backgroundColor: AppColors.black,
       body: WillPopScope(
         onWillPop: () => _onWillPop(),
-        child: spinner
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
-            : Container(
-                padding: EdgeInsets.only(
-                  top: mediaQuery.padding.top,
-                  right: width * .05,
-                  left: width * .05,
-                ),
-                child: buildScreenContent(),
-              ),
+        child: Container(
+          padding: EdgeInsets.only(
+            top: mediaQuery.padding.top,
+            right: width * .05,
+            left: width * .05,
+          ),
+          child: spinner
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : buildScreenContent(),
+        ),
       ),
     );
   }
