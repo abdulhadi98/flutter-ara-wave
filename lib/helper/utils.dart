@@ -151,8 +151,52 @@ class Utils {
     return fileInBase64;
   }
 
-  static String getFormattedNum(double? num) {
-    String formattedNum = NumberFormat('###,###.00').format(num ?? 0.0);
+  static String getFormattedChartNum(num) {
+    String strNum = num.toString();
+    if (strNum.contains('.')) {
+      double d = double.parse(strNum);
+      String formattedNum = NumberFormat('###,###.00').format(d);
+      if (formattedNum.startsWith('.')) formattedNum = '0' + formattedNum;
+      if (formattedNum.split('.').last == '00')
+        return formattedNum.split('.').first;
+      else
+        return formattedNum;
+    }
+    int i = int.parse(strNum);
+    String formattedNum = NumberFormat('###,###').format(i);
+    return formattedNum;
+  }
+
+  static String getFormattedNum(num) {
+    String strNum = num.toString();
+    if (strNum.contains('.')) {
+      double d = double.parse(strNum);
+      String formattedNum = NumberFormat('###,###.00').format(d);
+      if (formattedNum.startsWith('.')) formattedNum = '0' + formattedNum;
+      if (formattedNum.split('.').last == '00')
+        return formattedNum.split('.').first;
+      else
+        return formattedNum;
+    }
+    int i = int.parse(strNum);
+    String formattedNum = NumberFormat('###,###').format(i);
+    return formattedNum;
+  }
+
+  static String getFormattedStrNum(strNum) {
+    //  String strNum = num.toString();
+    strNum = strNum.toString();
+    if (strNum.contains('.')) {
+      double d = double.parse(strNum);
+      String formattedNum = NumberFormat('###,###.00').format(d);
+      if (formattedNum.startsWith('.')) formattedNum = '0' + formattedNum;
+      if (formattedNum.split('.').last == '00')
+        return formattedNum.split('.').first;
+      else
+        return formattedNum;
+    }
+    int i = int.parse(strNum);
+    String formattedNum = NumberFormat('###,###').format(i);
     return formattedNum;
   }
 }

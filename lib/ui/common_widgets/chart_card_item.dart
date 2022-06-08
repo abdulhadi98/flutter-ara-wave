@@ -18,6 +18,7 @@ import '../../services/api_provider.dart';
 import '../../storage/data_store.dart';
 import '../root/home_screen.dart';
 import 'error_message_widget.dart';
+import 'package:intl/intl.dart';
 
 // import 'package:intl/intl.dart';
 class Xclass {
@@ -33,7 +34,6 @@ class Xclass {
   }
 
   Future<void> getPersonalChartValue() async {
-    print('abood');
     xList!.clear();
 
     //  dynamic api = _dataStore!.getApiToken();
@@ -140,27 +140,28 @@ class _ChartCardItemState extends BaseStateFullWidgetState<ChartCardItem> {
       child: buildChartComponents(),
     );
   }
+  // final List<SalesData> chartData = [
+  //   //   SalesData('Property', getRandomInt(0, 100)),
+  //   //   SalesData('Vehicle', getRandomInt(0, 100)),
+  //   SalesData('Luxury', getRandomInt(0, 100)), //1
+  //   SalesData('Electronics', getRandomInt(0, 100)),
 
-  final List<SalesData> chartData = [
-    //   SalesData('Property', getRandomInt(0, 100)),
-    //   SalesData('Vehicle', getRandomInt(0, 100)),
-    SalesData('Luxury', getRandomInt(0, 100)), //1
-    SalesData('Electronics', getRandomInt(0, 100)),
+  //   SalesData('Digital Asset', getRandomInt(0, 100)), //1
+  //   SalesData('Saving', getRandomInt(0, 100)), //1
+  //   SalesData('Automobile', 100), //1
+  //   SalesData('House', getRandomInt(0, 100)), //1
 
-    SalesData('Digital Asset', getRandomInt(0, 100)), //1
-    SalesData('Saving', getRandomInt(0, 100)), //1
-    SalesData('Automobile', 100), //1
-    SalesData('House', getRandomInt(0, 100)), //1
-
-    //SalesData('Currency', getRandomInt(0, 100)),
-    // SalesData('Metals', getRandomInt(0, 100)),
-    // SalesData('Collectable', getRandomInt(0, 100)),
-    SalesData('Other', getRandomInt(0, 100)),
-  ];
-
+  //   //SalesData('Currency', getRandomInt(0, 100)),
+  //   // SalesData('Metals', getRandomInt(0, 100)),
+  //   // SalesData('Collectable', getRandomInt(0, 100)),
+  //   SalesData('Other', getRandomInt(0, 100)),
+  //   SalesData('AAAAAAAAAA', getRandomInt(0, 100)),
+  //   SalesData('BBBBBBBBBBB', getRandomInt(0, 100)),
+  //   SalesData('CCCCCCCCCCC', getRandomInt(0, 100)),
+  // ];
   Widget buildColumnsChartItem() {
     return Container(
-      height: height * .22,
+      height: height * .228,
       child: SfCartesianChart(
         series: <CartesianSeries<SalesData, String>>[
           // Renders column chart
@@ -172,19 +173,25 @@ class _ChartCardItemState extends BaseStateFullWidgetState<ChartCardItem> {
             color: AppColors.blue,
             borderColor: AppColors.white,
 
-            width: 0.5, // Width of the bars
+            width: 0.3, // Width of the bars
             // spacing: 0.5,
           ),
         ],
         plotAreaBorderWidth: 0.0,
+        //  axes: [Ca],
+        margin: EdgeInsets.all(0),
         primaryXAxis: CategoryAxis(
           majorGridLines: MajorGridLines(width: 0),
           axisLine: AxisLine(
             width: 0.0,
           ),
           majorTickLines: MajorTickLines(width: 0),
+          //  maximumLabelWidth: width * 0.09,
+          labelPlacement: LabelPlacement.betweenTicks,
+          maximumLabelWidth: width * 0.13,
           labelStyle: TextStyle(
             fontSize: AppFonts.getXXSmallFontSize(context),
+            overflow: TextOverflow.fade,
           ),
         ),
         primaryYAxis: NumericAxis(isVisible: false),
@@ -205,14 +212,17 @@ class _ChartCardItemState extends BaseStateFullWidgetState<ChartCardItem> {
                   if (widget.historicalDataList?.isNotEmpty ?? false)
                     buildChartItem(filterSnapshot.data!),
                   if (widget.historicalDataList?.isEmpty ?? true)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 24.0,
-                        horizontal: 16,
+                    Container(
+                      height: height * .215,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 24.0,
+                          horizontal: 16,
+                        ),
+                        child: ErrorMessageWidget(
+                            messageKey: 'no_result_found_message',
+                            image: 'assets/images/ic_not_found.png'),
                       ),
-                      child: ErrorMessageWidget(
-                          messageKey: 'no_result_found_message',
-                          image: 'assets/images/ic_not_found.png'),
                     ),
                   Padding(
                     padding: const EdgeInsets.only(left: 0.0),
@@ -300,7 +310,7 @@ class _ChartCardItemState extends BaseStateFullWidgetState<ChartCardItem> {
     List<ChartData> chartData = getData(filter);
 
     return Container(
-      height: height * .20,
+      height: height * .2128,
       child: SfCartesianChart(
         // primaryXAxis: DateTimeAxis(),
         // margin: EdgeInsets.symmetric(horizontal: width* .025, vertical: height* .025),
@@ -362,7 +372,8 @@ class _ChartCardItemState extends BaseStateFullWidgetState<ChartCardItem> {
         ),
         primaryYAxis: NumericAxis(
           edgeLabelPlacement: EdgeLabelPlacement.shift,
-          labelFormat: '{value}K',
+          labelFormat: '{value}',
+          numberFormat: NumberFormat.compactSimpleCurrency(),
           // numberFormat: NumberFormat.simpleCurrency(decimalDigits: 0),
           majorGridLines: MajorGridLines(width: .03),
           axisLine: AxisLine(
@@ -384,7 +395,7 @@ class _ChartCardItemState extends BaseStateFullWidgetState<ChartCardItem> {
     ];
 
     return Container(
-      height: height * .26,
+      height: height * .264,
       child: SfCartesianChart(
         series: <CartesianSeries<SalesData, int>>[
           // Renders column chart
@@ -558,10 +569,10 @@ class _ChartCardItemState extends BaseStateFullWidgetState<ChartCardItem> {
   }
 
   // Rotate the sweep gradient according to the start angle
-  Float64List _resolveTransform(Rect bounds, TextDirection? textDirection) {
-    final GradientTransform transform = GradientRotation(_degreeToRadian(-90));
-    return transform.transform(bounds, textDirection: textDirection)!.storage;
-  }
+  // Float64List _resolveTransform(Rect bounds, TextDirection? textDirection) {
+  //   final GradientTransform transform = GradientRotation(_degreeToRadian(-90));
+  //   return transform.transform(bounds, textDirection: textDirection)!.storage;
+  // }
 
   // Convert degree to radian
   double _degreeToRadian(int deg) => deg * (3.141592653589793 / 180);

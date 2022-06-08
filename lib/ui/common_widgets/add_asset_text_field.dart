@@ -3,11 +3,22 @@ import 'package:wave_flutter/helper/app_colors.dart';
 import 'package:wave_flutter/helper/app_fonts.dart';
 import 'package:wave_flutter/ui/common_widgets/base_statefull_widget.dart';
 
+import '../root/add_assets/add_assets_dialog_text_field.dart';
+
 class AddAssetTextField extends StatelessWidget {
+  final String optioType;
+
   final String hintKey;
   final onChanged;
-
-  AddAssetTextField({required this.hintKey, required this.onChanged, key})
+  final TextInputType keyboardType;
+  //final TextEditingController? controller;
+  AddAssetTextField(
+      { //required this.controller,
+      required this.hintKey,
+      required this.onChanged,
+      key,
+      required this.keyboardType,
+      required this.optioType})
       : super(key: key);
 
   @override
@@ -26,6 +37,10 @@ class AddAssetTextField extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: TextField(
+          //   controller: ,
+          inputFormatters:
+              optioType != 'text' ? [ThousandsSeparatorInputFormatter()] : [],
+          textCapitalization: TextCapitalization.sentences,
           autofocus: false,
           enabled: true,
           onChanged: onChanged,
@@ -36,12 +51,23 @@ class AddAssetTextField extends StatelessWidget {
             fontSize: AppFonts.getSmallFontSize(context),
             height: 1,
           ),
-          keyboardType: TextInputType.text,
+          keyboardType: keyboardType,
           cursorColor: AppColors.blue,
           textAlign: TextAlign.center,
           maxLines: 1,
+
           // controller: controller,
           decoration: InputDecoration(
+            prefix: optioType == 'money'
+                ? Text(
+                    '\$ ',
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontSize: AppFonts.getSmallFontSize(context),
+                      height: 1,
+                    ),
+                  )
+                : Text(''),
             contentPadding: EdgeInsets.symmetric(
               horizontal: width * .02,
               vertical: 0.0,

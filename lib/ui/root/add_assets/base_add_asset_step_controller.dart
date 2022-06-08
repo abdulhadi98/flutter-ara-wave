@@ -1,12 +1,14 @@
 import 'package:rxdart/rxdart.dart';
 
 abstract class BaseAddAssetStepController {
-  final BehaviorSubject<bool> _validationController = BehaviorSubject.seeded(false);
+  final BehaviorSubject<bool> _validationController =
+      BehaviorSubject.seeded(false);
   get validationStream => _validationController.stream;
   bool getValidationState() => _validationController.value;
   setValidationState(bool type) => _validationController.sink.add(type);
 
-  final BehaviorSubject<bool> _loadingController = BehaviorSubject.seeded(false);
+  final BehaviorSubject<bool> _loadingController =
+      BehaviorSubject.seeded(false);
   get loadingStream => _loadingController.stream;
   bool getLoadingState() => _loadingController.value;
   setLoadingState(bool state) => _loadingController.sink.add(state);

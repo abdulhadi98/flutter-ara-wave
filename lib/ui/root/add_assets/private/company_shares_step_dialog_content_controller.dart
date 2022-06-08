@@ -5,7 +5,8 @@ import '../base_add_asset_step_controller.dart';
 
 class CompanySharesStepDialogContentController
     extends BaseAddAssetStepController {
-  final investmentCapitalTextEditingController = TextEditingController();
+  TextEditingController investmentCapitalTextEditingController =
+      TextEditingController();
   final sharedPurchasesTextEditingController = TextEditingController();
   final sharesClassTextEditingController = TextEditingController();
   final companySharesOutstandingTextEditingController = TextEditingController();
@@ -70,7 +71,7 @@ class CompanySharesStepDialogContentController
       sharesClass: sharesClassTextEditingController.text,
       companySharesOutstanding:
           companySharesOutstandingTextEditingController.text,
-      marketValue: int.parse(marketValueTextEditingController.text),
+      marketValue: marketValueTextEditingController.text,
     );
 
     onDoneCallback(companyInfoStepModel);

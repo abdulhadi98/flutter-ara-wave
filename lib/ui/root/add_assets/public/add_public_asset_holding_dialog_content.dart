@@ -54,6 +54,8 @@ class _AddPublicAssetHoldingDialogContentState
         buildPublicAvailableCompanies(),
         SizedBox(height: height * .03),
         AddAssetsDialogTextField(
+          isMoney: false,
+          isNumber: false,
           controller: uiController.stockExchangeTextEditingController,
           keyboardType: TextInputType.text,
           hint: appLocal.trans('enter_stock_exchange'),
@@ -62,6 +64,8 @@ class _AddPublicAssetHoldingDialogContentState
         ),
         SizedBox(height: height * .03),
         AddAssetsDialogTextField(
+          isMoney: false,
+          isNumber: false,
           controller: uiController.ofSharesTextEditingController,
           keyboardType: TextInputType.number,
           hint: '# ${appLocal.trans('of_shares')}',
@@ -148,8 +152,8 @@ class _AddPublicAssetHoldingDialogContentState
                   color: dateTimeSnapshot.data != null
                       ? Colors.white
                       : Colors.white.withOpacity(.25),
-                  fontSize: AppFonts.getNormalFontSize(context),
-                  height: 1.0,
+                  fontSize: AppFonts.getSmallFontSize(context),
+                  //height: 1.0,
                 ),
               ),
             ),

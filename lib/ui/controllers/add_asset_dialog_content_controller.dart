@@ -96,6 +96,7 @@ class AddAssetDialogContentController {
   }
 
   bool validateAddPersonalAssetInfo() {
+    
     return addPersonalAssetOptionList.length > 0;
   }
 

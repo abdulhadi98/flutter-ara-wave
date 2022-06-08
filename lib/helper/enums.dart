@@ -18,7 +18,7 @@ enum AddingPersonalAssetStages { TYPE, INFO, IMAGES }
 enum AddingPrivateAssetType { ADD_ASSET_MANUALLY, ADD_SUBSCRIBED_COMPANY }
 enum AddingPrivateAssetStep { COMPANY, COMPANY_INFO, COMPANY_SHARES, PRICE_HISTORY }
 enum NewsType { WORLD, MY_ASSETS, }
-enum AddPersonalAssetHoldingTypeOptionType { choose, text, date, document }
+enum AddPersonalAssetHoldingTypeOptionType { choose, text, date, document,number,money }
 enum AddPersonalAssetChooseStepType { optionValues, steps }
 enum PublicAssetHistoricalDataRanges {
   minute,

@@ -100,11 +100,12 @@ class _AddPersonalAssetTextStepWidgetState
 
           //add this value (id: 63,type:'text',value:'empty', ),
           //  / uiController.validateAddPersonalAssetInfo(addList)
-          print(widget.options[index].id.toString() +
-              '  ' +
-              widget.options[index].type);
+          // print(widget.options[index].id.toString() +
+          //     '  ' +
+          //     widget.options[index].type);
           return Container(); // this for UI
         }
+        //  print(widget.options[index].name + '   ' + widget.options[index].type);
         return buildGridItem(widget.options[index]);
         // return Container();
       },
@@ -112,10 +113,18 @@ class _AddPersonalAssetTextStepWidgetState
   }
 
   Widget buildGridItem(PersonalAssetTypeOptionModel option) {
+    print(option.name + '    ' + option.id.toString() + option.type.toString());
     switch (option.typeEnum) {
       case AddPersonalAssetHoldingTypeOptionType.text:
-        print(option.name + '    ' + option.id.toString());
-        return buildTextFieldGridItem(option);
+        return buildTextFieldGridItem(option, TextInputType.text,
+            AddPersonalAssetHoldingTypeOptionType.text);
+      case AddPersonalAssetHoldingTypeOptionType.number:
+        return buildTextFieldGridItem(option, TextInputType.number,
+            AddPersonalAssetHoldingTypeOptionType.number);
+
+      case AddPersonalAssetHoldingTypeOptionType.money:
+        return buildTextFieldGridItem(option, TextInputType.number,
+            AddPersonalAssetHoldingTypeOptionType.money);
 
       case AddPersonalAssetHoldingTypeOptionType.date:
         return buildDateGridItemWidget(option);
@@ -125,14 +134,24 @@ class _AddPersonalAssetTextStepWidgetState
     }
   }
 
-  Widget buildTextFieldGridItem(PersonalAssetTypeOptionModel option) {
+  // Map<int, TextEditingController> listOfController = {};
+
+  TextEditingController c = TextEditingController(text: '');
+  Widget buildTextFieldGridItem(PersonalAssetTypeOptionModel option, type,
+      AddPersonalAssetHoldingTypeOptionType optionType) {
     return AddAssetTextField(
+        // controller: c,
+        optioType: option.type,
+        keyboardType: type,
+        //  keyboardType: TextInputType.text,
         // key: UniqueKey(),
         hintKey: option.name,
         onChanged: (value) {
+          //    print('asdasddasdasdlkjad;jasdlsajdlasdlivulsdvulasvdlus');
+          // print(c.text + '11221');
           uiController.onInputChanged(
-            value,
-            AddPersonalAssetHoldingTypeOptionType.text,
+            value.toString().replaceAll(',', ''),
+            optionType,
             option.id,
           );
         });
@@ -142,6 +161,7 @@ class _AddPersonalAssetTextStepWidgetState
     return DatePickerPlaceholderWidget(
       // key: UniqueKey(),
       hint: option.name,
+
       onDatedPicked: (date) => uiController.onInputChanged(
         date,
         AddPersonalAssetHoldingTypeOptionType.date,

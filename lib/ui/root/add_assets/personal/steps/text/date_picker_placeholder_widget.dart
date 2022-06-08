@@ -15,15 +15,18 @@ class DatePickerPlaceholderWidget extends BaseStateFullWidget {
   }) : super(key: key);
 
   @override
-  BaseStateFullWidgetState<DatePickerPlaceholderWidget> createState() => _DatePickerPlaceholderWidgetState();
+  BaseStateFullWidgetState<DatePickerPlaceholderWidget> createState() =>
+      _DatePickerPlaceholderWidgetState();
 }
 
-class _DatePickerPlaceholderWidgetState extends BaseStateFullWidgetState<DatePickerPlaceholderWidget> {
-
-  final BehaviorSubject<DateTime?> _purchaseDateController = BehaviorSubject<DateTime?>();
+class _DatePickerPlaceholderWidgetState
+    extends BaseStateFullWidgetState<DatePickerPlaceholderWidget> {
+  final BehaviorSubject<DateTime?> _purchaseDateController =
+      BehaviorSubject<DateTime?>();
   get purchaseDateStream => _purchaseDateController.stream;
   DateTime? getPurchaseDate() => _purchaseDateController.valueOrNull;
-  setPurchaseDate(DateTime? dateTime) => _purchaseDateController.sink.add(dateTime);
+  setPurchaseDate(DateTime? dateTime) =>
+      _purchaseDateController.sink.add(dateTime);
 
   @override
   void dispose() {
@@ -43,11 +46,13 @@ class _DatePickerPlaceholderWidgetState extends BaseStateFullWidgetState<DatePic
                 context: context,
                 locale: appLocal.locale,
               );
-              if(pickedDateTime!=null) widget.onDatedPicked(pickedDateTime.toString().substring(0, 10));
+              if (pickedDateTime != null)
+                widget
+                    .onDatedPicked(pickedDateTime.toString().substring(0, 10));
               setPurchaseDate(pickedDateTime);
             },
             child: Container(
-              height: height* .07,
+              height: height * .07,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: AppColors.mainColor,
@@ -58,15 +63,17 @@ class _DatePickerPlaceholderWidgetState extends BaseStateFullWidgetState<DatePic
                     ? widget.hint
                     : dateTimeSnapshot.data.toString().substring(0, 10),
                 style: TextStyle(
-                  color: dateTimeSnapshot.data!=null ? Colors.white : Colors.white.withOpacity(.25),
-                  fontSize: AppFonts.getSmallFontSize(context),
+                  color: dateTimeSnapshot.data != null
+                      ? Colors.white
+                      : Colors.white.withOpacity(.25),
+                  //fontSize: AppFonts.getSmallFontSize(context),
+                  fontSize: AppFonts.getXSmallFontSize(context),
                   height: 1.0,
                 ),
                 textAlign: TextAlign.center,
               ),
             ),
           );
-        }
-    );
+        });
   }
 }

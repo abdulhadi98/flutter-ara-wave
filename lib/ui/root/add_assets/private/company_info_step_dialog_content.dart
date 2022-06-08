@@ -48,15 +48,21 @@ class _CompanyInfoStepDialogContentState
       children: [
         SizedBox(height: height * .03),
         AddAssetsDialogTextField(
+          isMoney: false,
+          isNumber: false,
           enabled: widget.initialCompanyName == null,
           controller: uiController.companyNameTextEditingController,
           keyboardType: TextInputType.text,
           hint: appLocal.trans('name_of_company'),
           height: height * .070,
-          onChanged: uiController.onCompanyNameTextFieldChanged,
+          onChanged: (val) {
+            uiController.onCompanyNameTextFieldChanged(val);
+          },
         ),
         SizedBox(height: height * .03),
         AddAssetsDialogTextField(
+          isMoney: false,
+          isNumber: false,
           controller: uiController.headquarterCityTextEditingController,
           keyboardType: TextInputType.text,
           hint: appLocal.trans('headquarter_city'),
@@ -65,6 +71,8 @@ class _CompanyInfoStepDialogContentState
         ),
         SizedBox(height: height * .03),
         AddAssetsDialogTextField(
+          isMoney: false,
+          isNumber: false,
           controller: uiController.countryTextEditingController,
           keyboardType: TextInputType.text,
           hint: 'Country',

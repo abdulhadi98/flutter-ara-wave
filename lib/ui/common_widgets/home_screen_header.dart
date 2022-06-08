@@ -42,8 +42,8 @@ Widget buildHeaderComponents({
             Container(
               width: width * .263,
               alignment: Alignment.center,
-              padding: EdgeInsets.symmetric(
-                  vertical: height * 0.02, horizontal: width * .020),
+              // padding: EdgeInsets.symmetric(
+              //     vertical: height * 0.02, horizontal: width * .020),
               decoration: BoxDecoration(
                 color: AppColors.mainColor,
                 borderRadius: BorderRadius.circular(8),

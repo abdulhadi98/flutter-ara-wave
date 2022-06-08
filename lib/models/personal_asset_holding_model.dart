@@ -22,6 +22,7 @@ class PersonalAssetHoldingListModel {
 class PersonalAssetHoldingModel {
   PersonalAssetHoldingModel({
     required this.id,
+    required this.marketValue,
     required this.userId,
     required this.personalAssetTypeId,
     required this.title,
@@ -33,6 +34,9 @@ class PersonalAssetHoldingModel {
     this.personalAssetPhotos,
   });
   String? subType;
+
+  String marketValue;
+
   int id;
   int userId;
   int personalAssetTypeId;
@@ -46,6 +50,9 @@ class PersonalAssetHoldingModel {
   factory PersonalAssetHoldingModel.fromJson(Map<String, dynamic> json) =>
       PersonalAssetHoldingModel(
         id: json["id"] == null ? null : json["id"],
+        marketValue: json["market_value"].toString() == null
+            ? null
+            : json["market_value"],
         userId: json["user_id"] == null ? null : json["user_id"],
         personalAssetTypeId: json["personal_asset_type_id"] == null
             ? null
@@ -68,6 +75,7 @@ class PersonalAssetHoldingModel {
         "sub_type": subType == null ? null : subType,
         "id": id == null ? null : id,
         "user_id": userId == null ? null : userId,
+        "market_value": marketValue == null ? null : marketValue,
         "personal_asset_type_id":
             personalAssetTypeId == null ? null : personalAssetTypeId,
         "title": title == null ? null : title,

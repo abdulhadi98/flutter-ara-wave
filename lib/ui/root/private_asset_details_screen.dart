@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:intl/intl.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +21,8 @@ import 'package:wave_flutter/ui/common_widgets/home_screen_header.dart';
 import 'package:http/http.dart' as http;
 import 'package:wave_flutter/ui/root/holdings_screen.dart';
 import 'package:wave_flutter/ui/root/home_screen.dart';
+
+import '../../helper/utils.dart';
 
 class PrivateAssetDetailsScreen extends BaseStateFullWidget {
   final PrivateAssetModel assetModel;
@@ -107,7 +109,7 @@ class _PrivateAssetDetailsScreenState
       DateTime acquisitionDate = DateTime.parse(t);
       print('$acquisitionDate' + '');
 
-      int growth = element['price'];
+      int growth = element['price'].toInt();
       // int intGrowth = growth.toInt();
       // print('$growth' + 'aloalo');
       // if (growth == 0) growth = 0.01;
@@ -123,7 +125,14 @@ class _PrivateAssetDetailsScreenState
 
   Widget protfolioWidget() {
     return Container(
-      height: height * .22,
+      width: double.infinity,
+      // height: height* .40,
+      padding: EdgeInsets.symmetric(vertical: height * .01),
+      decoration: BoxDecoration(
+        color: AppColors.mainColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      height: height * .24,
       child: SfCartesianChart(
         // primaryXAxis: DateTimeAxis(),
         // margin: EdgeInsets.symmetric(horizontal: width* .025, vertical: height* .025),
@@ -169,7 +178,8 @@ class _PrivateAssetDetailsScreenState
         //     visibleMinimum: chartData[chartData.length-chartData.length~/2].year,
         //     visibleMaximum: chartData[chartData.length-chartData.length~/2].year,
         // ),
-        primaryXAxis: DateTimeAxis(
+               margin: EdgeInsets.only(right: width * 0.04, top: width * 0.01),
+primaryXAxis: DateTimeAxis(
           // // intervalType: _getChartIntervalType(filter),
           // visibleMinimum: chartData.length > 1
           //     ? chartData[chartData.length - (chartData.length ~/ 2)].x
@@ -180,12 +190,15 @@ class _PrivateAssetDetailsScreenState
             width: 0.0,
           ),
           tickPosition: TickPosition.outside,
+          labelAlignment: LabelAlignment.center,
+
           majorTickLines: MajorTickLines(width: 0),
           autoScrollingMode: AutoScrollingMode.end,
         ),
         primaryYAxis: NumericAxis(
           edgeLabelPlacement: EdgeLabelPlacement.shift,
-          labelFormat: '\${value}',
+          labelFormat: '{value}',
+          numberFormat: NumberFormat.compactSimpleCurrency(),
           // numberFormat: NumberFormat.simpleCurrency(decimalDigits: 0),
           majorGridLines: MajorGridLines(width: .03),
           axisLine: AxisLine(
@@ -329,9 +342,8 @@ class _PrivateAssetDetailsScreenState
                 Row(
                   children: [
                     ChartInfoCardItem(
-                      title: appLocal.trans('purchased_price'),
-                      value:
-                          "\$${double.parse(purchasePrice).toStringAsFixed(3).toString()}",
+                      title: 'Purchased Price', //translate
+                      value: "\$${Utils.getFormattedStrNum(purchasePrice)}",
                       //   bottomLabel: appLocal.trans('average_cost')
                     ),
                     SizedBox(
@@ -339,8 +351,7 @@ class _PrivateAssetDetailsScreenState
                     ),
                     ChartInfoCardItem(
                       title: appLocal.trans('market_price'),
-                      value:
-                          "\$${double.parse(marketValue).toStringAsFixed(2).toString()}",
+                      value: "\$${Utils.getFormattedStrNum(marketValue)}",
                       //   bottomLabel: appLocal.trans('current_share_price'),
                     ),
                     SizedBox(
@@ -348,9 +359,9 @@ class _PrivateAssetDetailsScreenState
                     ),
                     ChartInfoCardItem(
                       title: appLocal.trans('Profit %'),
-                      value:
-                          '\$${double.parse(profitPercentage.substring(0, profitPercentage.length - 1)).toStringAsFixed(2).toString()}',
-                      //   bottomLabel: widget.assetModel.assetGrowth ?? '312'),
+                      value: Utils.getFormattedStrNum(profitPercentage
+                              .substring(0, profitPercentage.length - 1)) +
+                          '%', //   bottomLabel: widget.assetModel.assetGrowth ?? '312'),
                     )
                   ],
                 ),
@@ -367,33 +378,40 @@ class _PrivateAssetDetailsScreenState
                       borderRadius: BorderRadius.circular(8)),
                   child: Column(
                     children: [
-                      rowInfo('Shares Owned', quantity),
+                      rowInfo(
+                          'Shares Owned', Utils.getFormattedStrNum(quantity)),
                       Divider(
                         color: AppColors.black.withOpacity(0.6),
                         thickness: 1.5,
                         height: 10,
                       ),
                       rowInfo('Total Amount Invested',
-                          "\$${double.parse(purchasePrice).toStringAsFixed(3).toString()}"),
-                      Divider(
-                        color: AppColors.black.withOpacity(0.6),
-                        thickness: 1.5,
-                        height: 10,
-                      ),
-                      rowInfo('Return On Investment (ROI)', rOI),
+                          "\$${Utils.getFormattedStrNum(purchasePrice)}"),
                       Divider(
                         color: AppColors.black.withOpacity(0.6),
                         thickness: 1.5,
                         height: 10,
                       ),
                       rowInfo(
-                          'Market Capitalization', '\$ $marketCapitaliztion'),
+                        'Return On Investment (ROI)',
+                        Utils.getFormattedStrNum(profitPercentage.substring(
+                                0, profitPercentage.length - 1)) +
+                            '%',
+                      ),
                       Divider(
                         color: AppColors.black.withOpacity(0.6),
                         thickness: 1.5,
                         height: 10,
                       ),
-                      rowInfo('Shares Outstanding', sharesOutstanding),
+                      rowInfo('Market Capitalization',
+                          '\$ ${Utils.getFormattedStrNum(marketCapitaliztion)}'),
+                      Divider(
+                        color: AppColors.black.withOpacity(0.6),
+                        thickness: 1.5,
+                        height: 10,
+                      ),
+                      rowInfo('Shares Outstanding',
+                          Utils.getFormattedStrNum(sharesOutstanding)),
                       Divider(
                         color: AppColors.black.withOpacity(0.6),
                         thickness: 1.5,
@@ -498,13 +516,9 @@ class _PrivateAssetDetailsScreenState
       addEditTitleKey: 'edit_asset',
       onAddEditClick: () {},
       totalTextKey: 'estimated_total_asset_equity',
-      netWorth: double.parse(totalBalance.substring(0, totalBalance.length - 1))
-          .toStringAsFixed(2)
-          .toString(),
-      growth: double.parse(
-                  profitPercentage.substring(0, profitPercentage.length - 1))
-              .toStringAsFixed(2)
-              .toString() +
+      netWorth: '${Utils.getFormattedStrNum(totalBalance)}',
+      growth: Utils.getFormattedStrNum(
+              profitPercentage.substring(0, profitPercentage.length - 1)) +
           '%',
     );
   }

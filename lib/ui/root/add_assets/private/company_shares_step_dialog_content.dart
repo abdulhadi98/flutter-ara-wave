@@ -4,12 +4,15 @@ import 'package:wave_flutter/di/company_info_step_dialog_content_di.dart';
 import 'package:wave_flutter/di/company_shares_step_dialog_content_di.dart';
 import 'package:wave_flutter/helper/app_colors.dart';
 import 'package:wave_flutter/helper/app_fonts.dart';
+import 'package:wave_flutter/helper/utils.dart';
 import 'package:wave_flutter/models/company_info_step_model.dart';
 import 'package:wave_flutter/models/company_shares_step_model.dart';
 import 'package:wave_flutter/ui/common_widgets/base_statefull_widget.dart';
 import 'package:wave_flutter/ui/common_widgets/show_date_picker.dart';
 import '../add_asset_action_button.dart';
 import '../add_assets_dialog_text_field.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:intl/intl.dart';
 
 class CompanySharesStepDialogContent extends BaseStateFullWidget {
   final ValueStream<bool>? loadingStream;
@@ -41,19 +44,46 @@ class _CompanySharesStepDialogContentState
     return buildScreenContent();
   }
 
+  String formattedNum(String s) {
+    return Utils.getFormattedStrNum(s);
+  }
+
+  TextEditingController investCont = TextEditingController(text: '');
+  FocusNode fn = FocusNode();
   Widget buildScreenContent() {
     return Column(
       children: [
         SizedBox(height: height * .03),
         AddAssetsDialogTextField(
+          isMoney: true,
+          isNumber: false,
           controller: uiController.investmentCapitalTextEditingController,
           keyboardType: TextInputType.number,
           hint: appLocal.trans('investment_capital'),
           height: height * .070,
-          onChanged: uiController.onInvestmentCapitalTextFieldChanged,
+          // inputFormatters: [
+          //   FilteringTextInputFormatter.allow(RegExp('[a-zA-Z]')),
+          // ],
+
+          onChanged: uiController.onInvestmentCapitalTextFieldChanged
+          // var price = int.parse(val.replaceAll(',', ''));
+          // var comma = NumberFormat('###,###,###,###');
+          // investCont.text =
+          //     comma.format(price).replaceAll(' ', '');
+          // //     textEditingController.selection=TextSelection(baseOffset: )
+          // //   val = formattedNum(val);
+          // // if (val.length > 3)
+
+          // // FocusScope.of(context).requestFocus(fn);
+
+          // //   print(uiController.investmentCapitalTextEditingController.text);
+          // uiController.onInvestmentCapitalTextFieldChanged(val);
+          ,
         ),
         SizedBox(height: height * .03),
         AddAssetsDialogTextField(
+          isMoney: false,
+          isNumber: true,
           controller: uiController.sharedPurchasesTextEditingController,
           keyboardType: TextInputType.number,
           hint: '# ${appLocal.trans('shares_purchased')}',
@@ -69,6 +99,8 @@ class _CompanySharesStepDialogContentState
         //     onChanged: uiController.onPurchasedPriceTextFieldChanged),
         SizedBox(height: height * .03),
         AddAssetsDialogTextField(
+          isMoney: false,
+          isNumber: false,
           controller: uiController.sharesClassTextEditingController,
           keyboardType: TextInputType.text,
           hint: appLocal.trans('share_class'),
@@ -77,6 +109,8 @@ class _CompanySharesStepDialogContentState
         ),
         SizedBox(height: height * .03),
         AddAssetsDialogTextField(
+          isMoney: false,
+          isNumber: true,
           controller:
               uiController.companySharesOutstandingTextEditingController,
           keyboardType: TextInputType.number,
@@ -86,13 +120,15 @@ class _CompanySharesStepDialogContentState
         ),
         SizedBox(height: height * .03),
         AddAssetsDialogTextField(
+          isMoney: true,
+          isNumber: false,
           controller: uiController.marketValueTextEditingController,
           keyboardType: TextInputType.number,
           hint: appLocal.trans('current_market_value'),
           height: height * .070,
           onChanged: uiController.onMarketValueTextFieldChanged,
         ),
-        SizedBox(height: height * .06),
+        SizedBox(height: height * .034),
         AddAssetActionButton(
           loadingStream: widget.loadingStream,
           validationStream: uiController.validationStream,

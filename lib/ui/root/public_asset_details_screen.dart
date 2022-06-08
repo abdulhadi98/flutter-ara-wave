@@ -9,6 +9,7 @@ import 'package:wave_flutter/di/private_asset_setails_screen_di.dart';
 import 'package:wave_flutter/helper/app_colors.dart';
 import 'package:wave_flutter/helper/app_fonts.dart';
 import 'package:wave_flutter/helper/enums.dart';
+import 'package:wave_flutter/helper/utils.dart';
 import 'package:wave_flutter/models/private_asset_model.dart';
 import 'package:wave_flutter/services/data_resource.dart';
 import 'package:wave_flutter/ui/common_widgets/base_statefull_widget.dart';
@@ -317,9 +318,8 @@ class _PublicAssetDetailsScreenState
                 Row(
                   children: [
                     ChartInfoCardItem(
-                      title: appLocal.trans('purchased_price'),
-                      value:
-                          "\$${double.parse(purchasePrice).toStringAsFixed(3).toString()}",
+                      title: 'Purchased Price', //translate
+                      value: "\$${Utils.getFormattedStrNum(purchasePrice)}",
                       //   bottomLabel: appLocal.trans('average_cost')
                     ),
                     SizedBox(
@@ -327,8 +327,7 @@ class _PublicAssetDetailsScreenState
                     ),
                     ChartInfoCardItem(
                       title: appLocal.trans('Market Value'),
-                      value:
-                          "\$${double.parse(marketValue).toStringAsFixed(2).toString()}",
+                      value: "\$${Utils.getFormattedStrNum(marketValue)}",
                       //   bottomLabel: appLocal.trans('current_share_price'),
                     ),
                     SizedBox(
@@ -337,7 +336,7 @@ class _PublicAssetDetailsScreenState
                     ChartInfoCardItem(
                       title: appLocal.trans('Profit'),
                       value:
-                          '\$${double.parse(profitPercentage.substring(0, profitPercentage.length - 1)).toStringAsFixed(2).toString()}',
+                          '\$${Utils.getFormattedStrNum(profitPercentage.substring(0, profitPercentage.length - 1))}',
                       //   bottomLabel: widget.assetModel.assetGrowth ?? '312'),
                     )
                   ],
@@ -355,33 +354,40 @@ class _PublicAssetDetailsScreenState
                       borderRadius: BorderRadius.circular(8)),
                   child: Column(
                     children: [
-                      rowInfo('Shares Owned', quantity),
+                      rowInfo(
+                          'Shares Owned', Utils.getFormattedStrNum(quantity)),
                       Divider(
                         color: AppColors.black.withOpacity(0.6),
                         thickness: 1.5,
                         height: 10,
                       ),
                       rowInfo('Total Amount Invested',
-                          "\$${double.parse(purchasePrice).toStringAsFixed(3).toString()}"),
-                      Divider(
-                        color: AppColors.black.withOpacity(0.6),
-                        thickness: 1.5,
-                        height: 10,
-                      ),
-                      rowInfo('Return On Investment (ROI)', profitPercentage),
+                          "\$${Utils.getFormattedStrNum(purchasePrice)}"),
                       Divider(
                         color: AppColors.black.withOpacity(0.6),
                         thickness: 1.5,
                         height: 10,
                       ),
                       rowInfo(
-                          'Market Capitalization', '\$ $marketCapitaliztion'),
+                        'Return On Investment (ROI)',
+                        Utils.getFormattedStrNum(profitPercentage.substring(
+                                0, profitPercentage.length - 1)) +
+                            '%',
+                      ),
                       Divider(
                         color: AppColors.black.withOpacity(0.6),
                         thickness: 1.5,
                         height: 10,
                       ),
-                      rowInfo('Shares Outstanding', sharesOutstanding),
+                      rowInfo('Market Capitalization',
+                          '\$ ${Utils.getFormattedStrNum(marketCapitaliztion)}'),
+                      Divider(
+                        color: AppColors.black.withOpacity(0.6),
+                        thickness: 1.5,
+                        height: 10,
+                      ),
+                      rowInfo('Shares Outstanding',
+                          Utils.getFormattedStrNum(sharesOutstanding)),
                       Divider(
                         color: AppColors.black.withOpacity(0.6),
                         thickness: 1.5,
@@ -550,12 +556,9 @@ class _PublicAssetDetailsScreenState
       addEditTitleKey: 'edit_asset',
       onAddEditClick: () {},
       totalTextKey: 'estimated_total_asset_equity',
-      netWorth:
-          '${double.parse(totalBalance).toStringAsFixed(2).toString()} ', //netWorth from api
-      growth: double.parse(
-                  profitPercentage.substring(0, profitPercentage.length - 1))
-              .toStringAsFixed(2)
-              .toString() +
+      netWorth: '${Utils.getFormattedStrNum(totalBalance)}', //netWorth from api
+      growth: Utils.getFormattedStrNum(
+              profitPercentage.substring(0, profitPercentage.length - 1)) +
           '%',
     );
   }

@@ -134,12 +134,14 @@ class _PersonalAssetDetailsScreenState
     photos.forEach((element) {
       var link = element['link'].toString();
       if (link != 'null')
-        personalAssetPhotos.add(PersonalAssetPhotos(
-            id: element['id'],
-            createdAt: DateTime.parse(element['created_at']),
-            updatedAt: DateTime.parse(element['updated_at']),
-            link: 'images/personal_assets/' + link.split('/').last.toString(),
-            personalAssetId: element['personal_asset_id']));
+        personalAssetPhotos.add(
+          PersonalAssetPhotos(
+              id: element['id'],
+              createdAt: DateTime.parse(element['created_at']),
+              updatedAt: DateTime.parse(element['updated_at']),
+              link: 'images/personal_assets/' + link.split('/').last.toString(),
+              personalAssetId: element['personal_asset_id']),
+        );
 
       print('images/personal_assets/' + link.split('/').last.toString());
       // .split('/')
@@ -196,15 +198,37 @@ class _PersonalAssetDetailsScreenState
             key == 'Interest Rate' ||
             key == 'Amortization' ||
             key == 'Monthly Payment')
-          loadRowList.add(rowInfo(key, value.toString()));
+          loadRowList
+              .add(rowInfo(key, Utils.getFormattedStrNum(value.toString())));
         else if (key == 'Lot Size' || key == 'Address' || key == 'Year Built')
           propertyRowLis.add(rowInfo(key, value.toString()));
+        else if (key == 'Lot Size')
+          propertyRowLis
+              .add(rowInfo(key, Utils.getFormattedStrNum(value.toString())));
         else
-          rowInforList.add(rowInfo(key, value.toString()));
+          details.forEach((key, value) {
+            value = double.tryParse(value.toString()) ?? value.toString();
+            print(value.toString() + '   ' + value.runtimeType.toString());
+            if (value.runtimeType == double) {
+              rowInforList.add(rowInfo(key, Utils.getFormattedStrNum(value)));
+            } else {
+              rowInforList.add(rowInfo(key, value));
+            }
+          });
       });
     } else
       details.forEach((key, value) {
-        rowInforList.add(rowInfo(key, value.toString()));
+        if (key != 'Year')
+          value = double.tryParse(value.toString()) ?? value.toString();
+        print(value.toString() + '   ' + value.runtimeType.toString());
+        if (value.runtimeType == double) {
+          print('dounle');
+          rowInforList.add(rowInfo(key, Utils.getFormattedStrNum(value)));
+        } else {
+          print('nodounle');
+
+          rowInforList.add(rowInfo(key, value.toString()));
+        }
       });
     print(details.length);
 
@@ -256,9 +280,10 @@ class _PersonalAssetDetailsScreenState
                                   borderRadius: BorderRadius.circular(8)),
                               child: Column(
                                 children: [
-                                  rowInfo('Purchase Price', purchasePrice),
-                                  rowInfo(
-                                      'Estimated Resale Value', totalBalance),
+                                  rowInfo('Purchase Price',
+                                      Utils.getFormattedStrNum(purchasePrice)),
+                                  rowInfo('Estimated Resale Value',
+                                      Utils.getFormattedStrNum(totalBalance)),
                                   rowInfo('Date of Purchase', created_at),
                                 ],
                               ),
@@ -556,7 +581,7 @@ class _PersonalAssetDetailsScreenState
                   // widget.assetModel.type == 'Collectables' ? widget.assetModel.collection??'':
                   headQuarterCity,
                   style: TextStyle(
-                    fontSize: AppFonts.getMediumFontSize(context),
+                    fontSize: AppFonts.getXSmallFontSize(context),
                     color: Colors.white,
                     height: 1.0,
                   ),
@@ -596,7 +621,7 @@ class _PersonalAssetDetailsScreenState
           // if(widget.assetModel.type == 'Collectables') SizedBox(width: width* .02),
         ],
       ),
-      netWorth: double.parse(totalBalance).toStringAsFixed(2).toString(),
+      netWorth: Utils.getFormattedStrNum(totalBalance),
       height: height,
       width: width,
       context: context,
@@ -606,7 +631,7 @@ class _PersonalAssetDetailsScreenState
       addEditIcon: 'assets/icons/ic_edit.svg',
       addEditTitleKey: 'edit_asset',
       onAddEditClick: () {
-        getAssetDetails();
+        // getAssetDetails();
       },
       totalTextKey: /*widget.assetModel.type == 'Collectables' ? 'estimated_asset_market_value' : */ 'estimated_total_asset_equity',
     );

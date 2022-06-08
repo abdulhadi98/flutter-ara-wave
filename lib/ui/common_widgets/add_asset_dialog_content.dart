@@ -633,6 +633,8 @@ class _AddAssetDialogContentState
     }
   }
 
+  TextEditingController c = TextEditingController(text: '1');
+
   Widget buildPersonalInfoGrid(List<PersonalAssetTypeOptionModel> options) {
     return GridView.builder(
       physics: NeverScrollableScrollPhysics(),
@@ -669,8 +671,14 @@ class _AddAssetDialogContentState
 
           case AddPersonalAssetHoldingTypeOptionType.text:
             return AddAssetTextField(
+              //  controller: c,
+                optioType: option.type,
+                keyboardType: option.type != 'text'
+                    ? TextInputType.number
+                    : TextInputType.text,
                 hintKey: option.name,
                 onChanged: (value) {
+                  //        print(value);
                   AddPersonalAssetOptionModel? repetedOption =
                       Utils.findItemById<AddPersonalAssetOptionModel?>(
                           uiController.addPersonalAssetOptionList, option.id);
@@ -850,6 +858,8 @@ class _AddAssetDialogContentState
           enabled: true,
           onChanged: (v) {
             if (v != null) {
+              print('zcxccxc');
+
               uiController.setValidateAddPersonalAssetInfo(
                   uiController.validateAddPersonalAssetInfo());
             }

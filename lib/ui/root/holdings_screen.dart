@@ -138,7 +138,14 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
 
   Widget protfolioWidget() {
     return Container(
-      height: height * .22,
+      width: double.infinity,
+      // height: height* .40,
+      padding: EdgeInsets.symmetric(vertical: height * .01),
+      decoration: BoxDecoration(
+        color: AppColors.mainColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      height: height * .247,
       child: SfCartesianChart(
         // primaryXAxis: DateTimeAxis(),
         // margin: EdgeInsets.symmetric(horizontal: width* .025, vertical: height* .025),
@@ -184,6 +191,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
         //     visibleMinimum: chartData[chartData.length-chartData.length~/2].year,
         //     visibleMaximum: chartData[chartData.length-chartData.length~/2].year,
         // ),
+        margin: EdgeInsets.only(right: width * 0.04, top: width * 0.01),
         primaryXAxis: DateTimeAxis(
           // // intervalType: _getChartIntervalType(filter),
           // visibleMinimum: chartData.length > 1
@@ -195,6 +203,8 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
             width: 0.0,
           ),
           tickPosition: TickPosition.outside,
+          labelAlignment: LabelAlignment.start,
+
           majorTickLines: MajorTickLines(width: 0),
           autoScrollingMode: AutoScrollingMode.end,
         ),
@@ -202,6 +212,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
           edgeLabelPlacement: EdgeLabelPlacement.shift,
           labelFormat: '{value}',
           // numberFormat: NumberFormat.simpleCurrency(decimalDigits: 0),
+          numberFormat: NumberFormat.compactSimpleCurrency(),
           majorGridLines: MajorGridLines(width: .03),
           axisLine: AxisLine(
             width: 0.0,
@@ -388,7 +399,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
               );
             case Status.SUCCESS:
               return Container(
-                height: height * .25,
+                //   height: height * .2,
                 child: ChartCardItem(
                   chartType: ChartsType.AREA,
                   filter: uiController.chartFilter,
@@ -664,7 +675,9 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                   ),
                 ),
                 Text(
-                  holdingModel.purchasedPrice ?? '',
+                  Utils.getFormattedStrNum(
+                    holdingModel.marketValue,
+                  ),
                   style: TextStyle(
                     fontSize: AppFonts.getNormalFontSize(context),
                     color: Colors.white,
@@ -717,7 +730,8 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                   SizedBox(width: width * .02),
                 if (holdingModel.purchasedPrice != null)
                   Text(
-                    holdingModel.purchasedPrice ?? '',
+                    Utils.getFormattedStrNum(holdingModel.purchasedPrice),
+                    //    holdingModel.purchasedPrice ?? '',
                     style: TextStyle(
                       fontSize: AppFonts.getSmallFontSize(context),
                       color: AppColors.blue,
@@ -886,8 +900,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
             country: item.asset.stockSymbol ?? '',
             city: item.stockEx ?? '',
             quantity: item.quantity.toString(),
-            purchasedPrice:
-                double.parse(item.purchasedPrice).toStringAsFixed(2).toString(),
+            purchasedPrice: double.parse(item.purchasedPrice).toString(),
             onClick: () {
               HoldingsScreen.assetId = item.id;
 
@@ -934,10 +947,10 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                   ),
                 ),
                 Text(
-                  //privateValue
-                  Utils.getFormattedNum(
-                      double.parse(purchasedPrice.toString()) *
-                          int.parse(quantity.toString())),
+                  Utils.getFormattedStrNum(
+                          double.parse(purchasedPrice.toString()) *
+                              int.parse(quantity.toString()))
+                      .toString(),
                   style: TextStyle(
                     fontSize: AppFonts.getNormalFontSize(context),
                     color: Colors.white,
@@ -986,7 +999,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                   ),
                 Spacer(),
                 Text(
-                  quantity,
+                  Utils.getFormattedStrNum(quantity),
                   style: TextStyle(
                     fontSize: AppFonts.getMediumFontSize(context),
                     color: AppColors.blue,
@@ -1000,7 +1013,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                     color: AppColors.blue),
                 SizedBox(width: width * .02),
                 Text(
-                  '\$' + purchasedPrice,
+                  '\$' + Utils.getFormattedStrNum(purchasedPrice),
                   style: TextStyle(
                     fontSize: AppFonts.getSmallFontSize(context),
                     color: AppColors.blue,

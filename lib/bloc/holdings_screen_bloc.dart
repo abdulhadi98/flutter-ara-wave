@@ -259,6 +259,7 @@ class HoldingsScreenBloc {
         dynamic id = element['id'] ?? '';
         dynamic userID = element['user_id'] ?? '';
         dynamic subType = element['sub_type'] ?? '';
+        dynamic marketValue = element['market_value'].toString();
 
         dynamic personalAssetTypeId = element['personal_asset_type_id'] ?? '';
         dynamic title = element['title'] ?? null;
@@ -300,6 +301,7 @@ class HoldingsScreenBloc {
         // ];
 
         holdings.add(PersonalAssetHoldingModel(
+          marketValue: marketValue,
           subType: subType,
           id: id,
           userId: userID,

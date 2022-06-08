@@ -45,11 +45,17 @@ class AddPrivateSubscribedCompanyDialogContentController
       headquarterCity: companyInfo!.headquarterCity, //
       country: companyInfo!.country, //
       purchasedAt: companyInfo!.initialInvestmentYear.toString() + '-01-01', //
-      investedCapital: companySharesStep!.investmentCapital, //
+      investedCapital: companySharesStep!.investmentCapital
+          .toString()
+          .replaceAll(',', ''), //
       purchasedPrice: '', //
       shareClass: companySharesStep!.sharesClass, //
-      companySharesOutstanding: companySharesStep!.companySharesOutstanding, //
-      quantity: int.parse(companySharesStep!.sharesPurchased), // TODO
+      companySharesOutstanding: companySharesStep!.companySharesOutstanding
+          .toString()
+          .replaceAll(',', ''), //
+      quantity: int.parse(companySharesStep!.sharesPurchased
+          .toString()
+          .replaceAll(',', '')), // TODO
       source: 'test', //TODO
     );
   }

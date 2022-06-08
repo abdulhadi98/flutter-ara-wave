@@ -22,6 +22,7 @@ class _SplashScreenState extends BaseStateFullWidgetState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('splash');
     super.build(context);
     return Scaffold(
       backgroundColor: Colors.black,

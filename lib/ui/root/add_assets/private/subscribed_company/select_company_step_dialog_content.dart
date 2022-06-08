@@ -57,6 +57,8 @@ class _SelectCompanyStepDialogContentState
         ),
         SizedBox(height: height * .03),
         AddAssetsDialogTextField(
+          isMoney: false,
+          isNumber: false,
           controller: uiController.shareholderPasscodeTextEditingController,
           keyboardType: TextInputType.number,
           hint: 'XXX-XXX-XXX',

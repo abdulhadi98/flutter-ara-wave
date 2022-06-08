@@ -9,21 +9,28 @@ import 'package:wave_flutter/models/price_history_step_model.dart';
 class PriceHistoryStepDialogContentController {
   final PriceHistoryBloc _priceHistoryBloc;
   final Map<String, dynamic> _addPriceHistoryParams;
-  PriceHistoryStepDialogContentController({required priceHistoryBloc, required addPriceHistoryParams,})
-      : _priceHistoryBloc = priceHistoryBloc, _addPriceHistoryParams = addPriceHistoryParams;
+  PriceHistoryStepDialogContentController({
+    required priceHistoryBloc,
+    required addPriceHistoryParams,
+  })  : _priceHistoryBloc = priceHistoryBloc,
+        _addPriceHistoryParams = addPriceHistoryParams;
 
-  final BehaviorSubject<bool> _loadingController = BehaviorSubject.seeded(false);
+  final BehaviorSubject<bool> _loadingController =
+      BehaviorSubject.seeded(false);
   get loadingStream => _loadingController.stream;
   bool getLoadingState() => _loadingController.value;
   setLoadingState(bool state) => _loadingController.sink.add(state);
 
-  TextEditingController currentMarketValueTextEditingController = TextEditingController();
+  TextEditingController currentMarketValueTextEditingController =
+      TextEditingController();
 
-  initYearPriceList({required int initialInvestmentYear,}) {
+  initYearPriceList({
+    required int initialInvestmentYear,
+  }) {
     int currentYear = DateTime.now().year;
     int yearDifference = currentYear - initialInvestmentYear;
 
-    for(int i = 0; i <= yearDifference; i++) {
+    for (int i = 0; i <= yearDifference; i++) {
       int year = initialInvestmentYear + i;
       YearPrice yearPrice = YearPrice(
         year: year.toString(),
@@ -33,7 +40,8 @@ class PriceHistoryStepDialogContentController {
   }
 
   initCurrentMarketValue(String currentMarketValue) {
-    yearPriceList[yearPriceList.length- 1].price = currentMarketValue;
+    yearPriceList[yearPriceList.length - 1].price =
+        currentMarketValue.replaceAll(',', '');
     currentMarketValueTextEditingController.text = currentMarketValue;
     _validateInputs();
   }
@@ -45,7 +53,7 @@ class PriceHistoryStepDialogContentController {
   }
 
   onPriceValueTextFieldChanged(String value, int index) {
-    yearPriceList[index].price = value;
+    yearPriceList[index].price = value.replaceAll(',', '');
     _validateInputs();
   }
 
@@ -57,7 +65,11 @@ class PriceHistoryStepDialogContentController {
     required PriceHistoryModel priceHistoryModel,
     required Function() onData,
     required Function(String message) onError,
-  }) => _priceHistoryBloc.addPriceHistory(priceHistoryModel: priceHistoryModel, onData: onData, onError: onError);
+  }) =>
+      _priceHistoryBloc.addPriceHistory(
+          priceHistoryModel: priceHistoryModel,
+          onData: onData,
+          onError: onError);
 
   onFinishButtonClicked({
     required BuildContext context,
@@ -73,7 +85,7 @@ class PriceHistoryStepDialogContentController {
 
   PriceHistoryModel createPriceHistoryModel() {
     return PriceHistoryModel(
-      apiToken: _priceHistoryBloc.currentUserApiToken??'',
+      apiToken: _priceHistoryBloc.currentUserApiToken ?? '',
       assetId: _addPriceHistoryParams['asset_id'],
       assetType: _addPriceHistoryParams['asset_type'],
       yearPrice: yearPriceList,
@@ -86,10 +98,11 @@ class PriceHistoryStepDialogContentController {
   }
 
   bool _validateYearPrice() {
-    return yearPriceList.every((element) => element.price?.isNotEmpty??false);
+    return yearPriceList.every((element) => element.price?.isNotEmpty ?? false);
   }
 
-  final BehaviorSubject<bool> _validationController = BehaviorSubject.seeded(false);
+  final BehaviorSubject<bool> _validationController =
+      BehaviorSubject.seeded(false);
   get validationStream => _validationController.stream;
   bool getValidationState() => _validationController.value;
   setValidationState(bool type) => _validationController.sink.add(type);

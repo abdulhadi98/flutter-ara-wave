@@ -32,12 +32,16 @@ class PriceHistoryStepDialogContent extends BaseStateFullWidget {
 class _PriceHistoryStepDialogContentState
     extends BaseStateFullWidgetState<PriceHistoryStepDialogContent>
     with PriceHistoryStepDialogContentDi {
-
   @override
   void initState() {
-    initScreenDi(assetId: widget.assetId, assetType: widget.assetType,);
+    initScreenDi(
+      assetId: widget.assetId,
+      assetType: widget.assetType,
+    );
     super.initState();
-    uiController.initYearPriceList(initialInvestmentYear: widget.initialInvestmentYear,);
+    uiController.initYearPriceList(
+      initialInvestmentYear: widget.initialInvestmentYear,
+    );
     uiController.initCurrentMarketValue(widget.currentMarketValue);
   }
 
@@ -53,15 +57,18 @@ class _PriceHistoryStepDialogContentState
         buildYearPriceComponent(),
         SizedBox(height: height * .03),
         AddAssetsDialogTextField(
+          isMoney: true,
           enabled: false,
           controller: uiController.currentMarketValueTextEditingController,
           keyboardType: TextInputType.number,
           hint: appLocal.trans('current_market_value'),
-          onChanged: (value) => uiController.onPriceValueTextFieldChanged(value, uiController.yearPriceList.length -1),
-          height: height* .07,
+          onChanged: (value) => uiController.onPriceValueTextFieldChanged(
+              value, uiController.yearPriceList.length - 1),
+          height: height * .07,
         ),
         SizedBox(height: height * .06),
         AddAssetActionButton(
+          
           loadingStream: uiController.loadingStream,
           validationStream: uiController.validationStream,
           titleKey: 'finished',
@@ -79,10 +86,14 @@ class _PriceHistoryStepDialogContentState
   }
 
   Widget buildYearPriceComponent() {
-    List<YearPrice> yearPriceList = uiController.yearPriceList.take(uiController.yearPriceList.length-1).toList();
+    List<YearPrice> yearPriceList = uiController.yearPriceList
+        .take(uiController.yearPriceList.length - 1)
+        .toList();
 
-    if(yearPriceList.isEmpty) return Container();
-    else return buildYearPriceList(yearPriceList);
+    if (yearPriceList.isEmpty)
+      return Container();
+    else
+      return buildYearPriceList(yearPriceList);
   }
 
   Widget buildYearPriceList(List<YearPrice> yearPriceList) {
@@ -99,9 +110,12 @@ class _PriceHistoryStepDialogContentState
       itemCount: listLength,
       itemBuilder: (context, index) {
         return AddAssetsDialogTextField(
+          isMoney: true,
+          isNumber: false,
           keyboardType: TextInputType.number,
           hint: yearPriceList[index].year,
-          onChanged: (value) => uiController.onPriceValueTextFieldChanged(value, index),
+          onChanged: (value) =>
+              uiController.onPriceValueTextFieldChanged(value, index),
         );
       },
     );
@@ -124,11 +138,13 @@ class _PriceHistoryStepDialogContentState
                 fontSize: AppFonts.getSmallFontSize(context),
               ),
             ),
-            SizedBox(width: 4.0,),
+            SizedBox(
+              width: 4.0,
+            ),
             ImageWidget(
               url: 'assets/icons/ic_arrow_next.svg',
-              width: width* .02,
-              height: width* .02,
+              width: width * .02,
+              height: width * .02,
               fit: BoxFit.contain,
               color: Colors.white,
             ),

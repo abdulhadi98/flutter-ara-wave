@@ -54,7 +54,8 @@ class _MyAppState extends State<MyApp> {
       localizationsDelegates: [
         const AppLocalizationsDelegate(),
         GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
       ],
       localeResolutionCallback:
           (Locale? locale, Iterable<Locale> supportedLocales) {

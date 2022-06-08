@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rxdart/streams.dart';
@@ -97,7 +97,14 @@ class _MyPortfolioScreenState
 
   Widget protfolioWidget() {
     return Container(
-      height: height * .22,
+      width: double.infinity,
+      // height: height* .40,
+      padding: EdgeInsets.symmetric(vertical: height * .01),
+      decoration: BoxDecoration(
+        color: AppColors.mainColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      height: height * .225,
       child: SfCartesianChart(
         // primaryXAxis: DateTimeAxis(),
         // margin: EdgeInsets.symmetric(horizontal: width* .025, vertical: height* .025),
@@ -143,6 +150,7 @@ class _MyPortfolioScreenState
         //     visibleMinimum: chartData[chartData.length-chartData.length~/2].year,
         //     visibleMaximum: chartData[chartData.length-chartData.length~/2].year,
         // ),
+        margin: EdgeInsets.only(right: width * 0.04, top: width * 0.01),
         primaryXAxis: DateTimeAxis(
           // // intervalType: _getChartIntervalType(filter),
           // visibleMinimum: chartData.length > 1
@@ -154,6 +162,8 @@ class _MyPortfolioScreenState
             width: 0.0,
           ),
           tickPosition: TickPosition.outside,
+          labelAlignment: LabelAlignment.center,
+
           majorTickLines: MajorTickLines(width: 0),
           autoScrollingMode: AutoScrollingMode.end,
         ),
@@ -166,6 +176,7 @@ class _MyPortfolioScreenState
             width: 0.0,
           ),
           majorTickLines: MajorTickLines(width: 0),
+          numberFormat: NumberFormat.compactSimpleCurrency(),
         ),
       ),
     );

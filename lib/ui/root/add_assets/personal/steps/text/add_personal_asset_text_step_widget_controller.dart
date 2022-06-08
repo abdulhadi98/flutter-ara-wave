@@ -45,7 +45,8 @@ class AddPersonalAssetTextStepWidgetController {
 
   onInputChanged(
       String value, AddPersonalAssetHoldingTypeOptionType type, int optionId) {
-    print('inputtttttttttttttt');
+   
+
     addPersonalAssetOptionList
         .removeWhere((element) => element.id.toString() == optionId.toString());
 
