@@ -213,15 +213,15 @@ class _ChartCardItemState extends BaseStateFullWidgetState<ChartCardItem> {
                     buildChartItem(filterSnapshot.data!),
                   if (widget.historicalDataList?.isEmpty ?? true)
                     Container(
-                      height: height * .215,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 24.0,
-                          horizontal: 16,
+                        padding: EdgeInsets.symmetric(
+                          vertical: height * 0.055,
+                          horizontal: 24,
                         ),
                         child: ErrorMessageWidget(
-                            messageKey: 'no_result_found_message',
-                            image: 'assets/images/ic_not_found.png'),
+                          messageKey: 'no_result_found_message',
+                          image: 'assets/images/ic_not_found.png',
+                        ),
                       ),
                     ),
                   Padding(
@@ -310,7 +310,7 @@ class _ChartCardItemState extends BaseStateFullWidgetState<ChartCardItem> {
     List<ChartData> chartData = getData(filter);
 
     return Container(
-      height: height * .2128,
+      height: height * .21,
       child: SfCartesianChart(
         // primaryXAxis: DateTimeAxis(),
         // margin: EdgeInsets.symmetric(horizontal: width* .025, vertical: height* .025),

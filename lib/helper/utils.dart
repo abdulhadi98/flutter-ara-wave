@@ -130,6 +130,9 @@ class Utils {
   static bool isLoggedUserExist() =>
       (GetIt.I<DataStore>().userModel?.apiToken) != null;
 
+  static bool isNotUserLogged() =>
+      (GetIt.I<DataStore>().userModel?.apiToken) == null;
+
   static removeNullMapObjects(Map map) {
     map.removeWhere((key, value) => key == null || value == null);
   }
@@ -152,6 +155,7 @@ class Utils {
   }
 
   static String getFormattedChartNum(num) {
+    num = num ?? 0.0;
     String strNum = num.toString();
     if (strNum.contains('.')) {
       double d = double.parse(strNum);
@@ -168,6 +172,7 @@ class Utils {
   }
 
   static String getFormattedNum(num) {
+    num = num ?? 0.0;
     String strNum = num.toString();
     if (strNum.contains('.')) {
       double d = double.parse(strNum);
@@ -183,7 +188,13 @@ class Utils {
     return formattedNum;
   }
 
+ 
+  static String getDoubleVal(strNum) {
+    return strNum;
+  }
+
   static String getFormattedStrNum(strNum) {
+    if (strNum == null || strNum == 'null') strNum = 0.0;
     //  String strNum = num.toString();
     strNum = strNum.toString();
     if (strNum.contains('.')) {

@@ -10,17 +10,19 @@ import 'package:wave_flutter/ui/root/add_assets/add_asset_action_button.dart';
 import 'package:wave_flutter/ui/root/add_assets/personal/add_asset_dialog_content_title_widget.dart';
 
 class AddPersonalAssetDocumentStepWidget extends BaseStateFullWidget {
+  final Function(BuildContext ctx)? onPhotosAdded;
   final Function(List<String>? imageUrlList) onFinishedClicked;
-  AddPersonalAssetDocumentStepWidget({required this.onFinishedClicked});
+  AddPersonalAssetDocumentStepWidget(
+      {required this.onFinishedClicked, this.onPhotosAdded});
 
   @override
-  BaseStateFullWidgetState<AddPersonalAssetDocumentStepWidget> createState() => _AddPersonalAssetDocumentStepWidgetState();
+  BaseStateFullWidgetState<AddPersonalAssetDocumentStepWidget> createState() =>
+      _AddPersonalAssetDocumentStepWidgetState();
 }
 
 class _AddPersonalAssetDocumentStepWidgetState
     extends BaseStateFullWidgetState<AddPersonalAssetDocumentStepWidget>
     with AddPersonalAssetDocumentStepWidgetDi {
-
   @override
   void initState() {
     initScreenDi();
@@ -29,21 +31,26 @@ class _AddPersonalAssetDocumentStepWidgetState
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          SizedBox(height: height * .03),
-          AddAssetDialogContentTitleWidget(AppLocalizations.of(context).trans('add_photos')),
-          SizedBox(height: height * .03),
-          buildPersonalPhotosGrid(),
-          SizedBox(height: height * .03),
-          buildFinishedButton(),
-          SizedBox(height: height * .03),
-        ],
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: height * 1.5,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: height * .03),
+            AddAssetDialogContentTitleWidget(
+                AppLocalizations.of(context).trans('add_photos')),
+            SizedBox(height: height * .015),
+            buildPersonalPhotosGrid(),
+            SizedBox(height: height * .025),
+            buildFinishedButton(),
+            SizedBox(height: height * .02),
+          ],
+        ),
       ),
     );
   }
-
 
   Widget buildPersonalPhotosGrid() {
     photoComponentItem({XFile? xFile}) {
@@ -52,7 +59,10 @@ class _AddPersonalAssetDocumentStepWidgetState
           GestureDetector(
             onTap: () => uiController.onAddPhotoClicked(context),
             child: Container(
-              margin: EdgeInsets.only(left: width* .02, top: height* .01,),
+              margin: EdgeInsets.only(
+                left: width * .02,
+                top: height * .01,
+              ),
               width: double.infinity,
               height: double.infinity,
               alignment: Alignment.center,
@@ -67,31 +77,34 @@ class _AddPersonalAssetDocumentStepWidgetState
               ),
             ),
           ),
-          if (xFile != null) Positioned(
-            top: height* .01,
-            left: width* .02,
-            bottom: 0,
-            right: 0,
-            child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(6.0)),
-              child: Image.file(
-                File(xFile.path),
-                fit: BoxFit.cover,
-                // width: double.infinity,
-                // height: double.infinity,
+          if (xFile != null)
+            Positioned(
+              top: height * .01,
+              left: width * .02,
+              bottom: 0,
+              right: 0,
+              child: ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(6.0)),
+                child: Image.file(
+                  File(xFile.path),
+                  fit: BoxFit.cover,
+                  // width: double.infinity,
+                  // height: double.infinity,
+                ),
               ),
             ),
-          ),
-          if(xFile!=null) GestureDetector(
-            onTap: () {
-              uiController.setPickedPhotoAssets(uiController.getPickedPhotoAssets()?..remove(xFile));
-            },
-            child: Icon(
-              Icons.cancel,
-              color: Colors.red.shade400,
-              size: width* .075,
+          if (xFile != null)
+            GestureDetector(
+              onTap: () {
+                uiController.setPickedPhotoAssets(
+                    uiController.getPickedPhotoAssets()?..remove(xFile));
+              },
+              child: Icon(
+                Icons.cancel,
+                color: Colors.red.shade400,
+                size: width * .075,
+              ),
             ),
-          ),
         ],
       );
     }
@@ -99,9 +112,10 @@ class _AddPersonalAssetDocumentStepWidgetState
     return StreamBuilder<List<XFile?>?>(
       stream: uiController.pickedPhotoAssetsStream,
       builder: (context, photosSnapshot) {
-        int gridItemsLength=6;
-        if(photosSnapshot.hasData&&photosSnapshot.data!=null){
-          if(photosSnapshot.data!.length >= 6) gridItemsLength=photosSnapshot.data!.length+1;
+        int gridItemsLength = 6;
+        if (photosSnapshot.hasData && photosSnapshot.data != null) {
+          if (photosSnapshot.data!.length >= 6)
+            gridItemsLength = photosSnapshot.data!.length + 1;
         }
         return GridView.builder(
           physics: NeverScrollableScrollPhysics(),
@@ -116,7 +130,8 @@ class _AddPersonalAssetDocumentStepWidgetState
           itemCount: gridItemsLength,
           itemBuilder: (context, index) {
             XFile? photoAsset;
-            if(index < (photosSnapshot.data?.length??-1)) photoAsset = photosSnapshot.data![index];
+            if (index < (photosSnapshot.data?.length ?? -1))
+              photoAsset = photosSnapshot.data![index];
             return photoComponentItem(xFile: photoAsset);
           },
         );
@@ -136,5 +151,4 @@ class _AddPersonalAssetDocumentStepWidgetState
       // isDone: type!=null,
     );
   }
-
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:wave_flutter/helper/enums.dart';
 import 'package:wave_flutter/helper/utils.dart';
 import 'package:wave_flutter/models/private_asset_model.dart';
 import 'package:wave_flutter/services/data_resource.dart';
+import 'package:wave_flutter/ui/common_widgets/add_asset_text_field.dart';
 import 'package:wave_flutter/ui/common_widgets/base_statefull_widget.dart';
 import 'package:wave_flutter/ui/common_widgets/card_item_details_screen.dart';
 import 'package:wave_flutter/ui/common_widgets/chart_card_item.dart';
@@ -19,14 +21,27 @@ import 'package:wave_flutter/ui/common_widgets/chart_info_card_item.dart';
 import 'package:wave_flutter/ui/common_widgets/error_message_widget.dart';
 import 'package:wave_flutter/ui/common_widgets/home_screen_header.dart';
 import 'package:http/http.dart' as http;
+import 'package:wave_flutter/ui/root/add_assets/custom_drop_down.dart';
 import 'package:wave_flutter/ui/root/holdings_screen.dart';
 import 'package:wave_flutter/ui/root/home_screen.dart';
 
 import '../../di/public_assset_details_di.dart';
 import '../../models/public_asset_graph_model.dart';
 import '../../models/public_asset_model.dart';
+import '../common_widgets/image_widget.dart';
+import '../common_widgets/show_add_asset_dialog.dart';
+import '../common_widgets/show_date_picker.dart';
+import 'add_assets/add_asset_action_button.dart';
+import 'add_assets/add_assets_dialog_text_field.dart';
+import 'add_assets/loading_indicator.dart';
+import 'add_assets/private/add_private_asset_dialog_content.dart';
+import '../../di/add_public_asset_holding_dialog_content_di.dart';
+import 'package:wave_flutter/services/api_handler.dart';
 
 class PublicAssetDetailsScreen extends BaseStateFullWidget {
+  static String? companyId;
+  static String? companyName;
+
   final PublicAssetModel assetModel;
   PublicAssetDetailsScreen({required this.assetModel});
 
@@ -43,6 +58,7 @@ class _PublicAssetDetailsScreenState
     super.initState();
     getAssetDetails();
     initScreenDi();
+    dinitScreenDi();
     uiController.fetchPublicAssetHistoricalDetails();
 
     //uiController.fetchResult();
@@ -71,7 +87,446 @@ class _PublicAssetDetailsScreenState
   var primaryExchange = '';
   var description = '';
   var name = '';
+  DateTime purchasedAt = DateTime(2022);
   // var totalBalance = '';
+  bool dialogSpinner = false;
+  Future<String> deleteAsset(onUpdateOk) async {
+    setState(() {
+      dialogSpinner = true;
+    });
+    String? message;
+    try {
+      String? apiToken = HomeScreen.apiToken;
+      int? assetId = HoldingsScreen.assetId;
+
+      var request;
+      //  var response;
+      var url = Uri.parse(
+        'https://wave.aratech.co/api/public-asset-holding/${HoldingsScreen.assetId}',
+      );
+      print('///////////' +
+          url.toString() +
+          '//tokennnnnn///' +
+          apiToken! +
+          '//////' +
+          assetId.toString());
+
+      //  response= dio.delete(
+      //       'https://wave.aratech.co/api/public-asset-holding/${HoldingsScreen.assetId}',
+      //       data: formData);
+      http.Response response = await http.delete(
+        Uri.parse(
+            'https://wave.aratech.co/api/public-asset-holding/${HoldingsScreen.assetId}'),
+        body: <String, String>{
+          "api_token": apiToken,
+        },
+      );
+      //  response = http.delete(url, body: {'api_token:$apiToken'});
+
+      //  request.body = jsonEncode({"api_token": apiToken});
+      //  response = await request.send();
+      var x = jsonDecode(response.body);
+      print(x);
+      String code = x['code'];
+      message = x['message'];
+
+      print(code);
+      if (code == '200') {
+        setState(() {
+          dialogSpinner = false;
+        });
+        Utils.showToast('Asset Deleted Successfully!');
+        // uiController.fetchPublicAssetHistoricalDetails();
+
+        onUpdateOk();
+        return 'ok';
+      } else {
+        setState(() {
+          dialogSpinner = false;
+        });
+        Utils.showToast(message!);
+        return 'error';
+      }
+    } catch (e) {
+      print(e.toString());
+
+      setState(() {
+        dialogSpinner = false;
+      });
+      Utils.showToast(message!);
+      return 'error';
+    }
+    return 'ok';
+  }
+
+  Future<String> updateAsset(onUpdateOk) async {
+    setState(() {
+      dialogSpinner = true;
+    });
+    try {
+      String? apiToken = HomeScreen.apiToken;
+      int? assetId = HoldingsScreen.assetId;
+
+      var request;
+      var response;
+      var url = Uri.parse(
+        'https://wave.aratech.co/api/edit-public-asset-holding',
+      );
+      print('///////////' +
+          url.toString() +
+          '//tokennnnnn///' +
+          apiToken! +
+          '//////' +
+          assetId.toString());
+
+      request = http.MultipartRequest('POST', url);
+      request.fields['api_token'] = apiToken;
+      request.fields['asset_holding_id'] = assetId.toString();
+      request.fields['public_asset_id'] =
+          PublicAssetDetailsScreen.companyId.toString();
+      request.fields['quantity'] =
+          quantityController!.text.replaceAll(RegExp('[^0-9.]'), '');
+      request.fields['purchased_at'] = purchasedAt.toString();
+      //   request.fields['stock_exchange'] = stockExchangeController!.text;
+
+      request.fields['purchased_price'] =
+          purchasedPriceController!.text.replaceAll(RegExp('[^0-9.]'), '');
+
+      response = await request.send();
+      var xx = await http.Response.fromStream(response);
+      var x = jsonDecode(xx.body);
+
+      print('///////////////////////////////////////////////////');
+      print(x.toString());
+      print('///////////////////////////////////////////////////');
+      String code = x['code'];
+      String msg = x['message'];
+
+      //  Map publicAsset = payload['public_asset'];
+      // var id = payload['id'];
+
+      if (code == '200') {
+        setState(() {
+          dialogSpinner = false;
+        });
+        Utils.showToast('Asset Updated Successfully!');
+        uiController.fetchPublicAssetHistoricalDetails();
+        getAssetDetails();
+        onUpdateOk();
+      } else {
+        setState(() {
+          dialogSpinner = false;
+        });
+        Utils.showToast(msg);
+        return 'error';
+      }
+    } catch (e) {
+      print(e.toString());
+
+      setState(() {
+        dialogSpinner = false;
+      });
+      Utils.showToast('Apdating Asset Failed, Please Try Again Later.');
+      return 'error';
+    }
+    return 'ok';
+  }
+
+  Widget buildPublicAvailableCompanies() {
+    return StreamBuilder<DataResource<List<PublicAssetModel>>?>(
+      stream: addPublicAssetHoldingBloc.publicAssetsStream,
+      builder: (context, assetsSnapshot) {
+        switch (assetsSnapshot.data?.status) {
+          case Status.LOADING:
+            return LoadingIndicator();
+          case Status.SUCCESS:
+            return CustomDropDownWidget<PublicAssetModel>(
+              title: name,
+              menuItems: assetsSnapshot.data!.data!,
+              onSelected: duiController.onPublicCompanySelected,
+            );
+          default:
+            return Container();
+        }
+      },
+    );
+  }
+
+  Map<String, String> editInfoList = {};
+  TextEditingController? stockExchangeController;
+
+  TextEditingController? quantityController;
+  TextEditingController? purchasedPriceController;
+
+  // TextEditingController stockExchangeontroller = TextEditingController();
+  Widget buildNextButton(contextt, onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: height * .06,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: AppColors.mainColor,
+          border: Border.all(color: Colors.white),
+          borderRadius: BorderRadius.circular(width * 0.019),
+        ),
+        child: Stack(
+          children: [
+            Center(
+              child: Text(
+                appLocal.trans('submit'),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: AppFonts.getNormalFontSize(context),
+                  height: 1.0,
+                ),
+              ),
+            ),
+            Positioned(
+              top: 0.0,
+              right: 48.0,
+              bottom: 0.0,
+              child: ImageWidget(
+                url: 'assets/icons/ic_arrow_next.svg',
+                width: width * .029,
+                height: width * .029,
+                fit: BoxFit.contain,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildDeleteButton(contextt, onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: height * .029,
+        //color: Colors.green,
+        alignment: Alignment.center,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ImageWidget(
+              url: 'assets/icons/delete-icon.svg',
+              width: width * .029,
+              height: width * .029,
+              fit: BoxFit.contain,
+              color: Colors.red[300],
+            ),
+            SizedBox(
+              width: width * 0.02,
+            ),
+            Text(
+              appLocal.trans('delete_asset'),
+              style: TextStyle(
+                color: Colors.red[300],
+                fontSize: AppFonts.getNormalFontSize(context),
+                fontWeight: FontWeight.w600,
+                height: 1.0,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  dynamic updateAssetDialog() {
+    return showAddAssetDialog(
+      popupHeight: height / 1.3,
+      context: context,
+      padding: EdgeInsets.only(
+        right: width * .08,
+        left: width * .08,
+        top: height * .08,
+      ),
+      dialogContent: StatefulBuilder(builder: (context, setState) {
+        return GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(new FocusNode());
+          },
+          child: Stack(
+            children: [
+              Positioned(
+                top: width * .075 / 2,
+                right: width * .075 / 2,
+                left: 0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.mainColor,
+                    borderRadius: BorderRadius.circular(width * 0.029),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(height: height * .025),
+                      Text(
+                        appLocal.trans('edit_asset'),
+                        style: TextStyle(
+                          color: AppColors.white,
+                          fontSize: AppFonts.getLargeFontSize(context),
+                          height: 1.0,
+                        ),
+                      ),
+                      SizedBox(height: height * .020),
+                      Container(
+                        margin: const EdgeInsets.all(1),
+                        padding: EdgeInsets.symmetric(horizontal: width * .08),
+                        decoration: BoxDecoration(
+                          color: AppColors.black,
+                          borderRadius: BorderRadius.only(
+                            bottomRight: Radius.circular(width * 0.029),
+                            bottomLeft: Radius.circular(width * 0.029),
+                          ),
+                        ),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: height * .02,
+                              ),
+                              buildPublicAvailableCompanies(),
+                              SizedBox(height: height * .020),
+                              AddAssetsDialogTextField(
+                                isMoney: false,
+                                isNumber: true,
+                                controller: quantityController,
+                                keyboardType: TextInputType.text,
+                                hint: '# ${appLocal.trans('of_shares')}',
+                                height: height * .070,
+                                onChanged: (val) {},
+                              ),
+                              SizedBox(height: height * .020),
+                              AddAssetsDialogTextField(
+                                isMoney: true,
+                                isNumber: false,
+                                controller: purchasedPriceController,
+                                keyboardType: TextInputType.text,
+                                hint: appLocal.trans('purchased_price'),
+                                height: height * .070,
+                                onChanged: (val) {},
+                              ),
+                              SizedBox(height: height * .020),
+                              GestureDetector(
+                                onTap: () async {
+                                  DateTime? pickedDateTime =
+                                      await showCustomDatePicker(
+                                    initialDate: purchasedAt,
+                                    context: context,
+                                    locale: appLocal.locale,
+                                  );
+                                  setState(() {
+                                    purchasedAt = pickedDateTime!;
+                                  });
+                                  print(
+                                      purchasedAt.toString().substring(0, 10));
+                                },
+                                child: Container(
+                                  height: height * .07,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.mainColor,
+                                    borderRadius:
+                                        BorderRadius.circular(width * 0.019),
+                                  ),
+                                  child: Text(
+                                    purchasedAt.toString().substring(0, 10),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize:
+                                          AppFonts.getSmallFontSize(context),
+                                      //height: 1.0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: height * .020),
+                              dialogSpinner
+                                  ? LoadingIndicator()
+                                  : buildNextButton(
+                                      context,
+                                      () async {
+                                        setState(() {
+                                          dialogSpinner = true;
+                                        });
+                                        String code = await updateAsset(() {});
+                                        setState(() {
+                                          dialogSpinner = false;
+                                        });
+                                        if (code == 'ok') {
+                                          Navigator.pop(context);
+                                          // rootScreenController
+                                          //     .setSharedData(HoldingsType.PUBLIC);
+                                          // rootScreenController.setCurrentScreen(
+                                          //     AppMainScreens.HOLDINGS_SCREEN);
+                                        }
+                                      },
+                                    ),
+                              SizedBox(height: height * .025),
+                              buildDeleteButton(
+                                context,
+                                () async {
+                                  setState(() {
+                                    dialogSpinner = true;
+                                  });
+                                  String code = await deleteAsset(() {});
+                                  setState(() {
+                                    dialogSpinner = false;
+                                  });
+                                  if (code == 'ok') {
+                                    Navigator.pop(context);
+                                    rootScreenController
+                                        .setSharedData(HoldingsType.PUBLIC);
+                                    rootScreenController.setCurrentScreen(
+                                        AppMainScreens.HOLDINGS_SCREEN);
+                                  }
+                                },
+                              ),
+                              SizedBox(height: height * .020),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                child: GestureDetector(
+                  onTap: () {
+                    //    uiController.clearAddAssetInputs();
+
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.gray, width: .5),
+                      shape: BoxShape.circle,
+                      color: AppColors.mainColor,
+                    ),
+                    child: Icon(
+                      Icons.close,
+                      color: AppColors.gray,
+                      size: width * .055,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }),
+    );
+  }
 
   void getAssetDetails() async {
     setState(() {
@@ -115,8 +570,19 @@ class _PublicAssetDetailsScreenState
     setState(() {
       quantity = payload['quantity'].toString();
       stockExchange = payload['stock_exchange'].toString();
-      totalBalance = payload['netWorth'].toString();
+      stockExchangeController = new TextEditingController(text: stockExchange);
       purchasePrice = payload['purchased_price'].toString();
+
+      quantityController = new TextEditingController(text: quantity);
+      purchasedPriceController = new TextEditingController(text: purchasePrice);
+
+      print(quantityController!.text + 'zxzxzxxz');
+      purchasedAt = DateTime.parse(payload['purchased_at']);
+
+      totalBalance = payload['netWorth'].toString();
+      PublicAssetDetailsScreen.companyId =
+          payload['public_asset_id'].toString();
+
       profit = payload['profit'].toString(); //check
       profitPercentage = payload['profitPercentage'].toString();
       name = publicAsset['name'].toString(); //change
@@ -180,7 +646,7 @@ class _PublicAssetDetailsScreenState
     // var id = payload['id'];
     setState(() {
       quantity = payload['quantity'].toString();
-      stockExchange = payload['stock_exchange'].toString();
+      stockExchange = payload['stock_exchange'].toString(); //popopo
       totalBalance = payload['netWorth'].toString();
       purchasePrice = payload['purchased_price'].toString();
       profit = payload['profit'].toString(); //check
@@ -229,38 +695,6 @@ class _PublicAssetDetailsScreenState
     );
   }
 
-  // Widget buildAssetResults() {
-  //   return StreamBuilder<DataResource<List<PrivateAssetModel>>?>(
-  //       stream: PublicAssetDetailsScreenBloc.privateAssetsStream,
-  //       builder: (context, assetsSnapshot) {
-  //         if (assetsSnapshot.hasData && assetsSnapshot.data != null) {
-  //           switch (assetsSnapshot.data!.status) {
-  //             case Status.LOADING:
-  //               return Expanded(
-  //                 child: Center(
-  //                   child: CircularProgressIndicator(),
-  //                 ),
-  //               );
-  //             case Status.SUCCESS:
-  //               return buildScreenContent(assetsSnapshot.data!.data!.first);
-  //             case Status.NO_RESULTS:
-  //               return ErrorMessageWidget(
-  //                   messageKey: 'no_result_found_message',
-  //                   image: 'assets/images/ic_not_found.png');
-  //             case Status.FAILURE:
-  //               return ErrorMessageWidget(
-  //                   messageKey: assetsSnapshot.data?.message ?? '',
-  //                   image: 'assets/images/ic_error.png');
-
-  //             default:
-  //               return Container();
-  //           }
-  //         } else {
-  //           return Container();
-  //         }
-  //       });
-  // }
-
   Widget buildScreenContent() {
     return Column(
       children: [
@@ -272,7 +706,6 @@ class _PublicAssetDetailsScreenState
             child: Column(
               children: [
                 Container(
-                  height: height * .25,
                   child:
                       StreamBuilder<DataResource<List<PublicAssetGraphModel>>?>(
                     stream: holdingsBloc.publicAssetGraphStream,
@@ -281,8 +714,11 @@ class _PublicAssetDetailsScreenState
                           historicalSnapshot.data != null) {
                         switch (historicalSnapshot.data!.status) {
                           case Status.LOADING:
-                            return Center(
-                              child: CircularProgressIndicator(),
+                            return Container(
+                              height: height * .255,
+                              child: Center(
+                                child: CircularProgressIndicator(),
+                              ),
                             );
                           case Status.SUCCESS:
                             return ChartCardItem(
@@ -351,7 +787,7 @@ class _PublicAssetDetailsScreenState
                   // height: height / 4,
                   decoration: BoxDecoration(
                       color: AppColors.mainColor,
-                      borderRadius: BorderRadius.circular(8)),
+                      borderRadius: BorderRadius.circular(width * 0.019)),
                   child: Column(
                     children: [
                       rowInfo(
@@ -410,7 +846,7 @@ class _PublicAssetDetailsScreenState
                   // height: height / 4,
                   decoration: BoxDecoration(
                     color: AppColors.mainColor,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(width * 0.019),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -500,7 +936,7 @@ class _PublicAssetDetailsScreenState
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.assetModel.name ?? '',
+                        name,
                         style: TextStyle(
                           overflow: TextOverflow.ellipsis,
                           fontSize: AppFonts.getMediumFontSize(context),
@@ -529,7 +965,7 @@ class _PublicAssetDetailsScreenState
                             ),
                           ),
                           Text(
-                            stockExchange,
+                            primaryExchange,
                             style: TextStyle(
                               fontSize: AppFonts.getXSmallFontSize(context),
                               color: Colors.white,
@@ -554,7 +990,9 @@ class _PublicAssetDetailsScreenState
       isAddProgressExist: true,
       addEditIcon: 'assets/icons/ic_edit.svg',
       addEditTitleKey: 'edit_asset',
-      onAddEditClick: () {},
+      onAddEditClick: () {
+        updateAssetDialog();
+      },
       totalTextKey: 'estimated_total_asset_equity',
       netWorth: '${Utils.getFormattedStrNum(totalBalance)}', //netWorth from api
       growth: Utils.getFormattedStrNum(
@@ -574,7 +1012,7 @@ class _PublicAssetDetailsScreenState
             alignment: Alignment.centerRight,
             decoration: BoxDecoration(
               color: AppColors.mainColor,
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(width * 0.019),
             ),
             child: DropdownButton<String>(
               value: yearSnapshot.data,
@@ -636,7 +1074,7 @@ class _PublicAssetDetailsScreenState
   Widget buildExpandableCard(
       {required title, required Map<String, List<PrivateAssetMeta>> map}) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(8.0),
+      borderRadius: BorderRadius.circular(width * 0.019),
       child: Container(
         color: AppColors.mainColor,
         child: ExpandablePanel(
@@ -657,8 +1095,8 @@ class _PublicAssetDetailsScreenState
             ),
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(
-                  8.0 /*topLeft: Radius.circular(8), topRight: Radius.circular(8),*/),
+              borderRadius: BorderRadius.circular(width *
+                  0.019 /*topLeft: Radius.circular(8), topRight: Radius.circular(8),*/),
               color: AppColors.mainColor,
             ),
             child: Row(

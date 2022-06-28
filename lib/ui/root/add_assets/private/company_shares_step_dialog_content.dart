@@ -59,7 +59,7 @@ class _CompanySharesStepDialogContentState
           isNumber: false,
           controller: uiController.investmentCapitalTextEditingController,
           keyboardType: TextInputType.number,
-          hint: appLocal.trans('investment_capital'),
+          hint: appLocal.trans('invested'),
           height: height * .070,
           // inputFormatters: [
           //   FilteringTextInputFormatter.allow(RegExp('[a-zA-Z]')),
@@ -151,7 +151,7 @@ class _CompanySharesStepDialogContentState
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Text(
-        appLocal.trans('investment_capital'),
+        appLocal.trans('invested'),
         style: TextStyle(
           color: Colors.white,
           fontSize: AppFonts.getNormalFontSize(context),

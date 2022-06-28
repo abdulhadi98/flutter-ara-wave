@@ -19,7 +19,6 @@ class AddPrivateSubscribedCompanyDialogContent extends BaseStateFullWidget {
 class _AddPrivateSubscribedCompanyDialogContentState
     extends BaseStateFullWidgetState<AddPrivateSubscribedCompanyDialogContent>
     with AddPrivateSubscribedDialogContentDi {
-
   @override
   void initState() {
     initScreenDi();
@@ -39,32 +38,33 @@ class _AddPrivateSubscribedCompanyDialogContentState
 
   Widget buildScreenContent() {
     return StreamBuilder<AddingPrivateAssetStep>(
-      initialData: AddingPrivateAssetStep.COMPANY,
-      stream: uiController.addingPrivateAssetStepStream,
-      builder: (context, stepSnapshot) {
-        switch(stepSnapshot.data) {
-          case AddingPrivateAssetStep.COMPANY:
-            return buildSelectCompanyStepDialogContent();
+        initialData: AddingPrivateAssetStep.COMPANY,
+        stream: uiController.addingPrivateAssetStepStream,
+        builder: (context, stepSnapshot) {
+          switch (stepSnapshot.data) {
+            case AddingPrivateAssetStep.COMPANY:
+              return buildSelectCompanyStepDialogContent();
 
-          case AddingPrivateAssetStep.COMPANY_INFO:
-            return buildCompanyInfoComponents();
+            case AddingPrivateAssetStep.COMPANY_INFO:
+              return buildCompanyInfoComponents();
 
-          case AddingPrivateAssetStep.COMPANY_SHARES:
-            return buildCompanySharesComponents();
+            case AddingPrivateAssetStep.COMPANY_SHARES:
+              return buildCompanySharesComponents();
 
-          case AddingPrivateAssetStep.PRICE_HISTORY:
-            return buildPriceHistoryComponents();
+            case AddingPrivateAssetStep.PRICE_HISTORY:
+              return buildPriceHistoryComponents();
 
-          default: return Container();
-        }
-      }
-    );
+            default:
+              return Container();
+          }
+        });
   }
 
   Widget buildSelectCompanyStepDialogContent() {
     return SelectCompanyStepDialogContent(
       privateAssetsStream: addPrivateSubscribedCompanyBloc.privateAssetsStream,
-      onNextButtonClicked: (selectCompanyStep) => uiController.onSelectCompanyNextClicked(
+      onNextButtonClicked: (selectCompanyStep) =>
+          uiController.onSelectCompanyNextClicked(
         nextStep: AddingPrivateAssetStep.COMPANY_INFO,
         selectCompanyStep: selectCompanyStep,
       ),
@@ -73,18 +73,19 @@ class _AddPrivateSubscribedCompanyDialogContentState
 
   Widget buildCompanyInfoComponents() {
     return CompanyInfoStepDialogContent(
-      initialCompanyName: uiController.selectCompanyStep!.company.name,
-      onNextButtonClicked: (companyInfo) => uiController.onCompanyInfoNextClicked(
-        nextStep: AddingPrivateAssetStep.COMPANY_SHARES,
-        companyInfo: companyInfo,
-      )
-    );
+        initialCompanyName: uiController.selectCompanyStep!.company.name,
+        onNextButtonClicked: (companyInfo) =>
+            uiController.onCompanyInfoNextClicked(
+              nextStep: AddingPrivateAssetStep.COMPANY_SHARES,
+              companyInfo: companyInfo,
+            ));
   }
 
   Widget buildCompanySharesComponents() {
     return CompanySharesStepDialogContent(
       loadingStream: uiController.loadingStream,
-      onPriceHistoryButtonClicked: (sharesStep) => uiController.onPriceHistoryButtonClicked(
+      onPriceHistoryButtonClicked: (sharesStep) =>
+          uiController.onPriceHistoryButtonClicked(
         context: context,
         nextStep: AddingPrivateAssetStep.PRICE_HISTORY,
         sharesStep: sharesStep,
@@ -97,8 +98,10 @@ class _AddPrivateSubscribedCompanyDialogContentState
     return PriceHistoryStepDialogContent(
       assetId: uiController.addedAssetId!,
       assetType: Utils.enumToString(HoldingsType.PRIVATE).toLowerCase(),
-      currentMarketValue: uiController.companySharesStep!.marketValue.toString(),
-      initialInvestmentYear: uiController.companyInfo?.initialInvestmentYear??0,
+      currentMarketValue:
+          uiController.companySharesStep!.marketValue.toString(),
+      initialInvestmentYear:
+          uiController.companyInfo?.initialInvestmentYear ?? 0,
       onFinishButtonClicked: () => uiController.onFinishedClicked(context),
       onSkipButtonClicked: () => Navigator.of(context).pop(),
     );

@@ -53,16 +53,7 @@ class _AddPublicAssetHoldingDialogContentState
         SizedBox(height: height * .03),
         buildPublicAvailableCompanies(),
         SizedBox(height: height * .03),
-        AddAssetsDialogTextField(
-          isMoney: false,
-          isNumber: false,
-          controller: uiController.stockExchangeTextEditingController,
-          keyboardType: TextInputType.text,
-          hint: appLocal.trans('enter_stock_exchange'),
-          height: height * .070,
-          onChanged: uiController.onStockExchangeTextFieldChanged,
-        ),
-        SizedBox(height: height * .03),
+       
         AddAssetsDialogTextField(
           isMoney: false,
           isNumber: false,
@@ -89,7 +80,7 @@ class _AddPublicAssetHoldingDialogContentState
 
   Widget buildPublicAvailableCompanies() {
     return StreamBuilder<DataResource<List<PublicAssetModel>>?>(
-        stream: addPublicAssetHoldingBloc.publicAssetsStream,
+        stream: addPublicAssetHoldingBloc.publicAssetsStream,//;
         builder: (context, assetsSnapshot) {
           switch (assetsSnapshot.data?.status) {
             case Status.LOADING:

@@ -8,7 +8,9 @@ import 'package:wave_flutter/ui/common_widgets/show_date_picker.dart';
 class DatePickerPlaceholderWidget extends BaseStateFullWidget {
   final String hint;
   final Function(String date) onDatedPicked;
+  final Color? color;
   DatePickerPlaceholderWidget({
+    this.color,
     required this.hint,
     required this.onDatedPicked,
     Key? key,
@@ -63,9 +65,11 @@ class _DatePickerPlaceholderWidgetState
                     ? widget.hint
                     : dateTimeSnapshot.data.toString().substring(0, 10),
                 style: TextStyle(
-                  color: dateTimeSnapshot.data != null
+                  color: (dateTimeSnapshot.data != null || widget.color != null)
                       ? Colors.white
-                      : Colors.white.withOpacity(.25),
+                      : widget.color != null
+                          ? widget.color
+                          : Colors.white.withOpacity(.25),
                   //fontSize: AppFonts.getSmallFontSize(context),
                   fontSize: AppFonts.getXSmallFontSize(context),
                   height: 1.0,

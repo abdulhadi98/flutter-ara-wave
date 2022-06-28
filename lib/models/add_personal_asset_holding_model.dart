@@ -37,12 +37,17 @@ class AddPersonalAssetHoldingModel {
 
 class AddPersonalAssetOptionModel {
   AddPersonalAssetOptionModel(
-      {required this.id, required this.type, required this.value, this.code});
+      {required this.id,
+      required this.type,
+      required this.value,
+      this.code,
+      this.optionName});
 
   int id;
   String type;
-  String value;
+  dynamic value;
   String? code;
+  String? optionName;
 
   Map<String, dynamic> toJson() => {
         "option_id": id,

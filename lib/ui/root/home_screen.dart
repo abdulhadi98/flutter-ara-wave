@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
@@ -18,16 +20,20 @@ import 'package:wave_flutter/storage/data_store.dart';
 import 'package:wave_flutter/ui/common_widgets/base_statefull_widget.dart';
 import 'package:wave_flutter/ui/common_widgets/image_widget.dart';
 import 'package:wave_flutter/ui/common_widgets/show_add_asset_dialog.dart';
+import 'package:wave_flutter/ui/intro/splash_screen.dart';
 import 'package:wave_flutter/ui/news/news_item.dart';
 import 'package:wave_flutter/ui/root/news_screen.dart';
 import 'package:wave_flutter/ui/controllers/holdings_screen_controller.dart';
 import 'package:wave_flutter/ui/root/holdings_screen.dart';
 
 import '../../bloc/holdings_screen_bloc.dart';
+import '../../helper/app_constant.dart';
+import '../auth/login_screen.dart';
 import '../common_widgets/chart_card_item.dart';
 import 'add_assets/personal/dialog_content/add_personal_asset_dialog_content.dart';
 import 'add_assets/private/add_private_asset_dialog_content.dart';
 import 'add_assets/public/add_public_asset_holding_dialog_content.dart';
+import 'package:http/http.dart' as http;
 
 class HomeScreen extends BaseStateFullWidget {
   static String? apiToken;
@@ -51,6 +57,38 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
     homeScreenBloc.fetchTopPerformingGainersLoosersAssets();
     homeScreenBloc.fetchNewsFromXml();
     _dataStore!.getApiToken();
+    Future(() {
+      checkUser();
+    });
+  }
+  // var response = await _apiProvider.getUser(token: currentUser?.apiToken);
+
+  checkUser() async {
+    var request;
+    var response;
+    var url = Uri.parse(
+      'https://wave.aratech.co/api/get-user',
+    );
+    //print('///////////' + url.toString() + '//tokennnnnn///' + apiToken!);
+    UserModel? dataS = await GetIt.I<DataStore>().getUser();
+    var apiToken = dataS!.apiToken;
+
+    print(apiToken);
+
+    request = http.MultipartRequest('POST', url);
+    request.fields['api_token'] = apiToken;
+    response = await request.send();
+    var xx = await http.Response.fromStream(response);
+    var x = jsonDecode(xx.body);
+    String code = x['code'].toString();
+    // String msg = x[''];
+    if (code == '404') {
+      await GetIt.instance<DataStore>().deleteCurrentUserData();
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (BuildContext context) => SplashScreen()),
+          (Route<dynamic> route) => false);
+    }
   }
 
   @override
@@ -101,11 +139,12 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
         shape: BoxShape.circle,
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(width * .08),
+        borderRadius: BorderRadius.circular(width * .086),
         child: Utils.buildImage(
-          url: '', //TODO
+          url: 'assets/icons/placeholder.png', //TODO
           width: width * .086,
           height: width * .086,
+
           fit: BoxFit.cover,
         ),
       ),
@@ -131,64 +170,64 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
           return Column(
             children: [
               IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      child: Container(
+                child: Container(
+                  height: height * 0.079,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: height * 0.02, horizontal: width * .03),
+                          decoration: BoxDecoration(
+                            color: AppColors.mainColor,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              GestureDetector(
+                                onTap: () =>
+                                    _scaffoldKey.currentState?.openDrawer(),
+                                child: ClipRRect(
+                                  // borderRadius:
+                                  //     BorderRadius.circular(width * .08),
+                                  child: Image.asset(
+                                    'assets/icons/placeholder.png', //TODO
+                                    width: width * .08,
+                                    height: width * .08,
+
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: width * .05,
+                              ),
+                              buildUserName(),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: width * .015),
+                      Container(
+                        width: width * .26,
+                        alignment: Alignment.center,
                         padding: EdgeInsets.symmetric(
-                            vertical: height * 0.02, horizontal: width * .03),
+                            vertical: height * 0.02, horizontal: width * .025),
                         decoration: BoxDecoration(
                           color: AppColors.mainColor,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            GestureDetector(
-                              onTap: () =>
-                                  _scaffoldKey.currentState?.openDrawer(),
-                              child: buildUserProfileImage(),
-                            ),
-                            SizedBox(
-                              width: width * .05,
-                            ),
-                            buildUserName(),
-                          ],
+                        child: Utils.buildImage(
+                          url: 'assets/images/logo.png',
+                          width: width * .1,
+                          height: width * .1,
+                          fit: BoxFit.contain,
                         ),
                       ),
-                    ),
-                    SizedBox(width: width * .015),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                          vertical: height * 0.02, horizontal: width * .025),
-                      decoration: BoxDecoration(
-                        color: AppColors.mainColor,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            appLocal.trans('home'),
-                            style: TextStyle(
-                              fontSize: AppFonts.getMediumFontSize(context),
-                              color: Colors.white,
-                            ),
-                          ),
-                          SizedBox(
-                            width: width * .025,
-                          ),
-                          Utils.buildImage(
-                            url: 'assets/images/logo.png',
-                            width: width * .06,
-                            height: width * .06,
-                            fit: BoxFit.contain,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               SizedBox(
@@ -219,39 +258,88 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
                     // ),
                     // SizedBox(width: width* .05),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${userPortfolioFinancialsSnapshot.data?.data?.formattedNetWorth ?? 0.0}',
-                            style: TextStyle(
-                              fontSize: AppFonts.getXXLargeFontSize(context),
-                              color: Colors.white,
-                              height: 1.0,
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          //  top: height * 0.02,
+                          left: width * .017,
+                          //    right: width * .01,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                userPortfolioFinancialsSnapshot
+                                            .data?.data?.formattedNetWorth ==
+                                        null
+                                    ? SizedBox()
+                                    : userPortfolioFinancialsSnapshot.data!
+                                                .data!.formattedProfitPercentage
+                                                .contains('+') ||
+                                            (!userPortfolioFinancialsSnapshot
+                                                    .data!
+                                                    .data!
+                                                    .formattedProfitPercentage
+                                                    .contains('+') &&
+                                                !userPortfolioFinancialsSnapshot
+                                                    .data!
+                                                    .data!
+                                                    .formattedProfitPercentage
+                                                    .contains('-'))
+                                        ? Icon(
+                                            Icons.keyboard_double_arrow_up,
+                                            color: AppColors.blue,
+                                            size: width * .07,
+                                          )
+                                        : Icon(
+                                            Icons.keyboard_double_arrow_down,
+                                            color: Colors.red,
+                                            size: width * .07,
+                                          ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: width * 0.007),
+                                  child: Text(
+                                    '${userPortfolioFinancialsSnapshot.data?.data?.formattedNetWorth ?? 0.0}',
+                                    style: TextStyle(
+                                      fontSize:
+                                          AppFonts.getXXLargeFontSize(context),
+                                      color: Colors.white,
+                                      height: 1.0,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          SizedBox(height: height * .015),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 0),
-                            child: Text(
-                              'Total NET Balance in USD',
-                              style: TextStyle(
-                                fontSize: AppFonts.getSmallFontSize(context),
-                                color: Colors.white.withOpacity(.35),
-                                height: 1.0,
+                            SizedBox(height: height * .015),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 0),
+                              child: Text(
+                                'Total NET Balance in USD',
+                                style: TextStyle(
+                                  fontSize: AppFonts.getXSmallFontSize(context),
+                                  color: Colors.white.withOpacity(.35),
+                                  height: 1.0,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(width: width * .06),
-                    Text(
-                      '${userPortfolioFinancialsSnapshot.data?.data?.formattedProfitPercentage ?? 0.0}',
-                      style: TextStyle(
-                        fontSize: AppFonts.getMediumFontSize(context),
-                        color: AppColors.blue,
-                        height: 1.0,
+                    Padding(
+                      padding: EdgeInsets.only(
+                        //  top: height * 0.02,
+
+                        right: width * .01,
+                      ),
+                      child: Text(
+                        '${userPortfolioFinancialsSnapshot.data?.data?.formattedProfitPercentage ?? 0.0}',
+                        style: TextStyle(
+                          fontSize: AppFonts.getMediumFontSize(context),
+                          color: AppColors.blue,
+                          height: 1.0,
+                        ),
                       ),
                     ),
                   ],
@@ -335,11 +423,12 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
                 print('HoldingsScreen.typeId = -4');
                 HoldingsScreen.typeId = -4;
                 showAddAssetDialog(
+                    popupHeight: height / 1.3,
                     context: context,
                     padding: EdgeInsets.only(
                       right: width * .1,
                       left: width * .1,
-                      top: height * .15,
+                      top: height * .05,
                     ),
                     dialogContent: Stack(
                       children: [
@@ -384,12 +473,16 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
                                         ),
                                         GestureDetector(
                                           onTap: () {
+                                            uiHoldingsController
+                                                .clearAddAssetInputs();
+
                                             showAddAssetDialog(
+                                                popupHeight: height / 1.3,
                                                 context: context,
                                                 padding: EdgeInsets.only(
                                                   right: width * .1,
                                                   left: width * .1,
-                                                  top: height * .15,
+                                                  top: height * .05,
                                                 ),
                                                 dialogContent:
                                                     AddPrivateAssetDialogContent(
@@ -426,10 +519,11 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
                                           onTap: () async {
                                             showAddAssetDialog(
                                                 context: context,
+                                                popupHeight: height / 1.3,
                                                 padding: EdgeInsets.only(
                                                   right: width * .1,
                                                   left: width * .1,
-                                                  top: height * .15,
+                                                  top: height * .05,
                                                 ),
                                                 dialogContent:
                                                     AddPublicAssetHoldingDialogContent(
@@ -465,11 +559,12 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
                                         GestureDetector(
                                           onTap: () async {
                                             showAddAssetDialog(
+                                                popupHeight: height / 1.3,
                                                 context: context,
                                                 padding: EdgeInsets.only(
                                                   right: width * .1,
                                                   left: width * .1,
-                                                  top: height * .15,
+                                                  top: height * .05,
                                                 ),
                                                 dialogContent:
                                                     AddPersonalAssetDialogContent(
@@ -929,7 +1024,16 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
                   SizedBox(
                     width: width * .025,
                   ),
-                  buildUserProfileImage(),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(width * .08),
+                    child: Image.asset(
+                      'assets/icons/placeholder.png', //TODO
+                      width: width * .08,
+                      height: width * .08,
+
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                   SizedBox(width: 8),
                   Expanded(
                     child: Column(
@@ -970,7 +1074,10 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
               SizedBox(
                 height: height * .07,
               ),
-              buildDrawerItem('assets/icons/ic_user.svg', 'profile'),
+              buildDrawerItem('assets/icons/ic_user.svg', 'profile',
+                  onClick: () {
+                Utils.showToast('Coming Soon');
+              }),
               SizedBox(
                 height: height * .035,
               ),
@@ -983,7 +1090,10 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
               SizedBox(
                 height: height * .035,
               ),
-              buildDrawerItem('assets/icons/ic_bar_chart.svg', 'wave_fund'),
+              buildDrawerItem('assets/icons/ic_bar_chart.svg', 'wave_fund',
+                  onClick: () {
+                Utils.showToast('Coming Soon');
+              }),
               SizedBox(
                 height: height * .1,
               ),
@@ -1023,26 +1133,36 @@ class _HomeScreenState extends BaseStateFullWidgetState<HomeScreen>
               SizedBox(
                 height: height * .05,
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: width * .035),
-                child: Text(
-                  appLocal.trans('settings_privacy'),
-                  style: TextStyle(
-                    fontSize: AppFonts.getMediumFontSize(context),
-                    color: Colors.white,
+              InkWell(
+                onTap: () {
+                  Utils.showToast('Coming Soon');
+                },
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: width * .035),
+                  child: Text(
+                    appLocal.trans('settings_privacy'),
+                    style: TextStyle(
+                      fontSize: AppFonts.getMediumFontSize(context),
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
               SizedBox(
                 height: height * .025,
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: width * .035),
-                child: Text(
-                  appLocal.trans('help_center'),
-                  style: TextStyle(
-                    fontSize: AppFonts.getMediumFontSize(context),
-                    color: Colors.white,
+              InkWell(
+                onTap: () {
+                  Utils.showToast('Coming Soon');
+                },
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: width * .035),
+                  child: Text(
+                    appLocal.trans('help_center'),
+                    style: TextStyle(
+                      fontSize: AppFonts.getMediumFontSize(context),
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),

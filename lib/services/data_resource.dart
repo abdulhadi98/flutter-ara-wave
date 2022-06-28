@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class DataResource<T extends dynamic> {
@@ -8,7 +7,14 @@ class DataResource<T extends dynamic> {
   DataResource({required this.status, this.data, this.message});
 
   static DataResource<T> success<T extends dynamic>(T data) {
-    return DataResource(status: Status.SUCCESS, data: data,);
+    return DataResource(
+      status: Status.SUCCESS,
+      data: data,
+    );
+  }
+
+  static DataResource<T> graph<T extends dynamic>(String message) {
+    return DataResource(status: Status.Graph, message: message);
   }
 
   static DataResource<T> failure<T extends dynamic>(String message) {
@@ -16,21 +22,38 @@ class DataResource<T extends dynamic> {
   }
 
   static DataResource<T> loading<T extends dynamic>() {
-    return DataResource(status: Status.LOADING,);
+    return DataResource(
+      status: Status.LOADING,
+    );
   }
 
   static DataResource<T> noResults<T extends dynamic>() {
-    return DataResource(status: Status.NO_RESULTS,);
+    return DataResource(
+      status: Status.NO_RESULTS,
+    );
   }
 
   static DataResource<T> loadingMore<T extends dynamic>(T data) {
-    return DataResource(status: Status.LOADING_MORE, data: data,);
+    return DataResource(
+      status: Status.LOADING_MORE,
+      data: data,
+    );
   }
 
   static DataResource<T> noMoreResults<T extends dynamic>(T data) {
-    return DataResource(status: Status.NO_MORE_RESULTS, data: data,);
+    return DataResource(
+      status: Status.NO_MORE_RESULTS,
+      data: data,
+    );
   }
-
 }
 
-enum Status { SUCCESS, FAILURE, LOADING, NO_RESULTS, LOADING_MORE, NO_MORE_RESULTS }
+enum Status {
+  SUCCESS,
+  FAILURE,
+  LOADING,
+  NO_RESULTS,
+  LOADING_MORE,
+  NO_MORE_RESULTS,
+  Graph
+}

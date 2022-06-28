@@ -19,7 +19,8 @@ class GalleryFullScreen extends BaseStateFullWidget {
   _GalleryFullScreenState createState() => _GalleryFullScreenState();
 }
 
-class _GalleryFullScreenState extends BaseStateFullWidgetState<GalleryFullScreen> {
+class _GalleryFullScreenState
+    extends BaseStateFullWidgetState<GalleryFullScreen> {
   final _currentItemController = BehaviorSubject<int>();
   CarouselController _carouselController = CarouselController();
 
@@ -68,9 +69,9 @@ class _GalleryFullScreenState extends BaseStateFullWidgetState<GalleryFullScreen
               .toList()
               .cast<Widget>(),
         ),
-
-        if (widget.imageUrls.length > 1) Positioned(
-            bottom: height* .025,
+        if (widget.imageUrls.length > 1)
+          Positioned(
+            bottom: height * .025,
             left: 0,
             right: 0,
             child: StreamBuilder<int>(
@@ -86,7 +87,9 @@ class _GalleryFullScreenState extends BaseStateFullWidgetState<GalleryFullScreen
                         margin: EdgeInsets.symmetric(horizontal: 2.5),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: currentSnapshot.data == index ? Colors.white : Colors.white38,
+                          color: currentSnapshot.data == index
+                              ? Colors.white
+                              : Colors.white38,
                         ),
                       );
                     }).toList(),
@@ -95,23 +98,39 @@ class _GalleryFullScreenState extends BaseStateFullWidgetState<GalleryFullScreen
           ),
         Container(
           alignment: Alignment.bottomCenter,
-          margin: EdgeInsets.only(bottom: height* .05,),
+          margin: EdgeInsets.only(
+            bottom: height * .05,
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
               GestureDetector(
                 onTap: () {
-                  _carouselController.previousPage(duration: Duration(milliseconds: 300), curve: Curves.linear);
+                  _carouselController.previousPage(
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.linear);
                 },
-                  child: Icon(Icons.arrow_back_ios_rounded, color: AppColors.black, size: width* .15,),
+                child: Icon(
+                  Icons.arrow_back_ios_rounded,
+                  color: AppColors.black,
+                  size: width * .15,
+                ),
               ),
-              SizedBox(width: width*.15,),
+              SizedBox(
+                width: width * .15,
+              ),
               GestureDetector(
                 onTap: () {
-                  _carouselController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.linear);
+                  _carouselController.nextPage(
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.linear);
                 },
-                child: Icon(Icons.arrow_forward_ios_rounded, color: AppColors.black, size: width* .15,),
+                child: Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: AppColors.black,
+                  size: width * .15,
+                ),
               ),
             ],
           ),
@@ -130,11 +149,15 @@ class _GalleryFullScreenState extends BaseStateFullWidgetState<GalleryFullScreen
               padding: EdgeInsets.all(width * .035),
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(8)),
-                child: Utils.buildImage(url: url, width: double.infinity, fit: BoxFit.contain),
+                child: Utils.buildImage(
+                    url: url,
+                    width: double.infinity,
+                    height: height / 1.2,
+                    fit: BoxFit.contain),
               ),
             ),
             Positioned(
-              right: width * .01,
+              right: width * .06,
               // top: 0,
               child: GestureDetector(
                 onTap: () {

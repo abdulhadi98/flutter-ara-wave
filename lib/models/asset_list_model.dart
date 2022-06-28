@@ -13,17 +13,17 @@ class AssetListModel {
 }
 
 class AssetModel {
-  AssetModel({
-    this.id,
-    this.name,
-    this.stockSymbol,
-    this.icon,
-    this.purchasePrice,
-    this.salePrice,
-    this.serialNumber,
-    this.createdAt,
-    this.updatedAt,
-  });
+  AssetModel(
+      {this.id,
+      this.name,
+      this.stockSymbol,
+      this.icon,
+      this.purchasePrice,
+      this.salePrice,
+      this.serialNumber,
+      this.createdAt,
+      this.updatedAt,
+      this.primaryExchange});
 
   int? id;
   String? name;
@@ -34,6 +34,7 @@ class AssetModel {
   String? serialNumber;
   DateTime? createdAt;
   DateTime? updatedAt;
+  String? primaryExchange;
 
   String? get iconUrl =>
       '${UrlsContainer.baseUrl}/images/public_assets/$icon'; //TODO
@@ -46,6 +47,8 @@ class AssetModel {
         purchasePrice:
             json["purchase_price"] == null ? null : json["purchase_price"],
         salePrice: json["sale_price"] == null ? null : json["sale_price"],
+        primaryExchange:
+            json["primary_exchange"] == null ? null : json["primary_exchange"],
         serialNumber:
             json["serial_number"] == null ? null : json["serial_number"],
         createdAt: json["created_at"] == null

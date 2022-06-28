@@ -118,6 +118,7 @@ class _AddPersonalAssetTextStepWidgetState
       case AddPersonalAssetHoldingTypeOptionType.text:
         return buildTextFieldGridItem(option, TextInputType.text,
             AddPersonalAssetHoldingTypeOptionType.text);
+
       case AddPersonalAssetHoldingTypeOptionType.number:
         return buildTextFieldGridItem(option, TextInputType.number,
             AddPersonalAssetHoldingTypeOptionType.number);
@@ -125,6 +126,14 @@ class _AddPersonalAssetTextStepWidgetState
       case AddPersonalAssetHoldingTypeOptionType.money:
         return buildTextFieldGridItem(option, TextInputType.number,
             AddPersonalAssetHoldingTypeOptionType.money);
+
+      case AddPersonalAssetHoldingTypeOptionType.percentage:
+        return buildTextFieldGridItem(option, TextInputType.number,
+            AddPersonalAssetHoldingTypeOptionType.percentage);
+
+      case AddPersonalAssetHoldingTypeOptionType.year:
+        return buildTextFieldGridItem(option, TextInputType.number,
+            AddPersonalAssetHoldingTypeOptionType.year);
 
       case AddPersonalAssetHoldingTypeOptionType.date:
         return buildDateGridItemWidget(option);
@@ -140,8 +149,14 @@ class _AddPersonalAssetTextStepWidgetState
   Widget buildTextFieldGridItem(PersonalAssetTypeOptionModel option, type,
       AddPersonalAssetHoldingTypeOptionType optionType) {
     return AddAssetTextField(
+
         // controller: c,
         optioType: option.type,
+        prefix: option.type == 'money'
+            ? '\$'
+            : option.type == 'percentage'
+                ? '%'
+                : ' ',
         keyboardType: type,
         //  keyboardType: TextInputType.text,
         // key: UniqueKey(),
@@ -149,17 +164,28 @@ class _AddPersonalAssetTextStepWidgetState
         onChanged: (value) {
           //    print('asdasddasdasdlkjad;jasdlsajdlasdlivulsdvulasvdlus');
           // print(c.text + '11221');
-          uiController.onInputChanged(
-            value.toString().replaceAll(',', ''),
-            optionType,
-            option.id,
-          );
+          if (option.type == 'text')
+            uiController.onInputChanged(
+              value,
+              optionType,
+              option.id,
+            );
+          else {
+            value = value.toString().replaceAll(RegExp('[^0-9.]'), '');
+            print(value);
+            uiController.onInputChanged(
+              value,
+              optionType,
+              option.id,
+            );
+          }
         });
   }
 
   Widget buildDateGridItemWidget(PersonalAssetTypeOptionModel option) {
     return DatePickerPlaceholderWidget(
       // key: UniqueKey(),
+
       hint: option.name,
 
       onDatedPicked: (date) => uiController.onInputChanged(

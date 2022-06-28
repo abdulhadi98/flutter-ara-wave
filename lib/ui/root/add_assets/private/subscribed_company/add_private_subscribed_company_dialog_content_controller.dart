@@ -47,15 +47,16 @@ class AddPrivateSubscribedCompanyDialogContentController
       purchasedAt: companyInfo!.initialInvestmentYear.toString() + '-01-01', //
       investedCapital: companySharesStep!.investmentCapital
           .toString()
-          .replaceAll(',', ''), //
+          .replaceAll(RegExp('[^0-9.]'), ''), //
       purchasedPrice: '', //
       shareClass: companySharesStep!.sharesClass, //
       companySharesOutstanding: companySharesStep!.companySharesOutstanding
           .toString()
-          .replaceAll(',', ''), //
-      quantity: int.parse(companySharesStep!.sharesPurchased
-          .toString()
-          .replaceAll(',', '')), // TODO
+          .replaceAll(RegExp('[^0-9.]'), ''), //
+      quantity: double.parse(companySharesStep!.sharesPurchased
+              .toString()
+              .replaceAll(RegExp('[^0-9.]'), ''))
+          .toInt(), // TODO
       source: 'test', //TODO
     );
   }

@@ -15,7 +15,7 @@ class AddPersonalAssetStepDialogContent extends BaseStateFullWidget {
   final String stepsTitle;
   final List<PersonalAssetTypeStep> steps;
   final Function(List<AddPersonalAssetOptionModel> chooseOptionList, List<String>? imageUrlList) onNextClicked;
-  AddPersonalAssetStepDialogContent({
+    AddPersonalAssetStepDialogContent({
     required this.stepsTitle,
     required this.steps,
     required this.onNextClicked,

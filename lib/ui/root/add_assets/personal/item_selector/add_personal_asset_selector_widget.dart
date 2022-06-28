@@ -25,7 +25,6 @@ class AddPersonalAssetSelectorWidget<T> extends BaseStateFullWidget {
 class _AddPersonalAssetSelectorWidgetState<T>
     extends BaseStateFullWidgetState<AddPersonalAssetSelectorWidget>
     with AddPersonalAssetSelectorWidgetDi<T> {
-
   @override
   void initState() {
     initScreenDi();
@@ -55,8 +54,7 @@ class _AddPersonalAssetSelectorWidgetState<T>
               SizedBox(height: height * .03),
             ],
           );
-        }
-    );
+        });
   }
 
   Widget buildTypesGrid({required List<T> items, required T? selectedItem}) {
@@ -74,7 +72,7 @@ class _AddPersonalAssetSelectorWidgetState<T>
         return GestureDetector(
           onTap: () => uiController.onGridItemClicked(items[index]),
           child: widget.gridItemBuilder(
-            items[index]==selectedItem,
+            items[index] == selectedItem,
             items[index],
           ),
         );
@@ -91,6 +89,4 @@ class _AddPersonalAssetSelectorWidgetState<T>
       // isDone: type!=null,
     );
   }
-
-
 }

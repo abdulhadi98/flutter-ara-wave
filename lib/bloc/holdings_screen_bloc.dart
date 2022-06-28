@@ -23,9 +23,12 @@ import 'package:wave_flutter/services/api_provider.dart';
 import 'package:wave_flutter/services/data_resource.dart';
 import 'package:wave_flutter/storage/data_store.dart';
 import '../helper/utils.dart';
+import '../ui/common_widgets/chart_card_item.dart';
 import '../ui/root/home_screen.dart';
 import 'general_bloc.dart';
 import 'package:http/http.dart' as http;
+
+List<ChartData> privateChartDataa = [];
 
 class HoldingsScreenBloc {
   final ApiProvider _apiProvider;
@@ -89,93 +92,143 @@ class HoldingsScreenBloc {
     );
   }
 
+  Future getPrivateChartValue() async {
+    // setState(() {
+    //   privateChartSpinner = true;
+    //   emptyPrivateChart = false;
+    // });
+    try {
+      privateChartDataa.clear();
+      print('xxxxx');
+      //  dynamic api = _dataStore!.getApiToken();
+      // String? api = _dataStore!.userModel!.apiToken;
+      // dynamic api = _dataStore!.getApiToken().then((value) => apiToken = value!);
+      String? apiToken = HomeScreen.apiToken;
+      var request;
+      var response;
+      var url = Uri.parse(
+        'https://wave.aratech.co/api/get-private-assets-chart',
+      );
+      print('///////////' + url.toString() + '//tokennnnnn///' + apiToken!);
+
+      request = http.MultipartRequest('POST', url);
+      request.fields['api_token'] = apiToken;
+      response = await request.send();
+      var xx = await http.Response.fromStream(response);
+      var x = jsonDecode(xx.body);
+
+      print('///////////////////////////////////////////////////');
+      print(x.toString());
+      print('///////////////////////////////////////////////////');
+
+      Map<dynamic, dynamic> payload = x['data'];
+      payload.forEach((element, val) {
+        var t = element;
+        if (t.length >= 10)
+          t = t.substring(0, 10);
+        else if (t.length < 5) t = t + '-01-01';
+        //  String temp = t.length >= 10 ? t.substring(0, 10) : t;
+        DateTime acquisitionDate = DateTime.parse(t);
+        print('$acquisitionDate' + '');
+
+        int growth = val.toInt();
+        // int intGrowth = growth.toInt();
+        // print('$growth' + 'aloalo');
+        // if (growth == 0) growth = 0.01;
+        privateChartDataa.add(ChartData(acquisitionDate, growth));
+
+        print('personalAassetTtype = $acquisitionDate');
+        print('growth = $growth');
+      });
+    } catch (e) {
+      print(e);
+      // setState(() {
+      //   emptyPrivateChart = true;
+      //   privateChartSpinner = false;
+      // });
+    }
+  }
+
   _fetchAssetHoldings({required fetchList, onData, onError}) async {
     setAssetHoldings(DataResource.loading());
 
     DataResource<List<HoldingModel>> dataRes;
-    List<PrivateHoldingModel> manualAssets = [];
+    try {
+      List<PrivateHoldingModel> manualAssets = [];
 
-    String? apiToken = HomeScreen.apiToken;
-    var request;
-    var response;
-    var url = Uri.parse(
-      'https://wave.aratech.co/api/get-private-asset-manual-entries',
-    );
-    print('///////////' + url.toString() + '//tokennnnnn///' + apiToken!);
+      String? apiToken = HomeScreen.apiToken;
+      var request;
+      var response;
+      var url = Uri.parse(
+        'https://wave.aratech.co/api/get-private-asset-manual-entries',
+      );
+      print('///////////' + url.toString() + '//tokennnnnn///' + apiToken!);
 
-    request = http.MultipartRequest('POST', url);
-    request.fields['api_token'] = apiToken;
-    response = await request.send();
-    var xx = await http.Response.fromStream(response);
-    var x = jsonDecode(xx.body); //rrr
-    print(x);
-    List payload = x['data'];
-    // print(
-    //     'AAA//////////////////////////////////////////////////////////////////////////////////////////////////////');
+      request = http.MultipartRequest('POST', url);
+      request.fields['api_token'] = apiToken;
+      response = await request.send();
+      var xx = await http.Response.fromStream(response);
+      var x = jsonDecode(xx.body); //rrr
+      print(x);
+      List payload = x['data'];
+      PrivateHoldingModel? other;
+      payload.forEach((element) {
+        dynamic id = element['id'] ?? '';
+        dynamic userID = element['user_id'] ?? '';
 
-    // print(
-    //     'XAA//////////////////////////////////////////////////////////////////////////////////////////////////////');
-    PrivateHoldingModel? other;
-    payload.forEach((element) {
-      dynamic id = element['id'] ?? '';
-      dynamic userID = element['user_id'] ?? '';
+        dynamic companyName = element['company_name'] ?? '';
+        dynamic sharesPurchased = element['shares_purchased'] ?? '';
+        dynamic purchasedPrice = element['purchased_price'] ?? "";
+        dynamic headCity = element['headquarter_city'] ?? "";
+        dynamic country = element['country'] ?? "";
+        dynamic createdAt = element['created_at'] ?? "";
+        dynamic marketValue = element['market_value'] ?? "";
 
-      dynamic companyName = element['company_name'] ?? '';
-      dynamic sharesPurchased = element['shares_purchased'] ?? '';
-      dynamic purchasedPrice = element['purchased_price'] ?? "";
-      dynamic headCity = element['headquarter_city'] ?? "";
-      dynamic country = element['coutry'] ?? "";
-
-      //    dynamic privateAsset = element['private_asset'] ?? "";
-      //    dynamic icon = privateAsset['private_asset'] ?? "";
-
-      //  print('aewww' + icon);
-      //  manualAssets.add();
-      PrivateAssetModel? assetModel = PrivateAssetModel(
-        assetType: PrivateAssetType(
-            createdAt: DateTime.now(),
+        PrivateAssetModel? assetModel = PrivateAssetModel(
+          assetType: PrivateAssetType(
+            createdAt: DateTime.parse(createdAt),
             id: 0,
             kind: 'manual',
             name: '',
-            updatedAt: DateTime.now()),
-        kind: 'manual',
-        icon: '123',
-        //    icon: element['private_asset']['icon'],
-        assetCategory: PrivateAssetCategory(
-          id: 1,
+            updatedAt: DateTime.now(),
+          ),
+          kind: 'manual',
+          icon: '123',
+          //    icon: element['private_asset']['icon'],
+          assetCategory: PrivateAssetCategory(
+            id: 1,
+            name: companyName ?? 'a',
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          ),
+          assetCategoryId: 1,
+          id: id ?? 0,
+
           name: companyName ?? 'a',
-          createdAt: DateTime.now(),
+          purchasePrice: marketValue ?? 12,
+          stockSymbol: 'aBI0YtoocgQJHKfY7kKlEUx5Ftiwd4fHIIQIiAVH.png',
+        );
+
+        manualAssets.add(PrivateHoldingModel(
+          kind: 'manual',
+          companySharesOutstanding: 'asd',
+          country: country ?? '',
+          headquarterCity: headCity ?? '',
+          investedCapital: 'asd',
+          privateAssetId: 1,
+          shareClass: 'a',
+          createdAt: DateTime.parse(createdAt),
+          purchasedAt: DateTime.now(),
           updatedAt: DateTime.now(),
-        ),
-        assetCategoryId: 1,
-        id: id ?? 0,
-
-        name: companyName ?? 'a',
-        purchasePrice: purchasedPrice ?? 12,
-        stockSymbol: 'aBI0YtoocgQJHKfY7kKlEUx5Ftiwd4fHIIQIiAVH.png',
-      );
-
-      manualAssets.add(PrivateHoldingModel(
-        kind: 'manual',
-        companySharesOutstanding: 'asd',
-        country: country ?? '',
-        headquarterCity: headCity ?? '',
-        investedCapital: 'asd',
-        privateAssetId: 1,
-        shareClass: 'a',
-        createdAt: DateTime.now(),
-        purchasedAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        verified: 10,
-        userId: userID ?? '1',
-        id: id ?? 1,
-        asset: assetModel,
-        purchasedPrice: purchasedPrice ?? 1,
-        quantity: sharesPurchased ?? 1,
-      ));
-    });
-
-    try {
+          verified: 10,
+          userId: userID ?? '1',
+          id: id ?? 1,
+          asset: assetModel,
+          purchasedPrice: purchasedPrice ?? 1, //not purchased price
+          quantity: sharesPurchased ?? 1,
+        ));
+      });
+      await getPrivateChartValue();
       setAssetHoldings(DataResource.loading());
 //rrr
       print(
@@ -189,6 +242,7 @@ class HoldingsScreenBloc {
         for (var i = 0; i < assetHoldings.length; i++) {
           manualAssets.add(assetHoldings[i]);
         }
+        manualAssets.sort((a, b) => a.createdAt.compareTo(b.createdAt));
         dataRes = DataResource.success(manualAssets);
       } else if (assetHoldings.isNotEmpty && manualAssets.isEmpty)
         dataRes = DataResource.success(assetHoldings);

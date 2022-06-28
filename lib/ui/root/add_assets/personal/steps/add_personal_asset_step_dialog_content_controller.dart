@@ -57,10 +57,10 @@ class AddPersonalAssetStepDialogContentController {
     // GetIt _getIt = GetIt.instance;
     // late RootScreenController rootScreenController;
     // rootScreenController = _getIt<RootScreenController>();
-    Xclass xclass = Xclass(dataStore: DataStore(), chartData: xList);
-    await xclass.getPersonalChartValue();
+    // Xclass xclass = Xclass(dataStore: DataStore(), chartData: xList);
+    // await xclass.getPersonalChartValue();
     // uiController.onAddingPersonalAssetHoldingClicked(context);
-
+      
     onDoneCallback(addPersonalAssetOptionList, imageUrlList);
     // rootScreenController.setSharedData(HoldingsType.PERSONAL);
   }

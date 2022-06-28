@@ -62,13 +62,15 @@ class _PriceHistoryStepDialogContentState
           controller: uiController.currentMarketValueTextEditingController,
           keyboardType: TextInputType.number,
           hint: appLocal.trans('current_market_value'),
-          onChanged: (value) => uiController.onPriceValueTextFieldChanged(
-              value, uiController.yearPriceList.length - 1),
+          onChanged: (value) {
+            print(value);
+            uiController.onPriceValueTextFieldChanged(
+                value, uiController.yearPriceList.length - 1);
+          },
           height: height * .07,
         ),
         SizedBox(height: height * .06),
         AddAssetActionButton(
-          
           loadingStream: uiController.loadingStream,
           validationStream: uiController.validationStream,
           titleKey: 'finished',

@@ -11,13 +11,13 @@ class AddPersonalAssetDialogContent extends BaseStateFullWidget {
   AddPersonalAssetDialogContent({required this.onAssetAdded});
 
   @override
-  BaseStateFullWidgetState<AddPersonalAssetDialogContent> createState() => _AddPersonalAssetDialogContentState();
+  BaseStateFullWidgetState<AddPersonalAssetDialogContent> createState() =>
+      _AddPersonalAssetDialogContentState();
 }
 
 class _AddPersonalAssetDialogContentState
     extends BaseStateFullWidgetState<AddPersonalAssetDialogContent>
     with AddPersonalAssetDialogContentDi {
-
   @override
   void initState() {
     initScreenDi();
@@ -37,9 +37,12 @@ class _AddPersonalAssetDialogContentState
     return StreamBuilder<PersonalAssetType?>(
       stream: uiController.selectedTypeStream,
       builder: (context, typeSnapshot) {
-        if(typeSnapshot.data==null) return SelectPersonalAssetTypeDialogContent(
-          onTypeSelected: uiController.onTypeSelected,);
-        else return buildTypeSteps(typeSnapshot.data!);
+        if (typeSnapshot.data == null)
+          return SelectPersonalAssetTypeDialogContent(
+            onTypeSelected: uiController.onTypeSelected,
+          );
+        else
+          return buildTypeSteps(typeSnapshot.data!);
       },
     );
   }
@@ -48,13 +51,13 @@ class _AddPersonalAssetDialogContentState
     return AddPersonalAssetStepDialogContent(
       steps: type.steps,
       stepsTitle: type.name,
-      onNextClicked: (chooseOptionList, imageUrlList) => uiController.onAddingPersonalAssetHoldingClicked(
-        context: context ,
+      onNextClicked: (chooseOptionList, imageUrlList) =>
+          uiController.onAddingPersonalAssetHoldingClicked(
+        context: context,
         chooseOptionList: chooseOptionList,
         imageUrlList: imageUrlList,
         onAssetAdded: widget.onAssetAdded,
       ),
     );
   }
-
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:wave_flutter/bloc/holdings_screen_bloc.dart';
 import 'package:wave_flutter/di/holdings_screen_di.dart';
 import 'package:wave_flutter/helper/app_colors.dart';
 import 'package:wave_flutter/helper/app_fonts.dart';
@@ -36,11 +37,14 @@ import 'package:wave_flutter/ui/root/add_assets/public/add_public_asset_holding_
 import 'package:wave_flutter/ui/root/home_screen.dart';
 import 'package:http/http.dart' as http;
 
+import '../controllers/holdings_screen_controller.dart';
+
 class HoldingsScreen extends BaseStateFullWidget {
   final HoldingsType holdingsType;
   static int? assetId;
   static dynamic typeId = 0;
   static dynamic optionValueId = 0;
+  static HoldingsScreenController? staticHoldingsScreenController;
 
   static String? stockEx;
   HoldingsScreen({required this.holdingsType});
@@ -63,7 +67,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
     super.initState();
 
     initScreenDi();
-    getPrivateChartValue();
+    //  getPrivateChartValue();
     uiController.setHoldingsType(widget.holdingsType);
     uiController.fetchAssetsFinancialsResults();
     uiController.fetchAssetsResults();
@@ -136,6 +140,128 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
     });
   }
 
+  Widget buildPrivateChartWidget() {
+    return StreamBuilder<DataResource<List<HoldingModel>>>(
+      stream: holdingsBloc.assetHoldingsStream,
+      builder: (context, assetsSnapshot) {
+        if (assetsSnapshot.hasData && assetsSnapshot.data != null) {
+          switch (assetsSnapshot.data!.status) {
+            case Status.LOADING:
+              return Expanded(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            case Status.SUCCESS:
+              return Container(
+                width: double.infinity,
+                // height: height* .40,
+                padding: EdgeInsets.symmetric(vertical: height * .01),
+                decoration: BoxDecoration(
+                  color: AppColors.mainColor,
+                  borderRadius: BorderRadius.circular(width * 0.019),
+                ),
+                height: height * .247,
+                child: SfCartesianChart(
+                  // primaryXAxis: DateTimeAxis(),
+                  // margin: EdgeInsets.symmetric(horizontal: width* .025, vertical: height* .025),
+                  series: <CartesianSeries<ChartData, DateTime>>[
+                    // Renders area chart
+                    AreaSeries<ChartData, DateTime>(
+                      dataSource: privateChartDataa,
+                      xValueMapper: (ChartData data, _) => data.x,
+                      yValueMapper: (ChartData data, _) => data.y,
+                      borderDrawMode: BorderDrawMode.excludeBottom,
+                      borderColor: AppColors.blue,
+                      borderWidth: 1,
+                      gradient: LinearGradient(
+                        end: Alignment.topCenter,
+                        begin: Alignment.bottomCenter,
+                        tileMode: TileMode.clamp,
+                        colors: [
+                          AppColors.blue.withOpacity(.01),
+                          AppColors.blue.withOpacity(.25),
+                          AppColors.blue.withOpacity(.5),
+                        ],
+                        stops: [
+                          0.0,
+                          0.5,
+                          1.0,
+                        ],
+                      ),
+                    )
+                  ],
+                  zoomPanBehavior: ZoomPanBehavior(
+                    // enablePinching: true,
+                    enablePanning: true,
+                    zoomMode: ZoomMode.x,
+                  ),
+                  plotAreaBorderWidth: 0.0,
+                  // primaryXAxis: NumericAxis(
+                  //   majorGridLines: MajorGridLines(width: 0),
+                  //   axisLine: AxisLine(
+                  //     width: 0.0,
+                  //   ),
+                  //   tickPosition: TickPosition.outside,
+                  //   majorTickLines: MajorTickLines(width: 0),
+                  //     visibleMinimum: chartData[chartData.length-chartData.length~/2].year,
+                  //     visibleMaximum: chartData[chartData.length-chartData.length~/2].year,
+                  // ),
+                  margin:
+                      EdgeInsets.only(right: width * 0.04, top: width * 0.01),
+                  primaryXAxis: DateTimeAxis(
+                    // // intervalType: _getChartIntervalType(filter),
+                    // visibleMinimum: chartData.length > 1
+                    //     ? chartData[chartData.length - (chartData.length ~/ 2)].x
+                    //     : (chartData[chartData.length - 1].x),
+                    // visibleMaximum: chartData[chartData.length - 1].x,
+                    majorGridLines: MajorGridLines(width: 0),
+                    axisLine: AxisLine(
+                      width: 0.0,
+                    ),
+                    tickPosition: TickPosition.outside,
+                    labelAlignment: LabelAlignment.start,
+
+                    majorTickLines: MajorTickLines(width: 0),
+                    autoScrollingMode: AutoScrollingMode.end,
+                  ),
+                  primaryYAxis: NumericAxis(
+                    edgeLabelPlacement: EdgeLabelPlacement.shift,
+                    labelFormat: '{value}',
+                    // numberFormat: NumberFormat.simpleCurrency(decimalDigits: 0),
+                    numberFormat: NumberFormat.compactSimpleCurrency(),
+                    majorGridLines: MajorGridLines(width: .03),
+                    axisLine: AxisLine(
+                      width: 0.0,
+                    ),
+                    majorTickLines: MajorTickLines(width: 0),
+                  ),
+                ),
+              );
+            case Status.NO_RESULTS:
+              return Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: height * 0.055,
+                  horizontal: 24,
+                ),
+                child: ErrorMessageWidget(
+                    messageKey: 'no_result_found_message',
+                    image: 'assets/images/ic_not_found.png'),
+              );
+            case Status.FAILURE:
+              return ErrorMessageWidget(
+                  messageKey: '', image: 'assets/images/ic_error.png');
+
+            default:
+              return Container();
+          }
+        } else {
+          return Container();
+        }
+      },
+    );
+  }
+
   Widget protfolioWidget() {
     return Container(
       width: double.infinity,
@@ -143,7 +269,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
       padding: EdgeInsets.symmetric(vertical: height * .01),
       decoration: BoxDecoration(
         color: AppColors.mainColor,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(width * 0.019),
       ),
       height: height * .247,
       child: SfCartesianChart(
@@ -152,7 +278,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
         series: <CartesianSeries<ChartData, DateTime>>[
           // Renders area chart
           AreaSeries<ChartData, DateTime>(
-            dataSource: privateChartData,
+            dataSource: privateChartDataa,
             xValueMapper: (ChartData data, _) => data.x,
             yValueMapper: (ChartData data, _) => data.y,
             borderDrawMode: BorderDrawMode.excludeBottom,
@@ -284,7 +410,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
   }
 
   buildSettingsAndTabsSliver(context, HoldingsType tab, innerBoxIsScrolled) {
-    double expandedHeaderHeight = height * .55;
+    double expandedHeaderHeight = height * .529;
 
     return SliverOverlapAbsorber(
       handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
@@ -328,44 +454,37 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                       loading
                           ? Container(
                               height: height * .22,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CircularProgressIndicator(),
-                                ],
-                              ),
+                              child: Center(child: CircularProgressIndicator()),
                             )
-                          : ChartCardItem(
-                              chartType: ChartsType.COLUMN,
-                            ),
-                    if (tab == HoldingsType.PUBLIC) buildChartWidget(),
-                    if (tab == HoldingsType.PRIVATE)
-                      privateChartSpinner
-                          ? Container(
-                              height: height * .22,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CircularProgressIndicator(),
-                                ],
-                              ),
-                            )
-                          : emptyPrivateChart
+                          : xList!.every((element) => element.sales == 0)
                               ? Container(
-                                  height: height * .22,
+                                  width: double.infinity,
+                                  // height: height* .40,
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: height * .01),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.mainColor,
+                                    borderRadius:
+                                        BorderRadius.circular(width * 0.019),
+                                  ),
+                                  height: height * .244,
                                   child: Center(
                                     child: Text(
-                                      'Try to add some assets',
+                                      appLocal.trans('no_result_found_message'),
                                       style: TextStyle(
-                                        fontSize:
-                                            AppFonts.getMediumFontSize(context),
                                         color: Colors.white,
-                                        height: 1.0,
+                                        fontSize:
+                                            AppFonts.getSmallFontSize(context),
+                                        //height: 1.0,
                                       ),
                                     ),
                                   ),
                                 )
-                              : protfolioWidget(),
+                              : ChartCardItem(
+                                  chartType: ChartsType.COLUMN,
+                                ),
+                    if (tab == HoldingsType.PUBLIC) buildChartWidget(),
+                    if (tab == HoldingsType.PRIVATE) buildPrivateChartWidget(),
 
                     // (tab != HoldingsType.PERSONAL && loading == false)
                     //     ? buildChartWidget()
@@ -465,15 +584,16 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
             width: width,
             context: context,
             appLocal: appLocal,
-            logoTitleKey: type.toString().split('.').last.toLowerCase(),
+            logoTitleKey: '',
             isAddProgressExist: true,
-            addEditIcon: 'assets/icons/ic_add.svg',
+            addEditIcon: 'assets/icons/add_asset_icon.svg',
             addEditTitleKey: 'new_asset',
             onAddEditClick: () {
               uiController.clearAddAssetInputs();
               print('HoldingsScreen.typeId = -4');
               HoldingsScreen.typeId = -4;
               showAddAssetDialog(
+                popupHeight: height / 1,
                 context: context,
                 padding: EdgeInsets.only(
                   right: width * .1,
@@ -494,20 +614,24 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
       case HoldingsType.PRIVATE:
         return AddPrivateAssetDialogContent(
           onAssetAdded: () {
-            uiController.fetchAssetsResults();
-            getPrivateChartValue();
+            uiController.fetchAssetsResults(); //;';';'
+            //  getPrivateChartValue();
           },
         );
 
       case HoldingsType.PUBLIC:
-        return AddPublicAssetHoldingDialogContent(
-          onAssetAdded: () => uiController.fetchAssetsResults(),
-        );
+        return AddPublicAssetHoldingDialogContent(onAssetAdded: () {
+          uiController.fetchAssetsResults();
+          uiController.fetchAssetsFinancialsResults();
+          uiController.fetchPublicAssetHistorical();
+        });
 
       case HoldingsType.PERSONAL:
         return AddPersonalAssetDialogContent(
           onAssetAdded: () async {
             uiController.fetchAssetsResults();
+            uiController.fetchAssetsFinancialsResults();
+
             setState(() {
               loading = true;
             });
@@ -528,7 +652,8 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
       uiController.setHoldingsType(holdingType);
       uiController.fetchAssetsFinancialsResults();
       uiController.fetchAssetsResults();
-      getPrivateChartValue();
+      if (holdingType == HoldingsType.PERSONAL) loadingStatus();
+      //  getPrivateChartValue();
     }
 
     return PreferredSize(
@@ -856,8 +981,9 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
             icon:
                 'https://wave.aratech.co/images/private_assets/${item.asset?.icon}',
             quantity: item.quantity.toString(),
-            purchasedPrice:
-                double.parse(item.purchasedPrice).toStringAsFixed(3).toString(),
+            purchasedPrice: double.parse(item.asset!.purchasePrice!)
+                .toStringAsFixed(3)
+                .toString(),
             onClick: () {
               HoldingsScreen.assetId = item.id;
               print('zzzzzzz' +
@@ -898,7 +1024,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
             name: item.asset.name ?? '',
             salePrice: item.asset.salePrice.toString(),
             country: item.asset.stockSymbol ?? '',
-            city: item.stockEx ?? '',
+            city: item.asset.primaryExchange ?? '2',
             quantity: item.quantity.toString(),
             purchasedPrice: double.parse(item.purchasedPrice).toString(),
             onClick: () {

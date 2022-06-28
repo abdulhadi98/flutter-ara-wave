@@ -27,6 +27,7 @@ class PublicHoldingModel extends HoldingModel {
     required this.userId,
     required this.purchasedAt,
     required this.stockEx,
+    
   }) : super(
           purchasedPrice: purchasedPrice,
           quantity: quantity,

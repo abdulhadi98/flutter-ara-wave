@@ -47,49 +47,57 @@ class _MyPortfolioScreenState
     setState(() {
       spinner = true;
     });
-    protfolioChartData.clear();
-    print('xxxxx');
-    //  dynamic api = _dataStore!.getApiToken();
-    // String? api = _dataStore!.userModel!.apiToken;
-    // dynamic api = _dataStore!.getApiToken().then((value) => apiToken = value!);
-    String? apiToken = HomeScreen.apiToken;
-    var request;
-    var response;
-    var url = Uri.parse(
-      'https://wave.aratech.co/api/get-assets-chart-main-portfolio-data',
-    );
-    print('///////////' + url.toString() + '//tokennnnnn///' + apiToken!);
+    try {
+      protfolioChartData.clear();
+      print('xxxxx');
+      //  dynamic api = _dataStore!.getApiToken();
+      // String? api = _dataStore!.userModel!.apiToken;
+      // dynamic api = _dataStore!.getApiToken().then((value) => apiToken = value!);
+      String? apiToken = HomeScreen.apiToken;
+      var request;
+      var response;
+      var url = Uri.parse(
+        'https://wave.aratech.co/api/get-assets-chart-main-portfolio-data',
+      );
+      print('///////////' + url.toString() + '//tokennnnnn///' + apiToken!);
 
-    request = http.MultipartRequest('POST', url);
-    request.fields['api_token'] = apiToken;
-    response = await request.send();
-    var xx = await http.Response.fromStream(response);
-    var x = jsonDecode(xx.body);
+      request = http.MultipartRequest('POST', url);
+      request.fields['api_token'] = apiToken;
+      response = await request.send();
+      var xx = await http.Response.fromStream(response);
+      var x = jsonDecode(xx.body);
 
-    print('///////////////////////////////////////////////////');
-    print(x.toString());
-    print('///////////////////////////////////////////////////');
-    List payload = x['data'];
+      print('///////////////////////////////////////////////////');
+      print(x.toString());
+      print('///////////////////////////////////////////////////');
+      List payload = x['data'];
 
-    ChartData? other;
-    payload.forEach((element) {
-      var t = element['acquisition_date'].toString();
-      if (t.length >= 10)
-        t = t.substring(0, 10);
-      else if (t.length < 5) t = t + '-01-01';
-      //  String temp = t.length >= 10 ? t.substring(0, 10) : t;
-      DateTime acquisitionDate = DateTime.parse(t);
-      print('$acquisitionDate' + '');
+      ChartData? other;
+      payload.forEach((element) {
+        var t = element['acquisition_date'].toString();
+        if (t.length >= 10)
+          t = t.substring(0, 10);
+        else if (t.length < 5) t = t + '-01-01';
+        //  String temp = t.length >= 10 ? t.substring(0, 10) : t;
+        if (t != '-01-01') {
+          DateTime acquisitionDate = DateTime.parse(t);
+          print('$acquisitionDate' + '');
+          int growth = element['price'].toInt();
+          // int intGrowth = growth.toInt();
+          // print('$growth' + 'aloalo');
+          // if (growth == 0) growth = 0.01;
+          protfolioChartData.add(ChartData(acquisitionDate, growth));
 
-      int growth = element['price'].toInt();
-      // int intGrowth = growth.toInt();
-      // print('$growth' + 'aloalo');
-      // if (growth == 0) growth = 0.01;
-      protfolioChartData.add(ChartData(acquisitionDate, growth));
-
-      print('personalAassetTtype = $acquisitionDate');
-      print('growth = $growth');
-    });
+          print('personalAassetTtype = $acquisitionDate');
+          print('growth = $growth');
+        }
+      });
+    } catch (e) {
+      print(e);
+      setState(() {
+        spinner = false;
+      });
+    }
     setState(() {
       spinner = false;
     });
@@ -102,7 +110,7 @@ class _MyPortfolioScreenState
       padding: EdgeInsets.symmetric(vertical: height * .01),
       decoration: BoxDecoration(
         color: AppColors.mainColor,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(width * 0.019),
       ),
       height: height * .225,
       child: SfCartesianChart(
@@ -214,8 +222,8 @@ class _MyPortfolioScreenState
               // ),
               spinner
                   ? Container(
-                      height: height * .20,
-                      width: height * .20,
+                      height: height * .225,
+                      width: height * .225,
                       child: Center(
                         child: Container(
                             height: height * .04,
@@ -223,7 +231,28 @@ class _MyPortfolioScreenState
                             child: CircularProgressIndicator()),
                       ),
                     )
-                  : protfolioWidget(),
+                  : protfolioChartData.isEmpty
+                      ? Container(
+                          width: double.infinity,
+                          // height: height* .40,
+                          padding: EdgeInsets.symmetric(vertical: height * .01),
+                          decoration: BoxDecoration(
+                            color: AppColors.mainColor,
+                            borderRadius: BorderRadius.circular(width * 0.019),
+                          ),
+                          height: height * .225,
+                          child: Center(
+                            child: Text(
+                              appLocal.trans('no_result_found_message'),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: AppFonts.getSmallFontSize(context),
+                                //height: 1.0,
+                              ),
+                            ),
+                          ),
+                        )
+                      : protfolioWidget(),
               SizedBox(height: height * 0.0167),
               buildChartInfoRow(),
 
@@ -257,15 +286,15 @@ class _MyPortfolioScreenState
                       SvgPicture.asset(
                         'assets/icons/ic_home.svg',
                         fit: BoxFit.contain,
-                        width: width * .065,
-                        height: width * .065,
+                        width: width * .05,
+                        height: width * .05,
                         color: AppColors.gray,
                       ),
                     ],
                   ),
                 ),
                 SizedBox(
-                  width: width * .04,
+                  width: width * .035,
                 ),
                 Expanded(
                   child: Column(
@@ -287,7 +316,7 @@ class _MyPortfolioScreenState
                         child: Text(
                           'Estimated NET balance in USD',
                           style: TextStyle(
-                            fontSize: AppFonts.getSmallFontSize(context),
+                            fontSize: AppFonts.getXXSmallFontSize(context),
                             color: Colors.white.withOpacity(.35),
                             height: 1.0,
                           ),
@@ -302,7 +331,7 @@ class _MyPortfolioScreenState
             width: width,
             context: context,
             appLocal: appLocal,
-            logoTitleKey: 'equity',
+            logoTitleKey: '',
             netWorth:
                 '${userPortfolioFinancialsSnapshot.data?.data?.formattedNetWorth ?? 0.0}',
             growth:
@@ -320,14 +349,14 @@ class _MyPortfolioScreenState
               ChartInfoCardItem(
                   title: appLocal.trans('invested'),
                   value:
-                      '${userPortfolioFinancialsSnapshot.data?.data?.formattedInvested ?? 0.0}'),
+                      '\$ ${userPortfolioFinancialsSnapshot.data?.data?.formattedInvested ?? 0.0}'),
               SizedBox(
                 width: width * 0.025,
               ),
               ChartInfoCardItem(
                   title: appLocal.trans('profit'),
                   value:
-                      '${userPortfolioFinancialsSnapshot.data?.data?.formattedProfit ?? 0.0}'),
+                      '\$ ${userPortfolioFinancialsSnapshot.data?.data?.formattedProfit ?? 0.0}'),
               SizedBox(
                 width: width * 0.025,
               ),
@@ -359,7 +388,7 @@ class _MyPortfolioScreenState
               rootScreenController.setSharedData(HoldingsType.PUBLIC),
         ),
         SizedBox(
-          height: height * .015,
+          height: height * .014,
         ),
         buildHoldingAssetsItem(
           titleKey: 'personal_holdings',
@@ -389,16 +418,17 @@ class _MyPortfolioScreenState
                   .setCurrentScreen(AppMainScreens.HOLDINGS_SCREEN);
             },
             child: Container(
+              height: height * 0.085,
               width: double.infinity,
               padding: EdgeInsets.only(
                 bottom: height * .01,
                 top: height * .01,
-                right: width * .02,
-                left: width * .025,
+                right: width * .035,
+                left: width * .05,
               ),
               decoration: BoxDecoration(
                 color: AppColors.mainColor,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(width * 0.019),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -412,13 +442,14 @@ class _MyPortfolioScreenState
                   ),
                   Spacer(),
                   Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
                         Utils.getFormattedNum(financialsSnapshot
                                         .data?.data?.assetNetworth ??
                                     0.0) ==
-                                '.00'
+                                '0'
                             ? ''
                             : '${Utils.getFormattedNum(financialsSnapshot.data?.data?.assetNetworth ?? 0.0)}',
                         // '${financialsSnapshot.data?.data?.assetNetworth??''}',
@@ -442,7 +473,7 @@ class _MyPortfolioScreenState
                             Text(
                               financialsSnapshot.data?.data
                                           ?.getAssetGrowthRounded() ==
-                                      '+.00%'
+                                      '+0%'
                                   ? ''
                                   : financialsSnapshot.data?.data
                                           ?.getAssetGrowthRounded() ??

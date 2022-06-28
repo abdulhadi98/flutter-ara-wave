@@ -68,8 +68,7 @@ class AddAssetDialog extends StatelessWidget {
                               ),
                             ),
                             child: ConstrainedBox(
-                              constraints:
-                                  BoxConstraints(maxHeight: height / 1.59),
+                              constraints: BoxConstraints(maxHeight: height ),
                               child: SingleChildScrollView(
                                   scrollDirection: Axis.vertical,
                                   child: contentWidget),

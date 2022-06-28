@@ -17,50 +17,79 @@ import 'package:wave_flutter/models/upload_image_model.dart';
 import 'package:wave_flutter/services/data_resource.dart';
 
 class AddAssetDialogContentController {
-
   final HoldingsScreenBloc _holdingsScreenBloc;
-  AddAssetDialogContentController({required holdingsScreenBloc, }):
-        _holdingsScreenBloc = holdingsScreenBloc;
+  AddAssetDialogContentController({
+    required holdingsScreenBloc,
+  }) : _holdingsScreenBloc = holdingsScreenBloc;
 
-  final BehaviorSubject<HoldingsType?> holdingsTypeController = BehaviorSubject<HoldingsType?>();
+  final BehaviorSubject<HoldingsType?> holdingsTypeController =
+      BehaviorSubject<HoldingsType?>();
   get holdingsTypeStream => holdingsTypeController.stream;
   HoldingsType? getHoldingsType() => holdingsTypeController.value;
   setHoldingsType(HoldingsType? type) => holdingsTypeController.sink.add(type);
 
-  final BehaviorSubject<AddAssetHoldingDropDownMenuModel?> selectedPublicCompanyController = BehaviorSubject<AddAssetHoldingDropDownMenuModel?>();
+  final BehaviorSubject<AddAssetHoldingDropDownMenuModel?>
+      selectedPublicCompanyController =
+      BehaviorSubject<AddAssetHoldingDropDownMenuModel?>();
   get selectedPublicCompanyStream => selectedPublicCompanyController.stream;
-  AddAssetHoldingDropDownMenuModel? getSelectedPublicCompany() => selectedPublicCompanyController.valueOrNull;
-  setSelectedPublicCompany(AddAssetHoldingDropDownMenuModel? company) => selectedPublicCompanyController.sink.add(company);
+  AddAssetHoldingDropDownMenuModel? getSelectedPublicCompany() =>
+      selectedPublicCompanyController.valueOrNull;
+  setSelectedPublicCompany(AddAssetHoldingDropDownMenuModel? company) =>
+      selectedPublicCompanyController.sink.add(company);
 
-  final BehaviorSubject<AddAssetHoldingDropDownMenuModel?> selectedPrivateCompanyController = BehaviorSubject<AddAssetHoldingDropDownMenuModel?>();
+  final BehaviorSubject<AddAssetHoldingDropDownMenuModel?>
+      selectedPrivateCompanyController =
+      BehaviorSubject<AddAssetHoldingDropDownMenuModel?>();
   get selectedPrivateCompanyStream => selectedPrivateCompanyController.stream;
-  AddAssetHoldingDropDownMenuModel? getSelectedPrivateCompany() => selectedPrivateCompanyController.valueOrNull;
-  setSelectedPrivateCompany(AddAssetHoldingDropDownMenuModel? company) => selectedPrivateCompanyController.sink.add(company);
+  AddAssetHoldingDropDownMenuModel? getSelectedPrivateCompany() =>
+      selectedPrivateCompanyController.valueOrNull;
+  setSelectedPrivateCompany(AddAssetHoldingDropDownMenuModel? company) =>
+      selectedPrivateCompanyController.sink.add(company);
 
-  final BehaviorSubject<AddAssetHoldingDropDownMenuModel?> selectedAssetTypesController = BehaviorSubject<AddAssetHoldingDropDownMenuModel?>();
+  final BehaviorSubject<AddAssetHoldingDropDownMenuModel?>
+      selectedAssetTypesController =
+      BehaviorSubject<AddAssetHoldingDropDownMenuModel?>();
   get selectedAssetTypesStream => selectedAssetTypesController.stream;
-  AddAssetHoldingDropDownMenuModel? getSelectedAssetTypes() => selectedAssetTypesController.valueOrNull;
-  setSelectedAssetTypes(AddAssetHoldingDropDownMenuModel? company) => selectedAssetTypesController.sink.add(company);
+  AddAssetHoldingDropDownMenuModel? getSelectedAssetTypes() =>
+      selectedAssetTypesController.valueOrNull;
+  setSelectedAssetTypes(AddAssetHoldingDropDownMenuModel? company) =>
+      selectedAssetTypesController.sink.add(company);
 
-  final BehaviorSubject<AddingPersonalAssetStages?> addingPersonalAssetStagesController = BehaviorSubject<AddingPersonalAssetStages?>();
-  get addingPersonalAssetStagesStream => addingPersonalAssetStagesController.stream;
-  AddingPersonalAssetStages? getAddingPersonalAssetStages() => addingPersonalAssetStagesController.valueOrNull;
-  setAddingPersonalAssetStages(AddingPersonalAssetStages? stage) => addingPersonalAssetStagesController.sink.add(stage);
+  final BehaviorSubject<AddingPersonalAssetStages?>
+      addingPersonalAssetStagesController =
+      BehaviorSubject<AddingPersonalAssetStages?>();
+  get addingPersonalAssetStagesStream =>
+      addingPersonalAssetStagesController.stream;
+  AddingPersonalAssetStages? getAddingPersonalAssetStages() =>
+      addingPersonalAssetStagesController.valueOrNull;
+  setAddingPersonalAssetStages(AddingPersonalAssetStages? stage) =>
+      addingPersonalAssetStagesController.sink.add(stage);
 
-  final BehaviorSubject<String?> selectedPersonalAssetCategoryController = BehaviorSubject<String?>();
-  get selectedPersonalAssetCategoryStream => selectedPersonalAssetCategoryController.stream;
-  String? getSelectedPersonalAssetCategory() => selectedPersonalAssetCategoryController.valueOrNull;
-  setSelectedPersonalAssetCategory(String? category) => selectedPersonalAssetCategoryController.sink.add(category);
+  final BehaviorSubject<String?> selectedPersonalAssetCategoryController =
+      BehaviorSubject<String?>();
+  get selectedPersonalAssetCategoryStream =>
+      selectedPersonalAssetCategoryController.stream;
+  String? getSelectedPersonalAssetCategory() =>
+      selectedPersonalAssetCategoryController.valueOrNull;
+  setSelectedPersonalAssetCategory(String? category) =>
+      selectedPersonalAssetCategoryController.sink.add(category);
 
-  final BehaviorSubject<bool?> validateAddPersonalAssetInfoController = BehaviorSubject<bool?>();
-  get validateAddPersonalAssetInfoStream => validateAddPersonalAssetInfoController.stream;
-  bool? getValidateAddPersonalAssetInfo() => validateAddPersonalAssetInfoController.valueOrNull;
-  setValidateAddPersonalAssetInfo(bool? state) => validateAddPersonalAssetInfoController.sink.add(state);
+  final BehaviorSubject<bool?> validateAddPersonalAssetInfoController =
+      BehaviorSubject<bool?>();
+  get validateAddPersonalAssetInfoStream =>
+      validateAddPersonalAssetInfoController.stream;
+  bool? getValidateAddPersonalAssetInfo() =>
+      validateAddPersonalAssetInfoController.valueOrNull;
+  setValidateAddPersonalAssetInfo(bool? state) =>
+      validateAddPersonalAssetInfoController.sink.add(state);
 
-  final BehaviorSubject<List<XFile?>?> pickedPhotoAssetsController = BehaviorSubject<List<XFile?>?>();
+  final BehaviorSubject<List<XFile?>?> pickedPhotoAssetsController =
+      BehaviorSubject<List<XFile?>?>();
   get pickedPhotoAssetsStream => pickedPhotoAssetsController.stream;
-  List<XFile?>? getPickedPhotoAssets() => pickedPhotoAssetsController.valueOrNull;
-  setPickedPhotoAssets(List<XFile?>? photoAssets) => pickedPhotoAssetsController.sink.add(photoAssets);
+  List<XFile?>? getPickedPhotoAssets() =>
+      pickedPhotoAssetsController.valueOrNull;
+  setPickedPhotoAssets(List<XFile?>? photoAssets) =>
+      pickedPhotoAssetsController.sink.add(photoAssets);
 
   final privatePurchasedPriceTextEditingController = TextEditingController();
   final privateSharesNumTextEditingController = TextEditingController();
@@ -81,7 +110,6 @@ class AddAssetDialogContentController {
   final personalEstMarketPriceTextEditingController = TextEditingController();
   final personalSerialNumberTextEditingController = TextEditingController();
 
-
   List<AddPersonalAssetOptionModel> addPersonalAssetOptionList = [];
 
   void clearAddAssetInputs() {
@@ -96,12 +124,11 @@ class AddAssetDialogContentController {
   }
 
   bool validateAddPersonalAssetInfo() {
-    
     return addPersonalAssetOptionList.length > 0;
   }
 
-  String getScreenTitle(appLocal){
-    switch(getHoldingsType()){
+  String getScreenTitle(appLocal) {
+    switch (getHoldingsType()) {
       case HoldingsType.PRIVATE:
         return appLocal.trans('private_holdings');
       case HoldingsType.PUBLIC:
@@ -109,17 +136,17 @@ class AddAssetDialogContentController {
       case HoldingsType.PERSONAL:
         return appLocal.trans('personal_holdings');
 
-      default: return appLocal.trans('personal_holdings');
+      default:
+        return appLocal.trans('personal_holdings');
     }
   }
 
-  
   fetchPersonalAssetTypes() => _holdingsScreenBloc.fetchPersonalAssetTypes();
   fetchPrivateAssets() => _holdingsScreenBloc.fetchPrivateAssets();
   fetchPublicAssets() => _holdingsScreenBloc.fetchPublicAssets();
 
   fetchInitialRequiredData(HoldingsType? type) {
-    switch(type) {
+    switch (type) {
       case HoldingsType.PERSONAL:
         fetchPersonalAssetTypes();
         break;
@@ -130,76 +157,87 @@ class AddAssetDialogContentController {
         fetchPublicAssets();
         break;
 
-      default: break;
+      default:
+        break;
     }
   }
 
+  final BehaviorSubject<bool> addingHoldingLoadingStateController =
+      BehaviorSubject.seeded(false);
+  get addingHoldingLoadingStateStream =>
+      addingHoldingLoadingStateController.stream;
+  bool getAddingHoldingLoadingState() =>
+      addingHoldingLoadingStateController.value;
+  setAddingHoldingLoadingState(bool state) =>
+      addingHoldingLoadingStateController.sink.add(state);
 
-  final BehaviorSubject<bool> addingHoldingLoadingStateController = BehaviorSubject.seeded(false);
-  get addingHoldingLoadingStateStream => addingHoldingLoadingStateController.stream;
-  bool getAddingHoldingLoadingState() => addingHoldingLoadingStateController.value;
-  setAddingHoldingLoadingState(bool state) => addingHoldingLoadingStateController.sink.add(state);
-
-  onAddingPersonalAssetHoldingClicked(context,) {
-    if(validateAddPersonalAssetInfo()){
+  onAddingPersonalAssetHoldingClicked(
+    context,
+  ) {
+    if (validateAddPersonalAssetInfo()) {
       setAddingHoldingLoadingState(true);
-      if(getPickedPhotoAssets()?.isNotEmpty??false) {
+      if (getPickedPhotoAssets()?.isNotEmpty ?? false) {
         List<UploadImageModel> images = _createUploadImageList('personal');
         _holdingsScreenBloc.uploadImageList(
           images: images,
-          onData: () => _addPersonalAssetHolding(context: context, imageUrlList: images.map((e) => e.url??'').toList()),
+          onData: () => _addPersonalAssetHolding(
+              context: context,
+              imageUrlList: images.map((e) => e.url ?? '').toList()),
           onError: (message) => _onHoldingAddingFailed(context, message),
         );
-      } else _addPersonalAssetHolding(context: context);
+      } else
+        _addPersonalAssetHolding(context: context);
     }
   }
 
-  List<UploadImageModel> _createUploadImageList(assetType){
-    return getPickedPhotoAssets()!.map<UploadImageModel>((e) => UploadImageModel(
-      imagebase64: Utils.convertFileToBase64(e!.path),
-      imageName: 'test', //ToDO
-      assetType: assetType,
-      apiToken: _holdingsScreenBloc.currentUser?.apiToken??'',
-    )).toList();
+  List<UploadImageModel> _createUploadImageList(assetType) {
+    return getPickedPhotoAssets()!
+        .map<UploadImageModel>((e) => UploadImageModel(
+              imagebase64: Utils.convertFileToBase64(e!.path),
+              imageName: 'test', //ToDO
+              assetType: assetType,
+              apiToken: _holdingsScreenBloc.currentUser?.apiToken ?? '',
+            ))
+        .toList();
   }
 
   _addPersonalAssetHolding({required context, List<String>? imageUrlList}) {
+   // print('qpqpqpqpqpqpqp');
     _holdingsScreenBloc.addPersonalAssetHolding(
       addPersonalAssetHoldings: AddPersonalAssetHoldingModel(
-        apiToken: _holdingsScreenBloc.currentUser?.apiToken??'',
-     //   purchasedPrice:'',
-        assetTypeId: getSelectedAssetTypes()?.id??-1,
+        apiToken: _holdingsScreenBloc.currentUser?.apiToken ?? '',
+        //   purchasedPrice:'',
+        assetTypeId: getSelectedAssetTypes()?.id ?? -1,
         options: addPersonalAssetOptionList,
         photos: imageUrlList,
       ),
-      onData: () => _onPersonalHoldingAddingSucceed(context,),
+      onData: () => _onPersonalHoldingAddingSucceed(
+        context,
+      ),
       onError: (message) => _onHoldingAddingFailed(context, message),
     );
   }
 
   onAddingPrivateHoldingClicked(context) {
-    if(_validateAddPrivateHolding(context))
-      _addPrivateAssetHolding(context);
+    if (_validateAddPrivateHolding(context)) _addPrivateAssetHolding(context);
   }
 
   onAddingPublicHoldingClicked(context) {
-    if(_validateAddPublicHolding(context))
-      _addPublicAssetHolding(context);
+    if (_validateAddPublicHolding(context)) _addPublicAssetHolding(context);
   }
 
   bool _validateAddPrivateHolding(context) {
-
-    if(privatePurchasedPriceTextEditingController.text.isEmpty) {
+    if (privatePurchasedPriceTextEditingController.text.isEmpty) {
       Utils.showToast('purchased price is required field!');
       return false;
     }
 
-    if(getSelectedPrivateCompany() == null) {
+    if (getSelectedPrivateCompany() == null) {
       Utils.showToast('company is required field!');
       return false;
     }
 
-    if(privateSharesNumTextEditingController.text.isEmpty) {
+    if (privateSharesNumTextEditingController.text.isEmpty) {
       Utils.showToast('shares number is required field!');
       return false;
     }
@@ -208,17 +246,17 @@ class AddAssetDialogContentController {
   }
 
   bool _validateAddPublicHolding(context) {
-    if(getSelectedPublicCompany() == null) {
+    if (getSelectedPublicCompany() == null) {
       Utils.showToast('stock symbol is required field!');
       return false;
     }
 
-    if(publicSharesNumTextEditingController.text.isEmpty) {
+    if (publicSharesNumTextEditingController.text.isEmpty) {
       Utils.showToast('shares number is required field!');
       return false;
     }
 
-    if(publicPurchasedPriceTextEditingController.text.isEmpty) {
+    if (publicPurchasedPriceTextEditingController.text.isEmpty) {
       Utils.showToast('purchased price is required field!');
       return false;
     }
@@ -262,18 +300,28 @@ class AddAssetDialogContentController {
 
   var map = {
     "options": [
-      {"option_id":3, "option_value_type":"select", "option_value":5},
-      {"option_id":5, "option_value_type":"text", "option_value":"\$ 1000000"},
-      {"option_id":7, "option_value_type":"text", "option_value":"\$ 900000"},
-      {"option_id":13, "option_value_type":"text", "option_value":"my capin"}
-      ]
+      {"option_id": 3, "option_value_type": "select", "option_value": 5},
+      {
+        "option_id": 5,
+        "option_value_type": "text",
+        "option_value": "\$ 1000000"
+      },
+      {
+        "option_id": 7,
+        "option_value_type": "text",
+        "option_value": "\$ 900000"
+      },
+      {"option_id": 13, "option_value_type": "text", "option_value": "my capin"}
+    ]
   };
 
-  _onPrivateHoldingAddingSucceed(context,) {
+  _onPrivateHoldingAddingSucceed(
+    context,
+  ) {
     _holdingsScreenBloc.fetchPrivateAssetHoldings(
       onData: () {
         setAddingHoldingLoadingState(false);
-        
+
         Navigator.of(context).pop();
       },
       onError: (message) {
@@ -284,7 +332,7 @@ class AddAssetDialogContentController {
     //  _holdingsScreenBloc.fetchPrivateAssetHoldings(
     //   onData: () {
     //     setAddingHoldingLoadingState(false);
-        
+
     //     Navigator.of(context).pop();
     //   },
     //   onError: (message) {
@@ -294,7 +342,9 @@ class AddAssetDialogContentController {
     // );
   }
 
-  _onPublicHoldingAddingSucceed(context,) {
+  _onPublicHoldingAddingSucceed(
+    context,
+  ) {
     _holdingsScreenBloc.fetchPublicAssetHoldings(
       onData: () {
         setAddingHoldingLoadingState(false);
@@ -307,7 +357,9 @@ class AddAssetDialogContentController {
     );
   }
 
-  _onPersonalHoldingAddingSucceed(context,) {
+  _onPersonalHoldingAddingSucceed(
+    context,
+  ) {
     _holdingsScreenBloc.fetchPersonalAssetHoldings(
       onData: () {
         setAddingHoldingLoadingState(false);

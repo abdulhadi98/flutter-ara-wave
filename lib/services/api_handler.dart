@@ -8,7 +8,6 @@ import 'package:wave_flutter/services/server_errors_handler.dart';
 import 'urls_container.dart';
 
 abstract class ApiHandler {
-
   Map<String, String> _headers = <String, String>{
     // 'Content-Type': 'application/json',
     'Content-Type': 'application/x-www-form-urlencoded',
@@ -69,7 +68,8 @@ abstract class ApiHandler {
     );
   }
 
-  Future<dynamic> postCallApi({required String url, required Map body, onUploadProgress}) async {
+  Future<dynamic> postCallApi(
+      {required String url, required Map body, onUploadProgress}) async {
     Utils.removeNullMapObjects(body);
     Dio dio = await _createDioInstance();
     return await _makeHttpRequest(
@@ -88,7 +88,8 @@ abstract class ApiHandler {
     Utils.removeNullMapObjects(body);
     Dio dio = await _createDioInstance();
     return await _makeHttpRequest(
-      dio.put('${UrlsContainer.baseApiUrl}$url', data: body, options: Options(headers: _headers)),
+      dio.put('${UrlsContainer.baseApiUrl}$url',
+          data: body, options: Options(headers: _headers)),
     );
   }
 
@@ -108,7 +109,9 @@ abstract class ApiHandler {
   }
 
   Future<dynamic> postMultiPartCallApi(
-      {required String url, required Map<String, dynamic> body, onUploadProgress}) async {
+      {required String url,
+      required Map<String, dynamic> body,
+      onUploadProgress}) async {
     Utils.removeNullMapObjects(body);
     FormData formDataBody = FormData.fromMap(body);
     Dio dio = await _createDioInstance();
@@ -122,33 +125,42 @@ abstract class ApiHandler {
     );
   }
 
-  Future<dynamic> _makeHttpRequest(Future<Response<dynamic>> httpReq,) async{
-    try{
+  Future<dynamic> _makeHttpRequest(
+    Future<Response<dynamic>> httpReq,
+  ) async {
+    try {
       final response = await httpReq;
       var statusCode = response.data['code'];
 
-      if(response.data['data'] != null) {
-        if(statusCode.toString() == '200') return response.data['data'];
+      if (response.data['data'] != null) {
+        if (statusCode.toString() == '200')
+          return response.data['data'];
         else {
           print('0000000000000000000000000000000');
           String message = _getErrorMessage(response.data);
           throw FormatException(message = message);
         }
+      } else {
+        print('null error null error null error');
+        _getErrorMessage(response.data);
+
+        return response.data;
       }
-      else return response.data;
     } on DioError catch (e) {
       String message = _handleDioError(e);
       throw FormatException(message = message);
-    } on FormatException catch(e){
+    } on FormatException catch (e) {
       throw FormatException(e.message);
-    } catch (e){
+    } catch (e) {
       throw Exception('something_went_wrong');
     }
   }
 
   String _getErrorMessage(response) {
-    ErrorModel error = ErrorModel.fromJson(response,);
-    return ServerErrors.getError(error)?.message??'something_went_wrong';
+    ErrorModel error = ErrorModel.fromJson(
+      response,
+    );
+    return ServerErrors.getError(error)?.message ?? 'something_went_wrong';
   }
 
   String buildApiQuery(Map<String, dynamic> map) {
@@ -160,9 +172,11 @@ abstract class ApiHandler {
     map.forEach((key, value) {
       String queryPart = _getQueryPart(key, value);
       if (searchQuery.isNotEmpty)
-        searchQuery = queryPart.isNotEmpty ? '$searchQuery&$queryPart' : searchQuery;
+        searchQuery =
+            queryPart.isNotEmpty ? '$searchQuery&$queryPart' : searchQuery;
       else
-        searchQuery = queryPart.isNotEmpty ? '$searchQuery?$queryPart' : searchQuery;
+        searchQuery =
+            queryPart.isNotEmpty ? '$searchQuery?$queryPart' : searchQuery;
     });
     return searchQuery;
   }
@@ -178,8 +192,10 @@ abstract class ApiHandler {
       case DioErrorType.receiveTimeout:
         return "receive_timeout";
       case DioErrorType.response:
-        ErrorModel error = ErrorModel.fromJson(dioError.response?.data??{},);
-        return ServerErrors.getError(error)?.message??'something_went_wrong';
+        ErrorModel error = ErrorModel.fromJson(
+          dioError.response?.data ?? {},
+        );
+        return ServerErrors.getError(error)?.message ?? 'something_went_wrong';
         return "something_went_wrong";
       case DioErrorType.sendTimeout:
         return "send_timeout";

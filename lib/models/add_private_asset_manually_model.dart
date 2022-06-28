@@ -54,7 +54,7 @@ class AddPrivateAssetManuallyModel extends BaseAddPrivateAssetManuallyModel {
         "api_token": apiToken,
         "company_name": companyName,
         "headquarter_city": headquarterCity,
-        "coutry": country,
+        "country": country,
         "year_of_investment": yearOfInvestment,
         "invested_capital": investedCapital,
         "shares_purchased": sharesPurchased,
@@ -110,7 +110,7 @@ class PrivateAssetManuallyModel extends BaseAddPrivateAssetManuallyModel {
         companyName: json["company_name"] == null ? null : json["company_name"],
         headquarterCity:
             json["headquarter_city"] == null ? null : json["headquarter_city"],
-        country: json["coutry"] == null ? null : json["coutry"],
+        country: json["country"] == null ? null : json["country"],
         yearOfInvestment: json["year_of_investment"] == null
             ? null
             : json["year_of_investment"],
@@ -145,7 +145,7 @@ class PrivateAssetManuallyModel extends BaseAddPrivateAssetManuallyModel {
         "user_id": userId == null ? null : userId,
         "company_name": companyName == null ? null : companyName,
         "headquarter_city": headquarterCity == null ? null : headquarterCity,
-        "coutry": country == null ? null : country,
+        "country": country == null ? null : country,
         "year_of_investment":
             yearOfInvestment == null ? null : yearOfInvestment,
         "invested_capital": investedCapital == null ? null : investedCapital,

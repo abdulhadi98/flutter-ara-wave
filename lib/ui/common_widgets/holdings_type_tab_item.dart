@@ -24,8 +24,9 @@ class HoldingsTypeTapItem extends StatelessWidget {
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               color: AppColors.mainColor,
-              border: Border.all(color: isSelected ? Colors.white : AppColors.mainColor, width: 1)
-          ),
+              border: Border.all(
+                  color: isSelected ? Colors.white : AppColors.mainColor,
+                  width: 2)),
           child: Padding(
             padding: const EdgeInsets.only(top: 12, bottom: 12),
             child: Text(
@@ -33,8 +34,7 @@ class HoldingsTypeTapItem extends StatelessWidget {
               style: TextStyle(
                   color: Colors.white,
                   fontSize: AppFonts.getMediumFontSize(context),
-                  height: 1.0
-              ),
+                  height: 1.0),
             ),
           ),
         ),

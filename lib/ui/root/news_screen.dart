@@ -105,7 +105,7 @@ class _NewsScreenState extends BaseStateFullWidgetState<NewsScreen>
         width: width,
         context: context,
         appLocal: appLocal,
-        logoTitleKey: 'news',
+        logoTitleKey: '',
         isSecondRowVisible: false);
   }
 
@@ -318,7 +318,7 @@ class _NewsScreenState extends BaseStateFullWidgetState<NewsScreen>
     switch (holdingType) {
       case HoldingsType.PRIVATE:
         newsType == NewsType.MY_ASSETS
-            ? newsBloc.fetchNewsPrivateAssets() 
+            ? newsBloc.fetchNewsPrivateAssets()
             : newsBloc.fetchNewsPrivateWorld();
         break;
 

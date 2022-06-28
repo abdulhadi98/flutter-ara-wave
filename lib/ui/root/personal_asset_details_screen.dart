@@ -18,11 +18,18 @@ import 'package:wave_flutter/ui/common_widgets/chart_card_item.dart';
 import 'package:wave_flutter/ui/common_widgets/home_screen_header.dart';
 import 'package:wave_flutter/ui/common_widgets/image_widget.dart';
 import 'package:http/http.dart' as http;
+import 'package:wave_flutter/ui/root/add_assets/loading_indicator.dart';
 import 'package:wave_flutter/ui/root/holdings_screen.dart';
 import 'dart:convert';
+import '../../models/add_personal_asset_holding_model.dart';
+import '../common_widgets/add_asset_text_field.dart';
+import '../common_widgets/show_add_asset_dialog.dart';
+import 'add_assets/personal/steps/image/add_personal_asset_document_step_widget.dart';
+import 'add_assets/personal/steps/text/date_picker_placeholder_widget.dart';
 import 'home_screen.dart';
 
 class PersonalAssetDetailsScreen extends BaseStateFullWidget {
+  static List<String> photosList = [];
   final PersonalAssetHoldingModel assetModel;
   PersonalAssetDetailsScreen({required this.assetModel});
 
@@ -38,70 +45,574 @@ class _PersonalAssetDetailsScreenState
   void initState() {
     super.initState();
     getAssetDetails();
+    getAssetDetailsForEdit();
+
     initScreenDi();
   }
 
-  List<Widget> rowInforList = [
-    // rowInfo('Shares Owned', quantity),
-    // Divider(
-    //   color: AppColors.black.withOpacity(0.6),
-    //   thickness: 1.5,
-    //   height: 10,
-    // ),
-    // rowInfo('Return On Investment (ROI)', profitPercentage),
-    // Divider(
-    //   color: AppColors.black.withOpacity(0.6),
-    //   thickness: 1.5,
-    //   height: 10,
-    // ),
-  ];
-  List<Widget> loadRowList = [];
+  List<AddPersonalAssetOptionModel> addPersonalAssetOptionList = [];
+  void getAssetDetailsForEdit() async {
+    String? apiToken = HomeScreen.apiToken;
+    int? assetId = HoldingsScreen.assetId;
 
-  List<Widget> propertyRowLis = [];
+    var request;
+    var response;
+    var url = Uri.parse(
+      'https://wave.aratech.co/api/get-personal-assets-details-for-edit',
+    );
+    print('///////////' +
+        url.toString() +
+        '//tokennnnnn///' +
+        apiToken! +
+        '//////' +
+        assetId.toString());
 
-  bool spinner = false;
-  var created_at = '';
+    request = http.MultipartRequest('POST', url);
+    request.fields['api_token'] = apiToken;
+    request.fields['asset_id'] = assetId.toString();
 
-  var assetGrowth = '';
-  var salePrice = ''; //market price
-  var purchasePrice = '';
-  var headQuarterCity = '';
-  var profitPercentage = '';
-  var marketValue = '';
-  var profit = '';
+    response = await request.send();
+    var xx = await http.Response.fromStream(response);
+    var x = jsonDecode(xx.body);
 
-  var quantity = '';
+    print('///////////////////////////////////////////////////');
+    print(x.toString());
+    print('///////////////////////////////////////////////////');
+    List payload = x['data'];
+    print(payload.first);
+    payload.forEach((element) {
+      if (element['option_value_type'] == 'date')
+        setState(() {
+          createdAt = element['option_value'];
+        });
+      addPersonalAssetOptionList.add(AddPersonalAssetOptionModel(
+        id: element['option_id'],
+        type: element['option_value_type'],
+        value: element['option_value'] ?? Null,
+        optionName: element['option_name'],
+      ));
+      print(addPersonalAssetOptionList.last.optionName);
+    });
+  }
 
-  var rOI = '';
-  var totalA = ''; //quantity
-  var marketCapitaliztion = '';
-  var sharesOutstanding = '';
-  var shareClass = '';
+  Widget buildGridView() {
+    return GridView.builder(
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: addPersonalAssetOptionList.length,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: width * .030,
+        mainAxisSpacing: height * .03,
+        childAspectRatio: 1.65 / .7,
+      ),
+      itemBuilder: (context, index) {
+        return buildGridItem(addPersonalAssetOptionList[index]);
+      },
+    );
+  }
 
-  var totalBalance = '';
-  var stockExchange = '';
-  var primaryExchange = '';
-  var description = '';
-  var name = '';
-  var type = '';
+  Widget buildGridItem(AddPersonalAssetOptionModel option) {
+    print(option.optionName! +
+        '  id=  ' +
+        option.id.toString() +
+        option.type.toString() +
+        "  " +
+        option.value.toString());
+    switch (option.type) {
+      case 'text':
+        return buildTextFieldGridItem(option, TextInputType.text,
+            AddPersonalAssetHoldingTypeOptionType.text);
+
+      case 'year':
+        return buildTextFieldGridItem(option, TextInputType.number,
+            AddPersonalAssetHoldingTypeOptionType.text);
+
+      case 'number':
+        return buildTextFieldGridItem(option, TextInputType.number,
+            AddPersonalAssetHoldingTypeOptionType.number);
+
+      case 'money':
+        return buildTextFieldGridItem(option, TextInputType.number,
+            AddPersonalAssetHoldingTypeOptionType.money);
+
+      case 'percentage':
+        return buildTextFieldGridItem(option, TextInputType.number,
+            AddPersonalAssetHoldingTypeOptionType.percentage);
+
+      case 'date':
+        {
+          // createdAt = option.value;
+          return buildDateGridItemWidget(option);
+        }
+
+      default:
+        return SizedBox();
+    }
+  }
+
+  onInputChanged(int optionId, String type, String value, String optionName) {
+    print('before update' + addPersonalAssetOptionList.length.toString());
+
+    addPersonalAssetOptionList[addPersonalAssetOptionList.indexWhere(
+        (element) => element.id == optionId)] = AddPersonalAssetOptionModel(
+      id: optionId,
+      type: type,
+      value: value,
+      optionName: optionName,
+    );
+
+    // addPersonalAssetOptionList
+    //     .removeWhere((element) => element.id.toString() == optionId.toString());
+    // print('after delete' + addPersonalAssetOptionList.length.toString());
+    // addPersonalAssetOptionList.add(
+    //   AddPersonalAssetOptionModel(
+    //     id: optionId,
+    //     type: type,
+    //     value: value,
+    //     optionName: optionName,
+    //   ),
+    // );
+    print('after update' + addPersonalAssetOptionList.length.toString());
+    // addPersonalAssetOptionList.add(AddPersonalAssetOptionModel(
+    //     id: element['option_id'],
+    //     type: element['option_value_type'],
+    //     value: element['option_value'],
+    //     optionName: element['option_name'],
+    //     code: element['code']));
+  }
+
+  bool dialogSpinner = false;
+  Future<String> updateAsset(onUpdateOk) async {
+    setState(() {
+      dialogSpinner = true;
+    });
+
+    try {
+      String? apiToken = HomeScreen.apiToken;
+      int? assetId = HoldingsScreen.assetId;
+
+      var request;
+      var response;
+      var url = Uri.parse(
+        'https://wave.aratech.co/api/edit-personal-asset',
+      );
+      print('///////////' +
+          url.toString() +
+          '//tokennnnnn///' +
+          apiToken! +
+          '//////' +
+          assetId.toString());
+
+      request = http.MultipartRequest('POST', url);
+      request.fields['api_token'] = apiToken;
+      request.fields['asset_id'] = assetId.toString();
+      List<Map<dynamic, dynamic>> optionsListForApi = [];
+      addPersonalAssetOptionList.forEach((element) {
+        Map option = {
+          "option_id": element.id,
+          'option_value_type': element.type,
+          'option_value': element.value,
+          'option_name': element.optionName
+        };
+        optionsListForApi.add(option); //okok
+      });
+      //   print(optionsListForApi);
+
+      request.fields['options'] = json.encode(optionsListForApi);
+
+      // print(url);
+      //  getStringOfUrls(photosUrl)! +
+      //                         ',' +
+      //                         getStringOfUrls(
+      //                            PersonalAssetDetailsScreen.photosList )!
+
+      if (getStringOfUrls(PersonalAssetDetailsScreen.photosList)! != '')
+        urls = getStringOfUrls(photosUrl)! +
+            ',' +
+            getStringOfUrls(PersonalAssetDetailsScreen.photosList)!;
+      else
+        urls = getStringOfUrls(photosUrl)!;
+      request.fields['photos'] = urls.isEmpty ? '' : urls;
+      print('options: ' + optionsListForApi.toString());
+      print('photos: ' + urls);
+
+      //x   request.fields['country'] =  ;
+
+      response = await request.send();
+      var xx = await http.Response.fromStream(response);
+      var x = jsonDecode(xx.body);
+
+      print('///////////////////////////////////////////////////');
+      print(x.toString());
+      print('///////////////////////////////////////////////////');
+      String code = x['code'];
+      //  Map publicAsset = payload['public_asset'];
+      // var id = payload['id'];
+      String msg = x['message'];
+
+      if (code == '200') {
+        setState(() {
+          dialogSpinner = false;
+        });
+        Utils.showToast('Asset Updated Successfully!');
+        //uiController.fetchPublicAssetHistoricalDetails();
+        //getPersonalChartValue();
+        getAssetDetails();
+
+        //    getAssetDetailsForEdit();
+        onUpdateOk();
+      } else {
+        setState(() {
+          dialogSpinner = false;
+        });
+        Utils.showToast(msg);
+        return 'error';
+      }
+    } catch (e) {
+      print(e.toString());
+
+      setState(() {
+        dialogSpinner = false;
+      });
+      Utils.showToast('Apdating Asset Failed, Please Try Again Later.');
+      return 'error';
+    }
+    return 'ok';
+  }
+
+  Future<String> deleteAsset(onUpdateOk) async {
+    setState(() {
+      dialogSpinner = true;
+    });
+    String? message;
+    try {
+      String? apiToken = HomeScreen.apiToken;
+      int? assetId = HoldingsScreen.assetId;
+
+      var request;
+      //  var response;
+
+      //  response= dio.delete(
+      //       'https://wave.aratech.co/api/public-asset-holding/${HoldingsScreen.assetId}',
+      //       data: formData);
+      http.Response response = await http.delete(
+        Uri.parse('https://wave.aratech.co/api/personal-asset/$assetId'),
+        body: <String, String>{
+          "api_token": apiToken!,
+        },
+      );
+      //  response = http.delete(url, body: {'api_token:$apiToken'});
+
+      //  request.body = jsonEncode({"api_token": apiToken});
+      //  response = await request.send();
+      var x = jsonDecode(response.body);
+      print(x);
+      String code = x['code'];
+      message = x['message'];
+
+      print(code);
+      if (code == '200') {
+        setState(() {
+          dialogSpinner = false;
+        });
+        Utils.showToast('Asset Deleted Successfully!');
+        // uiController.fetchPublicAssetHistoricalDetails();
+
+        onUpdateOk();
+        return 'ok';
+      } else {
+        setState(() {
+          dialogSpinner = false;
+        });
+        Utils.showToast(message!);
+        return 'error';
+      }
+    } catch (e) {
+      print(e.toString());
+
+      setState(() {
+        dialogSpinner = false;
+      });
+      Utils.showToast(message!);
+      return 'error';
+    }
+    return 'ok';
+  }
+
+  editImages() {
+    return showAddAssetDialog(
+      popupHeight: height * 3,
+      context: context,
+      padding: EdgeInsets.only(
+        right: width * .1,
+        left: width * .1,
+        top: height * .05,
+      ),
+      dialogContent: StatefulBuilder(builder: (context, setState) {
+        return GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(new FocusNode());
+          },
+          child: Stack(
+            children: [
+              Positioned(
+                top: width * .075 / 2,
+                right: width * .075 / 2,
+                left: 0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.mainColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(height: height * .025),
+                      Text(
+                        appLocal.trans('edit_asset'),
+                        style: TextStyle(
+                          color: AppColors.white,
+                          fontSize: AppFonts.getLargeFontSize(context),
+                          height: 1.0,
+                        ),
+                      ),
+                      SizedBox(height: height * .020),
+                      Container(
+                        margin: const EdgeInsets.all(1),
+                        padding: EdgeInsets.symmetric(horizontal: width * .08),
+                        decoration: BoxDecoration(
+                          color: AppColors.black,
+                          borderRadius: BorderRadius.only(
+                            bottomRight: Radius.circular(12),
+                            bottomLeft: Radius.circular(12),
+                          ),
+                        ),
+                        child: AddPersonalAssetDocumentStepWidget(
+                          onFinishedClicked: (photosUrl1) {
+                            print('ONONONONONONONONONFinished' +
+                                getStringOfUrls(photosUrl1!)! +
+                                ',' +
+                                getStringOfUrls(
+                                    PersonalAssetDetailsScreen.photosList)!);
+                            updateAsset(() {});
+                            //      getAssetDetails();
+                            //    getAssetDetailsForEdit();
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                child: GestureDetector(
+                  onTap: () {
+                    //    uiController.clearAddAssetInputs();
+
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.gray, width: .5),
+                      shape: BoxShape.circle,
+                      color: AppColors.mainColor,
+                    ),
+                    child: Icon(
+                      Icons.close,
+                      color: AppColors.gray,
+                      size: width * .055,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+
+  dynamic updateAssetDialog() {
+    return showAddAssetDialog(
+      popupHeight: height / 1.3,
+      context: context,
+      padding: EdgeInsets.only(
+        right: width * .1,
+        left: width * .1,
+        top: height * .05,
+      ),
+      dialogContent: StatefulBuilder(builder: (context, setState) {
+        return GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(new FocusNode());
+          },
+          child: Stack(
+            children: [
+              Positioned(
+                top: width * .075 / 2,
+                right: width * .075 / 2,
+                left: 0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.mainColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(height: height * .025),
+                      Text(
+                        appLocal.trans('edit_asset'),
+                        style: TextStyle(
+                          color: AppColors.white,
+                          fontSize: AppFonts.getLargeFontSize(context),
+                          height: 1.0,
+                        ),
+                      ),
+                      SizedBox(height: height * .020),
+                      Container(
+                        margin: const EdgeInsets.all(1),
+                        padding: EdgeInsets.symmetric(horizontal: width * .08),
+                        decoration: BoxDecoration(
+                          color: AppColors.black,
+                          borderRadius: BorderRadius.only(
+                            bottomRight: Radius.circular(12),
+                            bottomLeft: Radius.circular(12),
+                          ),
+                        ),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: height * .02,
+                              ),
+                              buildGridView(),
+                              SizedBox(
+                                height: height * .02,
+                              ),
+                              dialogSpinner
+                                  ? LoadingIndicator()
+                                  : buildNextButton(
+                                      context,
+                                      () async {
+                                        setState(() {
+                                          dialogSpinner = true;
+                                        });
+                                        String code = await updateAsset(() {});
+                                        setState(() {
+                                          dialogSpinner = false;
+                                        });
+                                        if (code == 'ok') {
+                                          Navigator.pop(context);
+                                          // Navigator.pop(context);
+
+                                          // rootScreenController
+                                          //     .setSharedData(HoldingsType.PUBLIC);
+                                          // rootScreenController.setCurrentScreen(
+                                          //     AppMainScreens.HOLDINGS_SCREEN);
+                                        }
+                                      },
+                                    ),
+                              SizedBox(height: height * .025),
+                              buildDeleteButton(
+                                context,
+                                () async {
+                                  setState(() {
+                                    dialogSpinner = true;
+                                  });
+                                  String code = await deleteAsset(() {});
+                                  setState(() {
+                                    dialogSpinner = false;
+                                  });
+                                  if (code == 'ok') {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+
+                                    rootScreenController
+                                        .setSharedData(HoldingsType.PERSONAL);
+                                    rootScreenController.setCurrentScreen(
+                                        AppMainScreens.HOLDINGS_SCREEN);
+                                  }
+                                },
+                              ),
+                              SizedBox(height: height * .020),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                child: GestureDetector(
+                  onTap: () {
+                    //    uiController.clearAddAssetInputs();
+
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.gray, width: .5),
+                      shape: BoxShape.circle,
+                      color: AppColors.mainColor,
+                    ),
+                    child: Icon(
+                      Icons.close,
+                      color: AppColors.gray,
+                      size: width * .055,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }),
+    );
+  }
 
   // var totalBalance = '';
   List<Map<String, dynamic>> detailsInfoList = [];
   List<PersonalAssetPhotos> personalAssetPhotos = [];
+  String createdAt = '';
+  String urls = '';
+  String? getStringOfUrls(List<String> list) {
+    String temp = '';
+    if (list.isEmpty) return temp;
+    for (int i = 0; i < list.length; i++) {
+      temp += list[i];
+
+      if (i != list.length - 1) temp += ',';
+    }
+    return temp;
+  }
+
+  List<String> photosUrl = [];
+
   void getAssetDetails() async {
+    PersonalAssetDetailsScreen.photosList.clear();
+    photosUrl.clear();
+
+    personalAssetPhotos = [];
     rowInforList.clear();
     setState(() {
       spinner = true;
     });
-
-    //  protfolioChartData.clear();
-    print('xxxxx');
-    //  dynamic api = _dataStore!.getApiToken();
-    // String? api = _dataStore!.userModel!.apiToken;
-    // dynamic api = _dataStore!.getApiToken().then((value) => apiToken = value!);
     String? apiToken = HomeScreen.apiToken;
     int? assetId = HoldingsScreen.assetId;
-
     var request;
     var response;
     var url = Uri.parse(
@@ -133,7 +644,9 @@ class _PersonalAssetDetailsScreenState
 
     photos.forEach((element) {
       var link = element['link'].toString();
-      if (link != 'null')
+      if (link != 'null' && link != '') {
+        photosUrl
+            .add('images/personal_assets/' + link.split('/').last.toString());
         personalAssetPhotos.add(
           PersonalAssetPhotos(
               id: element['id'],
@@ -142,7 +655,7 @@ class _PersonalAssetDetailsScreenState
               link: 'images/personal_assets/' + link.split('/').last.toString(),
               personalAssetId: element['personal_asset_id']),
         );
-
+      }
       print('images/personal_assets/' + link.split('/').last.toString());
       // .split('/')
       // .last
@@ -155,7 +668,7 @@ class _PersonalAssetDetailsScreenState
     // var id = payload['id'];
     setState(() {
       purchasePrice = payload['purchased_price'].toString();
-
+      //pll
       if (headQuarterCity == 'Real Estate')
         totalBalance = details['Market Value'].toString();
       // else if(headQuarterCity == 'Savings' ||headQuarterCity=='Digital Asset')
@@ -173,6 +686,7 @@ class _PersonalAssetDetailsScreenState
             : details['Estimated Resale Value'].toString();
       created_at =
           DateTime.parse(payload["created_at"]).toString().substring(0, 10);
+      //createdAt = created_at;
 
       if (headQuarterCity != 'Real Estate' ||
           headQuarterCity != 'Digital Asset')
@@ -196,25 +710,27 @@ class _PersonalAssetDetailsScreenState
         if (key == 'Loan Amount' ||
             key == 'Down Payment' ||
             key == 'Interest Rate' ||
-            key == 'Amortization' ||
+            key == 'Amortization (Months)' ||
             key == 'Monthly Payment')
           loadRowList
               .add(rowInfo(key, Utils.getFormattedStrNum(value.toString())));
-        else if (key == 'Lot Size' || key == 'Address' || key == 'Year Built')
+        else if (key == 'Address' ||
+            key == 'Year Built' ||
+            key == 'Property Class' ||
+            key == 'Type')
           propertyRowLis.add(rowInfo(key, value.toString()));
         else if (key == 'Lot Size')
           propertyRowLis
               .add(rowInfo(key, Utils.getFormattedStrNum(value.toString())));
-        else
-          details.forEach((key, value) {
-            value = double.tryParse(value.toString()) ?? value.toString();
-            print(value.toString() + '   ' + value.runtimeType.toString());
-            if (value.runtimeType == double) {
-              rowInforList.add(rowInfo(key, Utils.getFormattedStrNum(value)));
-            } else {
-              rowInforList.add(rowInfo(key, value));
-            }
-          });
+        else {
+          value = double.tryParse(value.toString()) ?? value.toString();
+          print(value.toString() + '   ' + value.runtimeType.toString());
+          if (value.runtimeType == double) {
+            rowInforList.add(rowInfo(key, Utils.getFormattedStrNum(value)));
+          } else {
+            rowInforList.add(rowInfo(key, value));
+          }
+        }
       });
     } else
       details.forEach((key, value) {
@@ -258,6 +774,32 @@ class _PersonalAssetDetailsScreenState
                   children: [
                     SizedBox(height: height * 0.02),
                     buildHeader(),
+                    // MaterialButton(
+                    //   onPressed: () {
+                    //     showEditOptionsDialog();
+                    //   },
+                    //   child: Text('qweqweqweqwe'),
+                    //   height: 50,
+                    //   color: Colors.amber,
+                    // ),
+                    // MaterialButton(
+                    //   onPressed: () {
+                    //     // addPersonalAssetOptionList.forEach((element) {
+                    //     //   print(element.value);
+                    //     // });
+                    //     print(getStringOfUrls(photosUrl)! +
+                    //         ',' +
+                    //         getStringOfUrls(
+                    //             PersonalAssetDetailsScreen.photosList)!);
+                    //     // print(getStringOfUrls(
+                    //     //     PersonalAssetDetailsScreen.photosList));
+
+                    //     // print(addPersonalAssetOptionList);
+                    //   },
+                    //   child: Text('print list'),
+                    //   height: 50,
+                    //   color: Colors.amber,
+                    // ),
                     SizedBox(height: height * 0.020),
                     Expanded(
                       child: SingleChildScrollView(
@@ -284,7 +826,8 @@ class _PersonalAssetDetailsScreenState
                                       Utils.getFormattedStrNum(purchasePrice)),
                                   rowInfo('Estimated Resale Value',
                                       Utils.getFormattedStrNum(totalBalance)),
-                                  rowInfo('Date of Purchase', created_at),
+                                  rowInfo('Date of Purchase',
+                                      createdAt == '' ? created_at : createdAt),
                                 ],
                               ),
                             ),
@@ -455,7 +998,7 @@ class _PersonalAssetDetailsScreenState
   Padding rowInfo(leftText, rightText) {
     return Padding(
       padding: EdgeInsets.symmetric(
-          horizontal: width * .005, vertical: height * .01),
+          horizontal: width * .005, vertical: height * .004),
       child: Column(
         children: [
           Row(
@@ -482,7 +1025,7 @@ class _PersonalAssetDetailsScreenState
           Divider(
             color: AppColors.black.withOpacity(0.6),
             thickness: 1.5,
-            height: 10,
+            height: 5,
           ),
         ],
       ),
@@ -631,6 +1174,7 @@ class _PersonalAssetDetailsScreenState
       addEditIcon: 'assets/icons/ic_edit.svg',
       addEditTitleKey: 'edit_asset',
       onAddEditClick: () {
+        showEditOptionsDialog();
         // getAssetDetails();
       },
       totalTextKey: /*widget.assetModel.type == 'Collectables' ? 'estimated_asset_market_value' : */ 'estimated_total_asset_equity',
@@ -643,15 +1187,378 @@ class _PersonalAssetDetailsScreenState
         .toList(); //ggg
 
     return GestureDetector(
-      onTap: () => RoutesHelper.navigateToGalleryScreen(
-          gallery: urls, index: index, context: context),
-      child: ClipRRect(
-        borderRadius: BorderRadius.all(Radius.circular(8.0)),
-        child: ImageWidget(
-            url: '${UrlsContainer.baseUrl}/${photos[index].link}',
-            width: itemSize,
-            height: itemSize,
-            fit: BoxFit.cover),
+      onTap: () {
+        print(photos[index].link);
+        RoutesHelper.navigateToGalleryScreen(
+            gallery: urls, index: index, context: context);
+      },
+      child: Stack(
+        children: [
+          Positioned(
+            child: ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(8.0)),
+              child: ImageWidget(
+                  url: '${UrlsContainer.baseUrl}/${photos[index].link}',
+                  width: itemSize,
+                  height: itemSize,
+                  fit: BoxFit.cover),
+            ),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            // top: 0,
+            child: GestureDetector(
+              onTap: () {
+                print(photos[index].link! + index.toString());
+
+                print(photosUrl);
+
+                print(photosUrl.length);
+                photosUrl.removeWhere((element) {
+                  if (element == photos[index].link) {
+                    print('found and delete( $element)');
+                  }
+
+                  return element == photos[index].link!;
+                });
+
+                updateAsset(() {});
+
+                print(photosUrl.length);
+              },
+              child: Container(
+                alignment: Alignment.center,
+                padding: EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppColors.white, width: .5),
+                  shape: BoxShape.circle,
+                  color: AppColors.mainColor,
+                ),
+                child: Icon(
+                  Icons.delete_outline_outlined,
+                  color: AppColors.gray,
+                  size: width * .04,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildTextFieldGridItem(AddPersonalAssetOptionModel option, type,
+      AddPersonalAssetHoldingTypeOptionType optionType) {
+    return AddAssetTextFormField(
+        initialValue: option.value,
+
+        // controller: c,
+        optioType: option.type,
+        prefix: option.type == 'money'
+            ? '\$'
+            : option.type == 'percentage'
+                ? '%'
+                : '',
+        keyboardType: type,
+        //  keyboardType: TextInputType.text,
+        // key: UniqueKey(),
+        hintKey: option.optionName!,
+        onChanged: (value) {
+          //    print('asdasddasdasdlkjad;jasdlsajdlasdlivulsdvulasvdlus');
+          // print(c.text + '11221');
+          if (option.type == 'text')
+            onInputChanged(
+              option.id,
+              option.type,
+              value,
+              option.optionName!,
+            );
+          else {
+            value = value.toString().replaceAll(RegExp('[^0-9.]'), '');
+            print(value);
+            onInputChanged(
+              option.id,
+              option.type,
+              value,
+              option.optionName!,
+            );
+          }
+        });
+  }
+
+  Widget buildDateGridItemWidget(AddPersonalAssetOptionModel option) {
+    return DatePickerPlaceholderWidget(
+      // key: UniqueKey(),
+      color: Colors.white,
+      hint: createdAt,
+      // onDatedPicked: (date) {},
+
+      onDatedPicked: (date) {
+        setState(() {
+          createdAt = date.toString();
+        });
+        onInputChanged(
+          option.id,
+          option.type,
+          date.toString(),
+          option.optionName!,
+        );
+        // uiController.onInputChanged(
+        //   date,
+        //   AddPersonalAssetHoldingTypeOptionType.date,
+        //   option.id,
+        // );
+      },
+    );
+  }
+
+  List<Widget> rowInforList = [];
+  List<Widget> loadRowList = [];
+  List<Widget> propertyRowLis = [];
+  bool spinner = false;
+  var created_at = '';
+  var assetGrowth = '';
+  var salePrice = ''; //market price
+  var purchasePrice = '';
+  var headQuarterCity = '';
+  var profitPercentage = '';
+  var marketValue = '';
+  var profit = '';
+
+  var quantity = '';
+
+  var rOI = '';
+  var totalA = ''; //quantity
+  var marketCapitaliztion = '';
+  var sharesOutstanding = '';
+  var shareClass = '';
+
+  var totalBalance = '';
+  var stockExchange = '';
+  var primaryExchange = '';
+  var description = '';
+  var name = '';
+  var type = '';
+  Widget buildNextButton(contextt, onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: height * .06,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: AppColors.mainColor,
+          border: Border.all(color: Colors.white),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Stack(
+          children: [
+            Center(
+              child: Text(
+                appLocal.trans('submit'),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: AppFonts.getNormalFontSize(context),
+                  height: 1.0,
+                ),
+              ),
+            ),
+            Positioned(
+              top: 0.0,
+              right: 48.0,
+              bottom: 0.0,
+              child: ImageWidget(
+                url: 'assets/icons/ic_arrow_next.svg',
+                width: width * .029,
+                height: width * .029,
+                fit: BoxFit.contain,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildDeleteButton(contextt, onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: height * .029,
+        //color: Colors.green,
+        alignment: Alignment.center,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ImageWidget(
+              url: 'assets/icons/delete-icon.svg',
+              width: width * .029,
+              height: width * .029,
+              fit: BoxFit.contain,
+              color: Colors.red[300],
+            ),
+            SizedBox(
+              width: width * 0.02,
+            ),
+            Text(
+              appLocal.trans('delete_asset'),
+              style: TextStyle(
+                color: Colors.red[300],
+                fontSize: AppFonts.getNormalFontSize(context),
+                fontWeight: FontWeight.w600,
+                height: 1.0,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  showEditOptionsDialog() {
+    return showAddAssetDialog(
+      popupHeight: height / 1.3,
+      context: context,
+      padding: EdgeInsets.only(
+        right: width * .1,
+        left: width * .1,
+        top: height * .2,
+      ),
+      dialogContent: Container(
+        child: StatefulBuilder(builder: (context, setState) {
+          return GestureDetector(
+            onTap: () {
+              FocusScope.of(context).requestFocus(new FocusNode());
+            },
+            child: Stack(
+              children: [
+                Positioned(
+                  top: width * .075 / 2,
+                  right: width * .075 / 2,
+                  left: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.mainColor,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(height: height * .025),
+                        Text(
+                          appLocal.trans('edit_asset'),
+                          style: TextStyle(
+                            color: AppColors.white,
+                            fontSize: AppFonts.getLargeFontSize(context),
+                            height: 1.0,
+                          ),
+                        ),
+                        SizedBox(height: height * .020),
+                        Container(
+                          margin: const EdgeInsets.all(1),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: width * .08),
+                          decoration: BoxDecoration(
+                            color: AppColors.black,
+                            borderRadius: BorderRadius.only(
+                              bottomRight: Radius.circular(12),
+                              bottomLeft: Radius.circular(12),
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: height * .02,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  // uiHoldingsController
+                                  //     .clearAddAssetInputs();
+                                  updateAssetDialog();
+                                },
+                                child: Container(
+                                  height: height * .07,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.mainColor,
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  child: Text(
+                                    appLocal.trans('edit_asset_info'),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize:
+                                          AppFonts.getMediumFontSize(context),
+                                      height: 1.0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: height * .02,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  // uiHoldingsController
+                                  //     .clearAddAssetInputs();
+                                  editImages();
+                                },
+                                child: Container(
+                                  height: height * .07,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.mainColor,
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  child: Text(
+                                    appLocal.trans('add_images'),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize:
+                                          AppFonts.getMediumFontSize(context),
+                                      height: 1.0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: height * .020),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: GestureDetector(
+                    onTap: () {
+                      //    uiController.clearAddAssetInputs();
+
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: AppColors.gray, width: .5),
+                        shape: BoxShape.circle,
+                        color: AppColors.mainColor,
+                      ),
+                      child: Icon(
+                        Icons.close,
+                        color: AppColors.gray,
+                        size: width * .055,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }

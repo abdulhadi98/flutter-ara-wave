@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 class HoldingModel {
-
   HoldingModel({
     required this.purchasedPrice,
     required this.quantity,
@@ -11,12 +10,12 @@ class HoldingModel {
   int quantity;
 
   factory HoldingModel.fromJson(Map<String, dynamic> json) => HoldingModel(
-      purchasedPrice: json["purchased_price"],
-      quantity: json["quantity"],
-  );
+        purchasedPrice: json["purchased_price"],
+        quantity: json["quantity"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "purchased_price": purchasedPrice,
-    "quantity": quantity,
-  };
+        "purchased_price": purchasedPrice,
+        "quantity": quantity,
+      };
 }

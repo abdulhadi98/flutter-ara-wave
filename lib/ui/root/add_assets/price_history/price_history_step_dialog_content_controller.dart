@@ -41,7 +41,8 @@ class PriceHistoryStepDialogContentController {
 
   initCurrentMarketValue(String currentMarketValue) {
     yearPriceList[yearPriceList.length - 1].price =
-        currentMarketValue.replaceAll(',', '');
+        currentMarketValue.replaceAll(RegExp('[^0-9.]'), '');
+
     currentMarketValueTextEditingController.text = currentMarketValue;
     _validateInputs();
   }
@@ -53,7 +54,8 @@ class PriceHistoryStepDialogContentController {
   }
 
   onPriceValueTextFieldChanged(String value, int index) {
-    yearPriceList[index].price = value.replaceAll(',', '');
+    yearPriceList[index].price = value.replaceAll(RegExp('[^0-9.]'), '');
+    
     _validateInputs();
   }
 

@@ -6,6 +6,8 @@ import 'package:wave_flutter/ui/animation/animated_logo_animation_manager.dart';
 import 'package:wave_flutter/ui/controllers/home_screen_controller.dart';
 import 'package:wave_flutter/ui/controllers/root_screen_controller.dart';
 
+import '../ui/controllers/holdings_screen_controller.dart';
+
 abstract class HomeScreenDi {
   GetIt _getIt = GetIt.instance;
   late HomeScreenController uiController;
@@ -14,13 +16,21 @@ abstract class HomeScreenDi {
   late AuthenticationBloc authBloc;
   late HoldingsScreenBloc holdingsBloc;
 
-  initScreenDi(){
+  late HoldingsScreenController uiHoldingsController;
+
+  initScreenDi() {
     homeScreenBloc = _getIt<HomeScreenBloc>();
     authBloc = _getIt<AuthenticationBloc>();
     holdingsBloc = _getIt<HoldingsScreenBloc>();
     rootScreenController = _getIt<RootScreenController>();
-    uiController = _getIt<HomeScreenController>(param1: homeScreenBloc, param2: authBloc,);
+    uiController = _getIt<HomeScreenController>(
+      param1: homeScreenBloc,
+      param2: authBloc,
+    );
+
+    uiHoldingsController =
+        _getIt<HoldingsScreenController>(param1: holdingsBloc);
+
     //holdingUiController=_getIt<HomeScreenController>(param1: homeScreenBloc, param2: authBloc,);
   }
 }
-

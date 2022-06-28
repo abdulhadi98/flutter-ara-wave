@@ -34,12 +34,16 @@
   "public": "Public",
   "personal": "Personal",
   "add_new_asset": "Add New Asset",
-  "purchased_price": "purchased price",
+  "purchased_price": "Purchased Price",
   "num_of_shares": "Number of shares",
   "add_asset": "Add Asset",
   "enter_stock_symbol": "Enter Stock Symbol",
   "amount_of_shares_purchased": "Amount of Shares Purchased",
   "edit_asset": "Edit Asset",
+  "submit": "Submit",
+  "delete_asset": "Delete Asset",
+  
+  
   "total_net_balance_in_usd": "Total NET Balance in USD",
   "estimated_total_asset_equity": "Estimated Total Asset Equity",
   "average_cost": "Average Cost",
@@ -233,7 +237,9 @@
   
   
 
-
+  "edit_asset_info": "Edit Asset Details",
+  "add_images": "Add Images",
+  
 
   "password_length_error": "The password must be at least 8 characters.",
   "wrong_credential": "Invalid e-mail or password",

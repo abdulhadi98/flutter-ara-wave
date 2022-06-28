@@ -4,6 +4,7 @@ import 'package:wave_flutter/helper/app_colors.dart';
 import 'package:wave_flutter/helper/utils.dart';
 import 'package:wave_flutter/models/add_asset_holding_drop_down_menu_model.dart';
 import 'package:wave_flutter/ui/common_widgets/base_statefull_widget.dart';
+import 'package:wave_flutter/ui/root/public_asset_details_screen.dart';
 
 import '../../../helper/app_fonts.dart';
 
@@ -145,7 +146,7 @@ class _CustomDropDownWidgetState<T>
   // }
 
   // var listHeight = checkEmpty ? 0 : height / 4.2;
-  String buttonTextVal = 'Available Companies';
+  String? buttonTextVal;
   bool isSearchingNow = false;
   Widget x() {
     return StreamBuilder<AddAssetHoldingDropDownMenuModel?>(
@@ -166,7 +167,7 @@ class _CustomDropDownWidgetState<T>
                     },
                     child: Center(
                       child: Text(
-                        buttonTextVal,
+                        buttonTextVal == null ? widget.title : buttonTextVal!,
                         textAlign: TextAlign.center,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -230,6 +231,10 @@ class _CustomDropDownWidgetState<T>
                                         print(items[index].name +
                                             '  ' +
                                             items[index].id.toString());
+                                        PublicAssetDetailsScreen.companyId =
+                                            items[index].id.toString();
+                                        PublicAssetDetailsScreen.companyName =
+                                            items[index].id.toString();
 
                                         setSelection(items[index]);
                                         widget.onSelected(items[index]);

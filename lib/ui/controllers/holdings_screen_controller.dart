@@ -243,7 +243,10 @@ class HoldingsScreenController {
   void fetchAssetsResults() {
     switch (getHoldingsType()) {
       case HoldingsType.PRIVATE:
-        _holdingsScreenBloc.fetchPrivateAssetHoldings();
+        {
+          _holdingsScreenBloc.fetchPrivateAssetHoldings();
+        //  print('qqqqqqqqqqqqqq');
+        }
         // _holdingsScreenBloc.fetchPrivateAssetMaualEntreis();
         break;
 

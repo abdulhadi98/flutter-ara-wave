@@ -18,7 +18,7 @@ class AddPublicAssetHoldingDialogContentController
 
   @override
   dispose() {
-    stockExchangeTextEditingController.dispose();
+    // stockExchangeTextEditingController.dispose();
     ofSharesTextEditingController.dispose();
     _purchaseDateController.close();
     _selectedPublicCompanyController.close();
@@ -26,10 +26,9 @@ class AddPublicAssetHoldingDialogContentController
 
   @override
   bool validateInputs() {
-    return _validateSelectedCompanyValue() &&
-        _validateStockExchangeValue() &&
-        _validateOfSharesValue() &&
-        _validatePurchaseDateValue();
+    return //_validateSelectedCompanyValue() &&
+        //    _validateStockExchangeValue() &&
+        _validateOfSharesValue() && _validatePurchaseDateValue();
   }
 
   final BehaviorSubject<AddAssetHoldingDropDownMenuModel?>
@@ -48,7 +47,7 @@ class AddPublicAssetHoldingDialogContentController
   setPurchaseDate(DateTime? dateTime) =>
       _purchaseDateController.sink.add(dateTime);
 
-  final stockExchangeTextEditingController = TextEditingController();
+  // final stockExchangeTextEditingController = TextEditingController();
   final ofSharesTextEditingController = TextEditingController();
 
   onPublicCompanySelected(AddAssetHoldingDropDownMenuModel selectedItem) {
@@ -69,13 +68,13 @@ class AddPublicAssetHoldingDialogContentController
     updateValidationState();
   }
 
-  bool _validateSelectedCompanyValue() {
-    return stockExchangeTextEditingController.text.isNotEmpty;
-  }
+  // bool _validateSelectedCompanyValue() {
+  //   return stockExchangeTextEditingController.text.isNotEmpty;
+  // }
 
-  bool _validateStockExchangeValue() {
-    return stockExchangeTextEditingController.text.isNotEmpty;
-  }
+  // bool _validateStockExchangeValue() {
+  //   return stockExchangeTextEditingController.text.isNotEmpty;
+  // }
 
   bool _validateOfSharesValue() {
     return ofSharesTextEditingController.text.isNotEmpty;
@@ -89,7 +88,7 @@ class AddPublicAssetHoldingDialogContentController
     final addPublicAssetHoldingModel = AddPublicAssetHoldingModel(
       apiToken: _addPublicAssetHoldingBloc.currentUserApiToken ?? '',
       assetId: getSelectedPublicCompany()!.id.toString(),
-      stockExchange: stockExchangeTextEditingController.text,
+      //  stockExchange: stockExchangeTextEditingController.text,
       quantity: ofSharesTextEditingController.text,
       verified: '1', //ToDo
       purchasedAt: getPurchaseDate().toString().substring(0, 10),

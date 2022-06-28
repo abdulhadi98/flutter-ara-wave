@@ -34,16 +34,15 @@ class AddPrivateAssetManuallyDialogContentController
       headquarterCity: companyInfo!.headquarterCity,
       country: companyInfo!.country,
       yearOfInvestment: companyInfo!.initialInvestmentYear.toString(),
-      investedCapital:
-          companySharesStep!.investmentCapital.toString().replaceAll(',', ''),
+      investedCapital: companySharesStep!.investmentCapital
+          .replaceAll(RegExp('[^0-9.]'), ''),
       sharesPurchased:
-          companySharesStep!.sharesPurchased.toString().replaceAll(',', ''),
+          companySharesStep!.sharesPurchased.replaceAll(RegExp('[^0-9.]'), ''),
       shareClass: companySharesStep!.sharesClass.toString(),
       companySharesOutstanding: companySharesStep!.companySharesOutstanding
-          .toString()
-          .replaceAll(',', ''),
+          .replaceAll(RegExp('[^0-9.]'), ''),
       marketValue:
-          companySharesStep!.marketValue.toString().replaceAll(',', ''),
+          companySharesStep!.marketValue.replaceAll(RegExp('[^0-9.]'), ''),
     );
   }
 

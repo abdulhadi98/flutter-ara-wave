@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wave_flutter/di/root_screen_di.dart';
 import 'package:wave_flutter/helper/app_colors.dart';
+import 'package:wave_flutter/helper/app_constant.dart';
 import 'package:wave_flutter/helper/enums.dart';
 import 'package:wave_flutter/helper/utils.dart';
+import 'package:wave_flutter/ui/auth/login_screen.dart';
 import 'package:wave_flutter/ui/common_widgets/base_statefull_widget.dart';
 import 'package:wave_flutter/ui/root/holdings_screen.dart';
 import 'package:wave_flutter/ui/root/home_screen.dart';
@@ -13,6 +15,9 @@ import 'package:wave_flutter/ui/root/private_asset_details_screen.dart';
 import 'package:wave_flutter/ui/root/private_asset_manual_screen.dart';
 import 'package:wave_flutter/ui/root/public_asset_details_screen.dart';
 
+import '../../helper/app_constant.dart';
+import '../../helper/app_fonts.dart';
+import '../intro/splash_screen.dart';
 import 'my_portfolio_screen.dart';
 
 class RootScreen extends BaseStateFullWidget {
@@ -38,22 +43,40 @@ class _RootScreenState extends BaseStateFullWidgetState<RootScreen>
         initialData: AppMainScreens.HOME_SCREEN,
         stream: uiController.currentScreenStream,
         builder: (context, screenSnapshot) {
-          return Container(
-            height: height,
-            width: width,
-            child: Column(
-              children: [
-                Expanded(child: buildCurrentScreen(screenSnapshot.data)),
-                buildBottomNavBar(screenSnapshot.data!),
-              ],
-            ),
-          );
+          AppConstant.homeContext = context;
+
+          if (!Utils.isLoggedUserExist()) {
+            return SplashScreen();
+          } else
+            return Container(
+              height: height,
+              width: width,
+              child: Column(
+                children: [
+                  Expanded(child: buildCurrentScreen(screenSnapshot.data)),
+                  buildBottomNavBar(screenSnapshot.data!),
+                ],
+              ),
+            );
         },
       ),
     );
   }
 
+  // bool checkLogin() {
+  //   return Utils.isLoggedUserExist();
+  //   // if (!Utils.isLoggedUserExist())
+  //   //   Navigator.pushReplacement(
+  //   //     context,
+  //   //     MaterialPageRoute(builder: (BuildContext context) => SplashScreen()),
+  //   //   );
+  // }
+
   Widget buildCurrentScreen(AppMainScreens? screen) {
+    // if (!checkLogin()) {
+    //   print(true);
+    //   return SplashScreen();
+    // } else
     switch (screen) {
       case AppMainScreens.HOME_SCREEN:
         return HomeScreen();
@@ -67,8 +90,11 @@ class _RootScreenState extends BaseStateFullWidgetState<RootScreen>
       case AppMainScreens.OPTIONS_SCREEN:
         return Center(
           child: Text(
-            Utils.enumToString<AppMainScreens>(AppMainScreens.OPTIONS_SCREEN),
-            style: TextStyle(color: Colors.white),
+            'Coming Soon',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: AppFonts.getLargeFontSize(context),
+            ),
           ),
         );
 
