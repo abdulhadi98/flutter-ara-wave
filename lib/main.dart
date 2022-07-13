@@ -50,7 +50,9 @@ class _MyAppState extends State<MyApp> {
         canvasColor: Colors.white,
         primaryColor: AppColors.mainColor,
       ),
-      supportedLocales: <Locale>[const Locale('ar'), const Locale('en')],
+      supportedLocales: <Locale>[
+        // const Locale('ar'),
+       const Locale('en')],
       localizationsDelegates: [
         const AppLocalizationsDelegate(),
         GlobalMaterialLocalizations.delegate,

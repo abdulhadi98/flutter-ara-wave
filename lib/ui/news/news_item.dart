@@ -31,10 +31,12 @@ class _NewsItemState extends BaseStateFullWidgetState<NewsItem> {
         ),
         child: IntrinsicHeight(
           child: Row(
+            //    mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       widget.newsItem.title,
@@ -64,8 +66,10 @@ class _NewsItemState extends BaseStateFullWidgetState<NewsItem> {
                       children: [
                         Expanded(
                           child: Text(
-                            widget.newsItem.createdAt.substring(
-                                0, widget.newsItem.createdAt.length - 13),
+                            widget.newsItem.createdAt == ''
+                                ? ''
+                                : widget.newsItem.createdAt.substring(
+                                    0, widget.newsItem.createdAt.length - 13),
                             style: TextStyle(
                               fontSize: AppFonts.getXSmallFontSize(context),
                               color: AppColors.white,

@@ -27,7 +27,7 @@ class _NewsScreenState extends BaseStateFullWidgetState<NewsScreen>
     uiController.init(tickerProvider: this);
 
     newsBloc.fetchNewsPrivateWorld();
-    newsBloc.fetchAssetsNewsFromXml();
+    newsBloc.fetchNewsPrivateAssets();
   }
 
   @override

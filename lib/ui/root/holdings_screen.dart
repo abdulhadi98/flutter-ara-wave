@@ -387,7 +387,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                         PrimaryScrollController.of(context);
                     return Container(
                       padding: EdgeInsets.only(
-                        top: tabsHeight + 48,
+                        top: tabsHeight + mediaQuery.padding.top,
                         right: width * .05,
                         left: width * .05,
                       ),
@@ -404,7 +404,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                   },
                 ),
               );
-            }),
+            },),
       ),
     );
   }
@@ -689,7 +689,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Padding(
-          padding: EdgeInsets.only(right: width * 0.013),
+          padding: EdgeInsets.only(right: width * 0.013, top: height * 0.02),
           child: Text(
             appLocal.trans('equity'),
             style: TextStyle(

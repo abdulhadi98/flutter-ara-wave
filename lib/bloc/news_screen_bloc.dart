@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wave_flutter/models/news_model.dart';
@@ -8,6 +10,8 @@ import 'package:wave_flutter/services/data_resource.dart';
 import 'package:wave_flutter/storage/data_store.dart';
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart' as xml;
+
+import '../ui/root/home_screen.dart';
 
 class NewsScreenBloc {
   final ApiProvider _apiProvider;
@@ -41,14 +45,18 @@ class NewsScreenBloc {
       var media =
           element.findElements('media:content').first.getAttribute('url');
       var title = element.findElements('title').single.text;
-      var description = element.findElements('title').single.text;
+      var description = element.findElements('description').single.text;
 
       var formattedDescription = 'formatted';
       var url = element.findElements('link').single.text;
       var author = element.findElements('dc:creator').single.text;
       var date = DateTime.now();
       var hash = 'hash';
-      var createdAt = element.findElements('pubDate').single.text;
+      dynamic createdAt = element.findElements('pubDate');
+      if (createdAt.isEmpty)
+        createdAt = '';
+      else
+        createdAt = createdAt.single.text;
       newsList.add(NewsModel(
         id: '1',
         enclosure: Enclosure(type: '1', url: media!, size: '3'),
@@ -96,46 +104,226 @@ class NewsScreenBloc {
     //   newsList.add();
   }
 
-  _fetchAssetsNews() async {
+  _fetchAssetsNewsPrivate() async {
     DataResource<List<NewsModel>> dataRes;
     List<NewsModel> newsList = [];
     setNewsAssets(DataResource.loading());
-    var url = Uri.parse('https://rss.app/feeds/tHl0ppMop8sAho4v.xml');
+
+    var url = Uri.parse('https://rss.app/feeds/_0DW7pkozaKuS0nHk.xml');
     print(url);
-    http.Response res = await http.get(url);
-    String data = res.body;
-    var raw = xml.XmlDocument.parse(data);
+    try {
+      http.Response res = await http.get(url);
+      String data = res.body;
+      //  print(data);
+      var raw = xml.XmlDocument.parse(data);
 
-    // var raw = xml.parse(data);
-    var elements = raw.findAllElements('item');
-    elements.forEach((element) {
-      var media =
-          element.findElements('media:content').first.getAttribute('url');
-      var title = element.findElements('title').single.text;
-      var description = element.findElements('title').single.text;
+      // var raw = xml.parse(data);
+      var elements = raw.findAllElements('item');
+      elements.forEach((element) {
+        dynamic media = element.findElements('media:content');
+        //    print(media);
 
-      var formattedDescription = 'formatted';
-      var url = element.findElements('link').single.text;
-      var author = element.findElements('dc:creator').single.text;
-      var date = DateTime.now();
-      var hash = 'hash';
-      var createdAt = element.findElements('pubDate').single.text;
-      newsList.add(NewsModel(
-        id: '1',
-        enclosure: Enclosure(type: '1', url: media!, size: '3'),
-        title: title,
-        description: description,
-        formattedDescription: 'formatted',
-        url: url,
-        author: author,
-        date: DateTime.now(),
-        hash: 'hash',
-        createdAt: createdAt,
-      ));
-    });
+        if (media.isEmpty)
+          media = 'assets/images/app_icon_news.png';
+        else
+          media =
+              element.findElements('media:content').first.getAttribute('url') ??
+                  '';
+        //first.getAttribute('url') ?? '';
+        var title = element.findElements('title').single.text;
+        var description = element.findElements('description').single.text;
 
-    dataRes = DataResource.success(newsList);
-    setNewsAssets(dataRes);
+        var formattedDescription = 'formatted';
+        var url = element.findElements('link').single.text;
+        var author = element.findElements('dc:creator').single.text;
+        var date = DateTime.now();
+        var hash = 'hash';
+        dynamic createdAt = element.findElements('pubDate');
+        if (createdAt.isEmpty)
+          createdAt = '';
+        else
+          createdAt = createdAt.single.text;
+
+        print(createdAt);
+        newsList.add(NewsModel(
+          id: '1',
+          enclosure: Enclosure(type: '1', url: media, size: '3'),
+          title: title,
+          description: description,
+          formattedDescription: 'formatted',
+          url: url,
+          author: author,
+          date: DateTime.now(),
+          hash: 'hash',
+          createdAt: createdAt,
+        ));
+      });
+      if (newsList.isEmpty)
+        dataRes = DataResource.noResults();
+      else
+        dataRes = DataResource.success(newsList);
+      setNewsAssets(dataRes);
+    } catch (e) {
+      print(e);
+      dataRes = DataResource.failure('something_went_wrong');
+      setNewsAssets(dataRes);
+    }
+  }
+
+  _fetchAssetsNewsPublic() async {
+    DataResource<List<NewsModel>> dataRes;
+    List<NewsModel> newsList = [];
+    setNewsAssets(DataResource.loading());
+    try {
+      var url = Uri.parse('https://rss.app/feeds/_oqmXFF0Mtb59fOtg.xml');
+      print(url);
+      http.Response res = await http.get(url);
+      String data = res.body;
+      //  print(data);
+      var raw = xml.XmlDocument.parse(data);
+
+      // var raw = xml.parse(data);
+      var elements = raw.findAllElements('item');
+      elements.forEach((element) {
+        dynamic media = element.findElements('media:content');
+        //  print(media);
+        if (media.isEmpty)
+          media = 'assets/images/app_icon_news.png';
+        else
+          media =
+              element.findElements('media:content').first.getAttribute('url') ??
+                  '';
+        //first.getAttribute('url') ?? '';
+        var title = element.findElements('title').single.text;
+        var description = element.findElements('description').single.text;
+
+        var formattedDescription = 'formatted';
+        var url = element.findElements('link').single.text;
+        var author = element.findElements('dc:creator').single.text;
+        var date = DateTime.now();
+        var hash = 'hash';
+        dynamic createdAt = element.findElements('pubDate');
+        if (createdAt.isEmpty)
+          createdAt = '';
+        else
+          createdAt = createdAt.single.text;
+        newsList.add(NewsModel(
+          id: '1',
+          enclosure: Enclosure(type: '1', url: media, size: '3'),
+          title: title,
+          description: description,
+          formattedDescription: 'formatted',
+          url: url,
+          author: author,
+          date: DateTime.now(),
+          hash: 'hash',
+          createdAt: createdAt,
+        ));
+      });
+      if (newsList.isEmpty)
+        dataRes = DataResource.noResults();
+      else
+        dataRes = DataResource.success(newsList);
+      setNewsAssets(dataRes);
+    } catch (e) {
+      print(e);
+      dataRes = DataResource.failure('something_went_wrong');
+      setNewsAssets(dataRes);
+    }
+  }
+
+  _fetchAssetsNewsPersonal() async {
+    DataResource<List<NewsModel>> dataRes;
+    List<NewsModel> newsList = [];
+    setNewsAssets(DataResource.loading());
+
+    List<String> newsFeedList = [];
+    String? apiToken = HomeScreen.apiToken;
+    var request;
+    var response;
+    var url = Uri.parse(
+      'https://wave.aratech.co/api/get-my-assets-news',
+    );
+    print('///////////' + url.toString() + '//tokennnnnn///' + apiToken!);
+
+    request = http.MultipartRequest('POST', url);
+    request.fields['api_token'] = apiToken;
+    try {
+      response = await request.send();
+      var xx = await http.Response.fromStream(response);
+      var x = jsonDecode(xx.body);
+
+      print('///////////////////////////////////////////////////');
+      print(x.toString());
+      print('///////////////////////////////////////////////////');
+
+      Map<dynamic, dynamic> payload = x['data'];
+      List<dynamic> newsLinks = payload['personal'];
+      print(newsLinks);
+      if (newsLinks.isNotEmpty)
+        newsLinks.forEach((element) async {
+          var url = Uri.parse(element.toString());
+
+          print(url);
+          http.Response res = await http.get(url);
+          String data = res.body;
+          //  print(data);
+          var raw = xml.XmlDocument.parse(data);
+
+          // var raw = xml.parse(data);
+          var elements = raw.findAllElements('item');
+          elements.forEach((element) {
+            dynamic media = element.findElements('media:content');
+            // print(media);
+
+            if (media.isEmpty)
+              media = '';
+            else
+              media = element
+                      .findElements('media:content')
+                      .first
+                      .getAttribute('url') ??
+                  '';
+            //first.getAttribute('url') ?? '';
+            var title = element.findElements('title').single.text;
+            var description = element.findElements('description').single.text;
+
+            var formattedDescription = 'formatted';
+            var url = element.findElements('link').single.text;
+            var author = element.findElements('dc:creator').single.text;
+            var date = DateTime.now();
+            var hash = 'hash';
+            dynamic createdAt = element.findElements('pubDate');
+            if (createdAt.isEmpty)
+              createdAt = '';
+            else
+              createdAt = createdAt.single.text;
+            newsList.add(NewsModel(
+              id: '1',
+              enclosure: Enclosure(type: '1', url: media, size: '3'),
+              title: title,
+              description: description,
+              formattedDescription: 'formatted',
+              url: url,
+              author: author,
+              date: DateTime.now(),
+              hash: 'hash',
+              createdAt: createdAt,
+            ));
+          });
+
+          dataRes = DataResource.success(newsList);
+          setNewsAssets(dataRes);
+        });
+      else {
+        dataRes = DataResource.noResults();
+        setNewsAssets(dataRes);
+      }
+    } catch (e) {
+      print(e);
+      dataRes = DataResource.failure('something_went_wrong');
+      setNewsAssets(dataRes);
+    }
     // DataResource<List<NewsModel>> dataRes;
     // try {
     //   setNewsAssets(DataResource.loading());
@@ -155,64 +343,211 @@ class NewsScreenBloc {
   }
 
   fetchNewsPrivateAssets() async {
-    _fetchAssetsNews();
+    _fetchAssetsNewsPrivate();
   }
 
   fetchNewsPublicAssets() async {
-    _fetchAssetsNews();
+    _fetchAssetsNewsPublic();
   }
 
   fetchNewsPersonalAssets() async {
-    _fetchAssetsNews();
+    _fetchAssetsNewsPersonal();
   }
 
+  //////////////////////////////////spr
   final _newsWorldController = BehaviorSubject<DataResource<List<NewsModel>>>();
   get newsWorldStream => _newsWorldController.stream;
   DataResource<List<NewsModel>> getNewsWorld() => _newsWorldController.value;
   setNewsWorld(DataResource<List<NewsModel>> dataRes) =>
       _newsWorldController.sink.add(dataRes);
 
-  _fetchWorldNews() async {
+  _fetchWorldNewspPrivate() async {
     DataResource<List<NewsModel>> dataRes;
     List<NewsModel> newsList = [];
-    setNewsAssets(DataResource.loading());
-    var url = Uri.parse('https://rss.app/feeds/HU7be1PomjovZjnw.xml');
-    print(url);
-    http.Response res = await http.get(url);
-    String data = res.body;
-    var raw = xml.XmlDocument.parse(data);
+    setNewsWorld(DataResource.loading());
+    try {
+      var url = Uri.parse('https://rss.app/feeds/_ILCMJ8FEHa0dArK0.xml');
+      print(url);
+      http.Response res = await http.get(url);
+      String data = res.body;
+      //  print(data);
+      var raw = xml.XmlDocument.parse(data);
 
-    // var raw = xml.parse(data);
-    var elements = raw.findAllElements('item');
-    elements.forEach((element) {
-      var media =
-          element.findElements('media:content').first.getAttribute('url');
-      var title = element.findElements('title').single.text;
-      var description = element.findElements('title').single.text;
+      // var raw = xml.parse(data);
+      var elements = raw.findAllElements('item');
+      elements.forEach((element) {
+        dynamic media = element.findElements('media:content');
+        // print(media);
 
-      var formattedDescription = 'formatted';
-      var url = element.findElements('link').single.text;
-      var author = element.findElements('dc:creator').single.text;
-      var date = DateTime.now();
-      var hash = 'hash';
-      var createdAt = element.findElements('pubDate').single.text;
-      newsList.add(NewsModel(
-        id: '1',
-        enclosure: Enclosure(type: '1', url: media!, size: '3'),
-        title: title,
-        description: description,
-        formattedDescription: 'formatted',
-        url: url,
-        author: author,
-        date: DateTime.now(),
-        hash: 'hash',
-        createdAt: createdAt,
-      ));
-    });
+        if (media.isEmpty)
+          media = 'assets/images/app_icon_news.png';
+        else
+          media =
+              element.findElements('media:content').first.getAttribute('url') ??
+                  '';
+        //first.getAttribute('url') ?? '';
+        var title = element.findElements('title').single.text;
+        var description = element.findElements('description').single.text;
 
-    dataRes = DataResource.success(newsList);
-    setNewsWorld(dataRes);
+        var formattedDescription = 'formatted';
+        var url = element.findElements('link').single.text;
+        var author = element.findElements('dc:creator').single.text;
+        var date = DateTime.now();
+        var hash = 'hash';
+        dynamic createdAt = element.findElements('pubDate');
+        if (createdAt.isEmpty)
+          createdAt = '';
+        else
+          createdAt = createdAt.single.text;
+        newsList.add(NewsModel(
+          id: '1',
+          enclosure: Enclosure(type: '1', url: media, size: '3'),
+          title: title,
+          description: description,
+          formattedDescription: 'formatted',
+          url: url,
+          author: author,
+          date: DateTime.now(),
+          hash: 'hash',
+          createdAt: createdAt,
+        ));
+      });
+      if (newsList.isEmpty)
+        dataRes = DataResource.noResults();
+      else
+        dataRes = DataResource.success(newsList);
+      setNewsWorld(dataRes);
+    } catch (e) {
+      print(e);
+      dataRes = DataResource.failure('something_went_wrong');
+      setNewsWorld(dataRes);
+    }
+  }
 
+  _fetchWorldNewspPublic() async {
+    DataResource<List<NewsModel>> dataRes;
+    List<NewsModel> newsList = [];
+    setNewsWorld(DataResource.loading());
+    try {
+      var url = Uri.parse('https://rss.app/feeds/_JOQu14fBv9nPTP5v.xml');
+      print(url);
+      http.Response res = await http.get(url);
+      String data = res.body;
+      //  print(data);
+      var raw = xml.XmlDocument.parse(data);
+
+      // var raw = xml.parse(data);
+      var elements = raw.findAllElements('item');
+      elements.forEach((element) {
+        dynamic media = element.findElements('media:content');
+        //   print(media);
+
+        if (media.isEmpty)
+          media = 'assets/images/app_icon_news.png';
+        else
+          media =
+              element.findElements('media:content').first.getAttribute('url') ??
+                  '';
+        //first.getAttribute('url') ?? '';
+        var title = element.findElements('title').single.text;
+        var description = element.findElements('description').single.text;
+
+        var formattedDescription = 'formatted';
+        var url = element.findElements('link').single.text;
+        var author = element.findElements('dc:creator').single.text;
+        var date = DateTime.now();
+        var hash = 'hash';
+        dynamic createdAt = element.findElements('pubDate');
+        if (createdAt.isEmpty)
+          createdAt = '';
+        else
+          createdAt = createdAt.single.text;
+        newsList.add(NewsModel(
+          id: '1',
+          enclosure: Enclosure(type: '1', url: media, size: '3'),
+          title: title,
+          description: description,
+          formattedDescription: 'formatted',
+          url: url,
+          author: author,
+          date: DateTime.now(),
+          hash: 'hash',
+          createdAt: createdAt,
+        ));
+      });
+      if (newsList.isEmpty)
+        dataRes = DataResource.noResults();
+      else
+        dataRes = DataResource.success(newsList);
+      setNewsWorld(dataRes);
+    } catch (e) {
+      print(e);
+      dataRes = DataResource.failure('something_went_wrong');
+      setNewsWorld(dataRes);
+    }
+  }
+
+  _fetchWorldNewspPersonal() async {
+    DataResource<List<NewsModel>> dataRes;
+    List<NewsModel> newsList = [];
+    setNewsWorld(DataResource.loading());
+    try {
+      var url = Uri.parse('https://rss.app/feeds/_97yQ7fMQXX23mjvt.xml');
+      print(url);
+      http.Response res = await http.get(url);
+      String data = res.body;
+      //  print(data);
+      var raw = xml.XmlDocument.parse(data);
+
+      // var raw = xml.parse(data);
+      var elements = raw.findAllElements('item');
+      elements.forEach((element) {
+        dynamic media = element.findElements('media:content');
+        // print(media);
+
+        if (media.isEmpty)
+          media = 'assets/images/app_icon_news.png';
+        else
+          media =
+              element.findElements('media:content').first.getAttribute('url') ??
+                  '';
+        //first.getAttribute('url') ?? '';
+        var title = element.findElements('title').single.text;
+        var description = element.findElements('description').single.text;
+
+        var formattedDescription = 'formatted';
+        var url = element.findElements('link').single.text;
+        var author = element.findElements('dc:creator').single.text;
+        var date = DateTime.now();
+        var hash = 'hash';
+        dynamic createdAt = element.findElements('pubDate');
+        if (createdAt.isEmpty)
+          createdAt = '';
+        else
+          createdAt = createdAt.single.text;
+        newsList.add(NewsModel(
+          id: '1',
+          enclosure: Enclosure(type: '1', url: media, size: '3'),
+          title: title,
+          description: description,
+          formattedDescription: 'formatted',
+          url: url,
+          author: author,
+          date: DateTime.now(),
+          hash: 'hash',
+          createdAt: createdAt,
+        ));
+      });
+      if (newsList.isEmpty)
+        dataRes = DataResource.noResults();
+      else
+        dataRes = DataResource.success(newsList);
+      setNewsWorld(dataRes);
+    } catch (e) {
+      print(e);
+      dataRes = DataResource.failure('something_went_wrong');
+      setNewsWorld(dataRes);
+    }
     // DataResource<List<NewsModel>> dataRes;
     // try {
     //   setNewsWorld(DataResource.loading());
@@ -233,15 +568,15 @@ class NewsScreenBloc {
   }
 
   fetchNewsPrivateWorld() async {
-    _fetchWorldNews();
+    _fetchWorldNewspPrivate();
   }
 
   fetchNewsPublicWorld() async {
-    _fetchWorldNews();
+    _fetchWorldNewspPublic();
   }
 
   fetchNewsPersonalWorld() async {
-    _fetchWorldNews();
+    _fetchWorldNewspPersonal();
   }
 
   disposeStreams() {

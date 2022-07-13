@@ -88,42 +88,64 @@ class HomeScreenBloc {
     DataResource<List<NewsModel>> dataRes;
     List<NewsModel> newsList = [];
     setTopNews(DataResource.loading());
-    var url = Uri.parse('https://rss.app/feeds/trrL6L5yRVzomDm2.xml');
-    print(url);
-    http.Response res = await http.get(url);
-    String data = res.body;
-    var raw = xml.XmlDocument.parse(data);
+    try {
+      var url = Uri.parse('https://rss.app/feeds/_mgZeUOL131c18V2D.xml');
+      print(url);
+      http.Response res = await http.get(url);
+      String data = res.body;
+      //  print(data);
+      var raw = xml.XmlDocument.parse(data);
 
-    // var raw = xml.parse(data);
-    var elements = raw.findAllElements('item');
-    elements.forEach((element) {
-      var media =
-          element.findElements('media:content').first.getAttribute('url');
-      var title = element.findElements('title').single.text;
-      var description = element.findElements('title').single.text;
+      // var raw = xml.parse(data);
+      var elements = raw.findAllElements('item');
+      elements.forEach((element) {
+        dynamic media = element.findElements('media:content');
+     //   print(media);
 
-      var formattedDescription = 'formatted';
-      var url = element.findElements('link').single.text;
-      var author = element.findElements('dc:creator').single.text;
-      var date = DateTime.now();
-      var hash = 'hash';
-      var createdAt = element.findElements('pubDate').single.text;
-      newsList.add(NewsModel(
-        id: '1',
-        enclosure: Enclosure(type: '1', url: media!, size: '3'),
-        title: title,
-        description: description,
-        formattedDescription: 'formatted',
-        url: url,
-        author: author,
-        date: DateTime.now(),
-        hash: 'hash',
-        createdAt: createdAt,
-      ));
-    });
+      if (media.isEmpty)
+          media = 'assets/images/app_icon_news.png';
+        else
+          media =
+              element.findElements('media:content').first.getAttribute('url') ??
+                  '';
+        //first.getAttribute('url') ?? '';
+        var title = element.findElements('title').single.text;
+        var description = element.findElements('description').single.text;
 
-    dataRes = DataResource.success(newsList);
-    setTopNews(dataRes);
+        var formattedDescription = 'formatted';
+        var url = element.findElements('link').single.text;
+        var author = element.findElements('dc:creator').single.text;
+        var date = DateTime.now();
+        var hash = 'hash';
+        dynamic createdAt = element.findElements('pubDate');
+        if (createdAt.isEmpty)
+          createdAt = '';
+        else
+          createdAt = createdAt.single.text;
+        newsList.add(NewsModel(
+          id: '1',
+          enclosure: Enclosure(type: '1', url: media, size: '3'),
+          title: title,
+          description: description,
+          formattedDescription: 'formatted',
+          url: url,
+          author: author,
+          date: DateTime.now(),
+          hash: 'hash',
+          createdAt: createdAt,
+        ));
+      });
+      if (newsList.isEmpty)
+        dataRes = DataResource.noResults();
+      else
+        dataRes = DataResource.success(newsList);
+      setTopNews(dataRes);
+    } catch (e) {
+      print(e);
+      dataRes = DataResource.failure('something_went_wrong');
+      setTopNews(dataRes);
+    }
+
     // print(elements);
     // elements.map((node) {
     //   print('zzzzzzzzzzzzzzzzzzzzzzzzzz');

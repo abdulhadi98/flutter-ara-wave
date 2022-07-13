@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -32,9 +33,19 @@ class Utils {
         'assets/images/placeholder.jpg',
       );
     }
-
+    // if (url.endsWith('svg')) {
+    //   return SvgPicture.asset(
+    //     url,
+    //     width: width! * 0.2,
+    //     height: width * 0.2,
+    //     fit: fit,
+    //   );
+    // }
     if (url.startsWith("http")) {
       return FadeInImage.assetNetwork(
+        imageErrorBuilder: (context, error, stackTrace) => assetImage(
+          'assets/images/placeholder_error.jpg',
+        ),
         placeholder: 'assets/images/placeholder.jpg',
         image: url,
         fit: fit,
@@ -188,7 +199,6 @@ class Utils {
     return formattedNum;
   }
 
- 
   static String getDoubleVal(strNum) {
     return strNum;
   }
