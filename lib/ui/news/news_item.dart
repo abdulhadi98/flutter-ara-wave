@@ -43,7 +43,7 @@ class _NewsItemState extends BaseStateFullWidgetState<NewsItem> {
                       style: TextStyle(
                         fontSize: AppFonts.getMediumFontSize(context),
                         color: AppColors.white,
-                        height: 1.0,
+                        height: 1.3,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,

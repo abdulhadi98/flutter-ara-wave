@@ -25,8 +25,7 @@ class RootScreen extends BaseStateFullWidget {
   _RootScreenState createState() => _RootScreenState();
 }
 
-class _RootScreenState extends BaseStateFullWidgetState<RootScreen>
-    with RootScreenDi {
+class _RootScreenState extends BaseStateFullWidgetState<RootScreen> with RootScreenDi {
   @override
   void initState() {
     super.initState();
@@ -102,20 +101,16 @@ class _RootScreenState extends BaseStateFullWidgetState<RootScreen>
         return HoldingsScreen(holdingsType: uiController.getSharedData());
 
       case AppMainScreens.PRIVATE_ASSET_DETAILS_SCREEN:
-        return PrivateAssetDetailsScreen(
-            assetModel: uiController.getSharedData());
+        return PrivateAssetDetailsScreen(assetModel: uiController.getSharedData());
 
       case AppMainScreens.PERSONAL_ASSET_DETAILS_SCREEN:
-        return PersonalAssetDetailsScreen(
-            assetModel: uiController.getSharedData());
+        return PersonalAssetDetailsScreen(assetModel: uiController.getSharedData());
 
       case AppMainScreens.PERSONAL_ASSET_MANUAL_DETAILS_SCREEN:
-        return PrivateManualDetailsScreen(
-            assetModel: uiController.getSharedData());
+        return PrivateManualDetailsScreen(assetModel: uiController.getSharedData());
 
       case AppMainScreens.PUBLIC_ASSET_DETAILS_SCREEN:
-        return PublicAssetDetailsScreen(
-            assetModel: uiController.getSharedData());
+        return PublicAssetDetailsScreen(assetModel: uiController.getSharedData());
 
       default:
         return Container();
@@ -145,8 +140,7 @@ class _RootScreenState extends BaseStateFullWidgetState<RootScreen>
                 screen == AppMainScreens.MY_PORTFOLIO_SCREEN ||
                     screen == AppMainScreens.HOLDINGS_SCREEN ||
                     screen == AppMainScreens.PRIVATE_ASSET_DETAILS_SCREEN ||
-                    screen ==
-                        AppMainScreens.PERSONAL_ASSET_MANUAL_DETAILS_SCREEN ||
+                    screen == AppMainScreens.PERSONAL_ASSET_MANUAL_DETAILS_SCREEN ||
                     screen == AppMainScreens.PERSONAL_ASSET_DETAILS_SCREEN,
                 AppMainScreens.MY_PORTFOLIO_SCREEN,
                 'assets/icons/ic_pie_chart.svg',
@@ -156,12 +150,12 @@ class _RootScreenState extends BaseStateFullWidgetState<RootScreen>
                 AppMainScreens.NEWS_SCREEN,
                 'assets/icons/ic_news.svg',
               ),
-              buildBottomNavBarItem(
-                screen == AppMainScreens.OPTIONS_SCREEN,
-                AppMainScreens.OPTIONS_SCREEN,
-                'assets/icons/ic_options.svg',
-                size: width * .025,
-              ),
+              // buildBottomNavBarItem(
+              //   screen == AppMainScreens.OPTIONS_SCREEN,
+              //   AppMainScreens.OPTIONS_SCREEN,
+              //   'assets/icons/ic_options.svg',
+              //   size: width * .025,
+              // ), //TODO option button
             ],
           ),
         ],
@@ -169,8 +163,7 @@ class _RootScreenState extends BaseStateFullWidgetState<RootScreen>
     );
   }
 
-  Widget buildBottomNavBarItem(isSelected, AppMainScreens screen, image,
-      {size}) {
+  Widget buildBottomNavBarItem(isSelected, AppMainScreens screen, image, {size}) {
     return GestureDetector(
       onTap: () => uiController.setCurrentScreen(screen),
       child: Padding(

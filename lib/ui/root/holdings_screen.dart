@@ -53,8 +53,7 @@ class HoldingsScreen extends BaseStateFullWidget {
   _HoldingsScreenState createState() => _HoldingsScreenState();
 }
 
-class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
-    with HoldingsScreenDi {
+class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen> with HoldingsScreenDi {
   bool emptyPrivateChart = false;
 
   double get tabsHeight => height * .035;
@@ -207,9 +206,9 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                   //     visibleMinimum: chartData[chartData.length-chartData.length~/2].year,
                   //     visibleMaximum: chartData[chartData.length-chartData.length~/2].year,
                   // ),
-                  margin:
-                      EdgeInsets.only(right: width * 0.04, top: width * 0.01),
+                  margin: EdgeInsets.only(right: width * 0.04, top: width * 0.01),
                   primaryXAxis: DateTimeAxis(
+                    labelStyle: TextStyle(color: AppColors.white),
                     // // intervalType: _getChartIntervalType(filter),
                     // visibleMinimum: chartData.length > 1
                     //     ? chartData[chartData.length - (chartData.length ~/ 2)].x
@@ -226,6 +225,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                     autoScrollingMode: AutoScrollingMode.end,
                   ),
                   primaryYAxis: NumericAxis(
+                    labelStyle: TextStyle(color: AppColors.white),
                     edgeLabelPlacement: EdgeLabelPlacement.shift,
                     labelFormat: '{value}',
                     // numberFormat: NumberFormat.simpleCurrency(decimalDigits: 0),
@@ -244,13 +244,10 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                   vertical: height * 0.055,
                   horizontal: 24,
                 ),
-                child: ErrorMessageWidget(
-                    messageKey: 'no_result_found_message',
-                    image: 'assets/images/ic_not_found.png'),
+                child: ErrorMessageWidget(messageKey: 'no_result_found_message', image: 'assets/images/ic_not_found.png'),
               );
             case Status.FAILURE:
-              return ErrorMessageWidget(
-                  messageKey: '', image: 'assets/images/ic_error.png');
+              return ErrorMessageWidget(messageKey: '', image: 'assets/images/ic_error.png');
 
             default:
               return Container();
@@ -367,44 +364,42 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
       // resizeToAvoidBottomInset: false,
       backgroundColor: Colors.black,
       body: WillPopScope(
-        onWillPop: () => rootScreenController
-            .setCurrentScreen(AppMainScreens.MY_PORTFOLIO_SCREEN),
+        onWillPop: () => rootScreenController.setCurrentScreen(AppMainScreens.MY_PORTFOLIO_SCREEN),
         child: StreamBuilder<HoldingsType>(
-            initialData: HoldingsType.PRIVATE,
-            stream: uiController.holdingsTypeStream,
-            builder: (context, typeSnapshot) {
-              return NestedScrollView(
-                physics: ClampingScrollPhysics(),
-                headerSliverBuilder: (context, bool innerBoxIsScrolled) {
-                  return [
-                    buildSettingsAndTabsSliver(
-                        context, typeSnapshot.data!, innerBoxIsScrolled),
-                  ];
+          initialData: HoldingsType.PRIVATE,
+          stream: uiController.holdingsTypeStream,
+          builder: (context, typeSnapshot) {
+            return NestedScrollView(
+              physics: ClampingScrollPhysics(),
+              headerSliverBuilder: (context, bool innerBoxIsScrolled) {
+                return [
+                  buildSettingsAndTabsSliver(context, typeSnapshot.data!, innerBoxIsScrolled),
+                ];
+              },
+              body: Builder(
+                builder: (context) {
+                  final ScrollController? innerScrollController = PrimaryScrollController.of(context);
+                  return Container(
+                    padding: EdgeInsets.only(
+                      top: tabsHeight + mediaQuery.padding.top,
+                      right: width * .05,
+                      left: width * .05,
+                    ),
+                    child: Column(
+                      children: [
+                        SizedBox(height: height * 0.03),
+                        buildSeparatorItem(),
+                        buildHoldingResults(
+                          typeSnapshot.data!,
+                        ),
+                      ],
+                    ),
+                  );
                 },
-                body: Builder(
-                  builder: (context) {
-                    final ScrollController? innerScrollController =
-                        PrimaryScrollController.of(context);
-                    return Container(
-                      padding: EdgeInsets.only(
-                        top: tabsHeight + mediaQuery.padding.top,
-                        right: width * .05,
-                        left: width * .05,
-                      ),
-                      child: Column(
-                        children: [
-                          SizedBox(height: height * 0.03),
-                          buildSeparatorItem(),
-                          buildHoldingResults(
-                            typeSnapshot.data!,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              );
-            },),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -429,8 +424,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
         flexibleSpace: LayoutBuilder(
           builder: (context, constraints) {
             top = constraints.biggest.height;
-            bool isCollapsed = top.toInt() ==
-                (tabsHeight + mediaQuery.padding.top + tabsHeight).toInt();
+            bool isCollapsed = top.toInt() == (tabsHeight + mediaQuery.padding.top + tabsHeight).toInt();
 
             return FlexibleSpaceBar(
               collapseMode: CollapseMode.pin,
@@ -460,12 +454,10 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                               ? Container(
                                   width: double.infinity,
                                   // height: height* .40,
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: height * .01),
+                                  padding: EdgeInsets.symmetric(vertical: height * .01),
                                   decoration: BoxDecoration(
                                     color: AppColors.mainColor,
-                                    borderRadius:
-                                        BorderRadius.circular(width * 0.019),
+                                    borderRadius: BorderRadius.circular(width * 0.019),
                                   ),
                                   height: height * .244,
                                   child: Center(
@@ -473,8 +465,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                                       appLocal.trans('no_result_found_message'),
                                       style: TextStyle(
                                         color: Colors.white,
-                                        fontSize:
-                                            AppFonts.getSmallFontSize(context),
+                                        fontSize: AppFonts.getSmallFontSize(context),
                                         //height: 1.0,
                                       ),
                                     ),
@@ -523,18 +514,13 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                   chartType: ChartsType.AREA,
                   filter: uiController.chartFilter,
                   historicalDataList: historicalSnapshot.data!.data!,
-                  onFilterChanged: (filter) =>
-                      uiController.fetchPublicAssetHistorical(filter: filter),
+                  onFilterChanged: (filter) => uiController.fetchPublicAssetHistorical(filter: filter),
                 ),
               );
             case Status.NO_RESULTS:
-              return ErrorMessageWidget(
-                  messageKey: 'no_result_found_message',
-                  image: 'assets/images/ic_not_found.png');
+              return ErrorMessageWidget(messageKey: 'no_result_found_message', image: 'assets/images/ic_not_found.png');
             case Status.FAILURE:
-              return ErrorMessageWidget(
-                  messageKey: historicalSnapshot.data?.message ?? '',
-                  image: 'assets/images/ic_error.png');
+              return ErrorMessageWidget(messageKey: historicalSnapshot.data?.message ?? '', image: 'assets/images/ic_error.png');
 
             default:
               return Container();
@@ -556,8 +542,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 GestureDetector(
-                  onTap: () => rootScreenController
-                      .setCurrentScreen(AppMainScreens.MY_PORTFOLIO_SCREEN),
+                  onTap: () => rootScreenController.setCurrentScreen(AppMainScreens.MY_PORTFOLIO_SCREEN),
                   child: Row(
                     children: [
                       SizedBox(width: width * .04),
@@ -664,20 +649,14 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
       child: Row(
         children: [
           SizedBox(width: width * 0.050),
-          HoldingsTypeTapItem(HoldingsType.PRIVATE,
-              type == HoldingsType.PRIVATE, appLocal.trans("private"), onClick),
+          HoldingsTypeTapItem(HoldingsType.PRIVATE, type == HoldingsType.PRIVATE, appLocal.trans("private"), onClick),
           SizedBox(width: width * .020),
-          HoldingsTypeTapItem(HoldingsType.PUBLIC, type == HoldingsType.PUBLIC,
-              appLocal.trans("public"), (holdingType) {
+          HoldingsTypeTapItem(HoldingsType.PUBLIC, type == HoldingsType.PUBLIC, appLocal.trans("public"), (holdingType) {
             onClick(holdingType);
             uiController.fetchPublicAssetHistorical();
           }),
           SizedBox(width: width * .020),
-          HoldingsTypeTapItem(
-              HoldingsType.PERSONAL,
-              type == HoldingsType.PERSONAL,
-              appLocal.trans("personal"),
-              onClick),
+          HoldingsTypeTapItem(HoldingsType.PERSONAL, type == HoldingsType.PERSONAL, appLocal.trans("personal"), onClick),
           SizedBox(width: width * 0.050),
         ],
       ),
@@ -728,16 +707,12 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                 return buildPersonalHoldingList(assetsSnapshot.data!.data!);
               }
             case Status.NO_RESULTS:
-              return ErrorMessageWidget(
-                  messageKey: 'no_result_found_message',
-                  image: 'assets/images/ic_not_found.png');
+              return ErrorMessageWidget(messageKey: 'no_result_found_message', image: 'assets/images/ic_not_found.png');
             case Status.FAILURE:
               {
                 // print('cya' + assetsSnapshot.data!.data!.length.toString());
 
-                return ErrorMessageWidget(
-                    messageKey: assetsSnapshot.data?.message ?? '',
-                    image: 'assets/images/ic_error.png');
+                return ErrorMessageWidget(messageKey: assetsSnapshot.data?.message ?? '', image: 'assets/images/ic_error.png');
               }
 
             default:
@@ -753,8 +728,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
   Widget buildPersonalHoldingList(items) {
     return buildHoldingList(
       itemsCount: items.length,
-      itemBuilder: (context, index) =>
-          buildPersonalHoldingItem(context, index, items.length, items[index]),
+      itemBuilder: (context, index) => buildPersonalHoldingItem(context, index, items.length, items[index]),
     );
   }
 
@@ -778,22 +752,17 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
         print(HoldingsScreen.assetId.toString());
         // rootScreenController.setSharedData(holdingModel.personalAssetType);
         rootScreenController.setSharedData(holdingModel);
-        rootScreenController
-            .setCurrentScreen(AppMainScreens.PERSONAL_ASSET_DETAILS_SCREEN);
+        rootScreenController.setCurrentScreen(AppMainScreens.PERSONAL_ASSET_DETAILS_SCREEN);
       },
       child: Container(
-        padding: EdgeInsets.only(
-            right: width * .01, top: height * .01, bottom: height * .01),
+        padding: EdgeInsets.only(right: width * .01, top: height * .01, bottom: height * .01),
         child: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  holdingModel.title ??
-                      holdingModel.personalAssetType?.personalAssetTypeOptions
-                          .first.name ??
-                      '',
+                  holdingModel.title ?? holdingModel.personalAssetType?.personalAssetTypeOptions.first.name ?? '',
                   style: TextStyle(
                     fontSize: AppFonts.getNormalFontSize(context),
                     color: Colors.white,
@@ -822,12 +791,10 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                 // ),
                 // SizedBox(width: width * .02),
                 Text(
-                  holdingModel.personalAssetType?.personalAssetTypeOptions.first
-                          .name ??
-                      '',
+                  holdingModel.personalAssetType?.personalAssetTypeOptions.first.name ?? '',
                   style: TextStyle(
                     fontSize: AppFonts.getMediumFontSize(context),
-                    color: AppColors.gray,
+                    color: AppColors.white.withOpacity(0.85),
                     height: 1.0,
                   ),
                 ),
@@ -835,24 +802,22 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                 Container(
                   width: width * .0018,
                   height: height * .018,
-                  color: AppColors.gray,
+                  color: AppColors.white.withOpacity(0.85),
                 ),
                 SizedBox(width: width * .02),
                 Text(
                   holdingModel.subType ?? 'null',
                   style: TextStyle(
                     fontSize: AppFonts.getMediumFontSize(context),
-                    color: AppColors.gray,
+                    color: AppColors.white.withOpacity(0.85),
                     height: 1.0,
                   ),
                 ),
                 Spacer(),
 
-                if (holdingModel.purchasedPrice != null)
-                  SizedBox(width: width * .02),
+                if (holdingModel.purchasedPrice != null) SizedBox(width: width * .02),
 
-                if (holdingModel.purchasedPrice != null)
-                  SizedBox(width: width * .02),
+                if (holdingModel.purchasedPrice != null) SizedBox(width: width * .02),
                 if (holdingModel.purchasedPrice != null)
                   Text(
                     Utils.getFormattedStrNum(holdingModel.purchasedPrice),
@@ -915,13 +880,9 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                   assetsSnapshot.data!.data!,
                 );
             case Status.NO_RESULTS:
-              return ErrorMessageWidget(
-                  messageKey: 'no_result_found_message',
-                  image: 'assets/images/ic_not_found.png');
+              return ErrorMessageWidget(messageKey: 'no_result_found_message', image: 'assets/images/ic_not_found.png');
             case Status.FAILURE:
-              return ErrorMessageWidget(
-                  messageKey: assetsSnapshot.data?.message ?? '',
-                  image: 'assets/images/ic_error.png');
+              return ErrorMessageWidget(messageKey: assetsSnapshot.data?.message ?? '', image: 'assets/images/ic_error.png');
 
             default:
               return Container();
@@ -964,13 +925,11 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
   ) {
     return buildHoldingList(
       itemsCount: items.length,
-      itemBuilder: (BuildContext context, int index) =>
-          buildPrivateHoldingItem(context, index, items.length, items[index]),
+      itemBuilder: (BuildContext context, int index) => buildPrivateHoldingItem(context, index, items.length, items[index]),
     );
   }
 
-  Widget buildPrivateHoldingItem(
-      context, index, itemsCount, PrivateHoldingModel item) {
+  Widget buildPrivateHoldingItem(context, index, itemsCount, PrivateHoldingModel item) {
     return Column(
       children: [
         buildAssetItem(
@@ -978,27 +937,19 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
             city: item.country,
             country: item.headquarterCity,
             salePrice: item.asset?.salePrice.toString(),
-            icon:
-                'https://wave.aratech.co/images/private_assets/${item.asset?.icon}',
+            icon: 'https://wave.aratech.co/images/private_assets/${item.asset?.icon}',
             quantity: item.quantity.toString(),
-            purchasedPrice: double.parse(item.asset!.purchasePrice!)
-                .toStringAsFixed(3)
-                .toString(),
+            purchasedPrice: double.parse(item.asset!.purchasePrice!).toStringAsFixed(3).toString(),
             onClick: () {
               HoldingsScreen.assetId = item.id;
-              print('zzzzzzz' +
-                  item.id.toString() +
-                  '  ' +
-                  '${item.asset!.assetType!.kind}');
+              print('zzzzzzz' + item.id.toString() + '  ' + '${item.asset!.assetType!.kind}');
 
               if (item.asset!.assetType!.kind == 'holding') {
                 rootScreenController.setSharedData(item.asset);
-                rootScreenController.setCurrentScreen(
-                    AppMainScreens.PRIVATE_ASSET_DETAILS_SCREEN);
+                rootScreenController.setCurrentScreen(AppMainScreens.PRIVATE_ASSET_DETAILS_SCREEN);
               } else {
                 rootScreenController.setSharedData(item.asset);
-                rootScreenController.setCurrentScreen(
-                    AppMainScreens.PERSONAL_ASSET_MANUAL_DETAILS_SCREEN);
+                rootScreenController.setCurrentScreen(AppMainScreens.PERSONAL_ASSET_MANUAL_DETAILS_SCREEN);
               }
             }),
         ...getListDividerItems(index, itemsCount),
@@ -1011,13 +962,11 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
   ) {
     return buildHoldingList(
       itemsCount: items.length,
-      itemBuilder: (context, index) =>
-          buildPublicHoldingItem(context, index, items.length, items[index]),
+      itemBuilder: (context, index) => buildPublicHoldingItem(context, index, items.length, items[index]),
     );
   }
 
-  Widget buildPublicHoldingItem(
-      context, index, itemsCount, PublicHoldingModel item) {
+  Widget buildPublicHoldingItem(context, index, itemsCount, PublicHoldingModel item) {
     return Column(
       children: [
         buildAssetItem(
@@ -1031,14 +980,10 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
               HoldingsScreen.assetId = item.id;
 
               HoldingsScreen.stockEx = item.asset.stockSymbol;
-              print('zzzzzzz' +
-                  item.id.toString() +
-                  '  ' +
-                  item.asset.stockSymbol!);
+              print('zzzzzzz' + item.id.toString() + '  ' + item.asset.stockSymbol!);
 
               rootScreenController.setSharedData(item.asset);
-              rootScreenController
-                  .setCurrentScreen(AppMainScreens.PUBLIC_ASSET_DETAILS_SCREEN);
+              rootScreenController.setCurrentScreen(AppMainScreens.PUBLIC_ASSET_DETAILS_SCREEN);
             }),
         ...getListDividerItems(index, itemsCount),
       ],
@@ -1058,8 +1003,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
     return InkWell(
       onTap: onClick,
       child: Container(
-        padding: EdgeInsets.only(
-            right: width * .01, top: height * .01, bottom: height * .01),
+        padding: EdgeInsets.only(right: width * .01, top: height * .01, bottom: height * .01),
         child: Column(
           children: [
             Row(
@@ -1073,10 +1017,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                   ),
                 ),
                 Text(
-                  Utils.getFormattedStrNum(
-                          double.parse(purchasedPrice.toString()) *
-                              int.parse(quantity.toString()))
-                      .toString(),
+                  Utils.getFormattedStrNum(double.parse(purchasedPrice.toString()) * int.parse(quantity.toString())).toString(),
                   style: TextStyle(
                     fontSize: AppFonts.getNormalFontSize(context),
                     color: Colors.white,
@@ -1094,15 +1035,13 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                     width: width * .04,
                     height: width * .04,
                   ),
-                if (icon != null &&
-                    icon != 'https://wave.aratech.co/images/private_assets/123')
-                  SizedBox(width: width * .02),
+                if (icon != null && icon != 'https://wave.aratech.co/images/private_assets/123') SizedBox(width: width * .02),
                 // if (icon == '123') SizedBox(width: width * .02),
                 Text(
                   country ?? '',
                   style: TextStyle(
                     fontSize: AppFonts.getMediumFontSize(context),
-                    color: AppColors.gray,
+                    color: AppColors.white.withOpacity(0.85),
                     height: 1.0,
                   ),
                 ),
@@ -1111,7 +1050,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                   Container(
                     width: width * .0018,
                     height: height * .018,
-                    color: AppColors.gray,
+                    color: AppColors.white.withOpacity(0.85),
                   ),
                 if (city != null) SizedBox(width: width * .02),
                 if (city != null)
@@ -1119,7 +1058,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                     city ?? '',
                     style: TextStyle(
                       fontSize: AppFonts.getMediumFontSize(context),
-                      color: AppColors.gray,
+                      color: AppColors.white.withOpacity(0.85),
                       height: 1.0,
                     ),
                   ),
@@ -1133,10 +1072,7 @@ class _HoldingsScreenState extends BaseStateFullWidgetState<HoldingsScreen>
                   ),
                 ),
                 SizedBox(width: width * .02),
-                Container(
-                    width: width * .0018,
-                    height: height * .018,
-                    color: AppColors.blue),
+                Container(width: width * .0018, height: height * .018, color: AppColors.blue),
                 SizedBox(width: width * .02),
                 Text(
                   '\$' + Utils.getFormattedStrNum(purchasedPrice),

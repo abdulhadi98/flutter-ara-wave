@@ -34,13 +34,10 @@ class PersonalAssetDetailsScreen extends BaseStateFullWidget {
   PersonalAssetDetailsScreen({required this.assetModel});
 
   @override
-  _PersonalAssetDetailsScreenState createState() =>
-      _PersonalAssetDetailsScreenState();
+  _PersonalAssetDetailsScreenState createState() => _PersonalAssetDetailsScreenState();
 }
 
-class _PersonalAssetDetailsScreenState
-    extends BaseStateFullWidgetState<PersonalAssetDetailsScreen>
-    with PersonalAssetDetailsScreenDi {
+class _PersonalAssetDetailsScreenState extends BaseStateFullWidgetState<PersonalAssetDetailsScreen> with PersonalAssetDetailsScreenDi {
   @override
   void initState() {
     super.initState();
@@ -60,12 +57,7 @@ class _PersonalAssetDetailsScreenState
     var url = Uri.parse(
       'https://wave.aratech.co/api/get-personal-assets-details-for-edit',
     );
-    print('///////////' +
-        url.toString() +
-        '//tokennnnnn///' +
-        apiToken! +
-        '//////' +
-        assetId.toString());
+    print('///////////' + url.toString() + '//tokennnnnn///' + apiToken! + '//////' + assetId.toString());
 
     request = http.MultipartRequest('POST', url);
     request.fields['api_token'] = apiToken;
@@ -113,32 +105,22 @@ class _PersonalAssetDetailsScreenState
   }
 
   Widget buildGridItem(AddPersonalAssetOptionModel option) {
-    print(option.optionName! +
-        '  id=  ' +
-        option.id.toString() +
-        option.type.toString() +
-        "  " +
-        option.value.toString());
+    print(option.optionName! + '  id=  ' + option.id.toString() + option.type.toString() + "  " + option.value.toString());
     switch (option.type) {
       case 'text':
-        return buildTextFieldGridItem(option, TextInputType.text,
-            AddPersonalAssetHoldingTypeOptionType.text);
+        return buildTextFieldGridItem(option, TextInputType.text, AddPersonalAssetHoldingTypeOptionType.text);
 
       case 'year':
-        return buildTextFieldGridItem(option, TextInputType.number,
-            AddPersonalAssetHoldingTypeOptionType.text);
+        return buildTextFieldGridItem(option, TextInputType.number, AddPersonalAssetHoldingTypeOptionType.text);
 
       case 'number':
-        return buildTextFieldGridItem(option, TextInputType.number,
-            AddPersonalAssetHoldingTypeOptionType.number);
+        return buildTextFieldGridItem(option, TextInputType.number, AddPersonalAssetHoldingTypeOptionType.number);
 
       case 'money':
-        return buildTextFieldGridItem(option, TextInputType.number,
-            AddPersonalAssetHoldingTypeOptionType.money);
+        return buildTextFieldGridItem(option, TextInputType.number, AddPersonalAssetHoldingTypeOptionType.money);
 
       case 'percentage':
-        return buildTextFieldGridItem(option, TextInputType.number,
-            AddPersonalAssetHoldingTypeOptionType.percentage);
+        return buildTextFieldGridItem(option, TextInputType.number, AddPersonalAssetHoldingTypeOptionType.percentage);
 
       case 'date':
         {
@@ -154,8 +136,7 @@ class _PersonalAssetDetailsScreenState
   onInputChanged(int optionId, String type, String value, String optionName) {
     print('before update' + addPersonalAssetOptionList.length.toString());
 
-    addPersonalAssetOptionList[addPersonalAssetOptionList.indexWhere(
-        (element) => element.id == optionId)] = AddPersonalAssetOptionModel(
+    addPersonalAssetOptionList[addPersonalAssetOptionList.indexWhere((element) => element.id == optionId)] = AddPersonalAssetOptionModel(
       id: optionId,
       type: type,
       value: value,
@@ -197,24 +178,14 @@ class _PersonalAssetDetailsScreenState
       var url = Uri.parse(
         'https://wave.aratech.co/api/edit-personal-asset',
       );
-      print('///////////' +
-          url.toString() +
-          '//tokennnnnn///' +
-          apiToken! +
-          '//////' +
-          assetId.toString());
+      print('///////////' + url.toString() + '//tokennnnnn///' + apiToken! + '//////' + assetId.toString());
 
       request = http.MultipartRequest('POST', url);
       request.fields['api_token'] = apiToken;
       request.fields['asset_id'] = assetId.toString();
       List<Map<dynamic, dynamic>> optionsListForApi = [];
       addPersonalAssetOptionList.forEach((element) {
-        Map option = {
-          "option_id": element.id,
-          'option_value_type': element.type,
-          'option_value': element.value,
-          'option_name': element.optionName
-        };
+        Map option = {"option_id": element.id, 'option_value_type': element.type, 'option_value': element.value, 'option_name': element.optionName};
         optionsListForApi.add(option); //okok
       });
       //   print(optionsListForApi);
@@ -228,9 +199,7 @@ class _PersonalAssetDetailsScreenState
       //                            PersonalAssetDetailsScreen.photosList )!
 
       if (getStringOfUrls(PersonalAssetDetailsScreen.photosList)! != '')
-        urls = getStringOfUrls(photosUrl)! +
-            ',' +
-            getStringOfUrls(PersonalAssetDetailsScreen.photosList)!;
+        urls = getStringOfUrls(photosUrl)! + ',' + getStringOfUrls(PersonalAssetDetailsScreen.photosList)!;
       else
         urls = getStringOfUrls(photosUrl)!;
       request.fields['photos'] = urls.isEmpty ? '' : urls;
@@ -390,11 +359,7 @@ class _PersonalAssetDetailsScreenState
                         ),
                         child: AddPersonalAssetDocumentStepWidget(
                           onFinishedClicked: (photosUrl1) {
-                            print('ONONONONONONONONONFinished' +
-                                getStringOfUrls(photosUrl1!)! +
-                                ',' +
-                                getStringOfUrls(
-                                    PersonalAssetDetailsScreen.photosList)!);
+                            print('ONONONONONONONONONFinished' + getStringOfUrls(photosUrl1!)! + ',' + getStringOfUrls(PersonalAssetDetailsScreen.photosList)!);
                             updateAsset(() {});
                             //      getAssetDetails();
                             //    getAssetDetailsForEdit();
@@ -536,10 +501,8 @@ class _PersonalAssetDetailsScreenState
                                     Navigator.pop(context);
                                     Navigator.pop(context);
 
-                                    rootScreenController
-                                        .setSharedData(HoldingsType.PERSONAL);
-                                    rootScreenController.setCurrentScreen(
-                                        AppMainScreens.HOLDINGS_SCREEN);
+                                    rootScreenController.setSharedData(HoldingsType.PERSONAL);
+                                    rootScreenController.setCurrentScreen(AppMainScreens.HOLDINGS_SCREEN);
                                   }
                                 },
                               ),
@@ -618,12 +581,7 @@ class _PersonalAssetDetailsScreenState
     var url = Uri.parse(
       'https://wave.aratech.co/api/get-personal-asset-details',
     );
-    print('///////////' +
-        url.toString() +
-        '//tokennnnnn///' +
-        apiToken! +
-        '//////' +
-        assetId.toString());
+    print('///////////' + url.toString() + '//tokennnnnn///' + apiToken! + '//////' + assetId.toString());
 
     request = http.MultipartRequest('POST', url);
     request.fields['api_token'] = apiToken;
@@ -645,8 +603,7 @@ class _PersonalAssetDetailsScreenState
     photos.forEach((element) {
       var link = element['link'].toString();
       if (link != 'null' && link != '') {
-        photosUrl
-            .add('images/personal_assets/' + link.split('/').last.toString());
+        photosUrl.add('images/personal_assets/' + link.split('/').last.toString());
         personalAssetPhotos.add(
           PersonalAssetPhotos(
               id: element['id'],
@@ -674,54 +631,31 @@ class _PersonalAssetDetailsScreenState
       // else if(headQuarterCity == 'Savings' ||headQuarterCity=='Digital Asset')
       //   totalBalance = details['Market Value'].toString();
       else if (headQuarterCity == 'Digital Asset')
-        totalBalance =
-            details['Est Market Value'] ?? details['Amount'].toString();
+        totalBalance = details['Est Market Value'] ?? details['Amount'].toString();
       else if (headQuarterCity == 'Savings')
-        totalBalance = details['Account Balance'].toString() == 'null'
-            ? details['Balance'].toString()
-            : details['Account Balance'].toString();
+        totalBalance = details['Account Balance'].toString() == 'null' ? details['Balance'].toString() : details['Account Balance'].toString();
       else
-        totalBalance = details['Estimated Resale Value'].toString() == 'null'
-            ? details['Est Resale Value'].toString()
-            : details['Estimated Resale Value'].toString();
-      created_at =
-          DateTime.parse(payload["created_at"]).toString().substring(0, 10);
+        totalBalance = details['Estimated Resale Value'].toString() == 'null' ? details['Est Resale Value'].toString() : details['Estimated Resale Value'].toString();
+      created_at = DateTime.parse(payload["created_at"]).toString().substring(0, 10);
       //createdAt = created_at;
 
-      if (headQuarterCity != 'Real Estate' ||
-          headQuarterCity != 'Digital Asset')
-        description = details['Description'].toString() == 'null'
-            ? ''
-            : details['Description'].toString();
+      if (headQuarterCity != 'Real Estate' || headQuarterCity != 'Digital Asset') description = details['Description'].toString() == 'null' ? '' : details['Description'].toString();
       //print(stockExchange);
 
       //    rOI = payload['returnOnInvestment'].toString();
       //   assetGrowth = payload['profitPercentage'].toString();
     });
 
-    details.removeWhere((key, value) => (key == 'Estimated Resale Value' ||
-        key == 'Purchased Price' ||
-        key == 'Description' ||
-        key == 'Date of Purchase' ||
-        key == 'Est Resale Value'));
+    details.removeWhere((key, value) => (key == 'Estimated Resale Value' || key == 'Purchased Price' || key == 'Description' || key == 'Date of Purchase' || key == 'Est Resale Value'));
 
     if (headQuarterCity == 'Real Estate') {
       details.forEach((key, value) {
-        if (key == 'Loan Amount' ||
-            key == 'Down Payment' ||
-            key == 'Interest Rate' ||
-            key == 'Amortization (Months)' ||
-            key == 'Monthly Payment')
-          loadRowList
-              .add(rowInfo(key, Utils.getFormattedStrNum(value.toString())));
-        else if (key == 'Address' ||
-            key == 'Year Built' ||
-            key == 'Property Class' ||
-            key == 'Type')
+        if (key == 'Loan Amount' || key == 'Down Payment' || key == 'Interest Rate' || key == 'Amortization (Months)' || key == 'Monthly Payment')
+          loadRowList.add(rowInfo(key, Utils.getFormattedStrNum(value.toString())));
+        else if (key == 'Address' || key == 'Year Built' || key == 'Property Class' || key == 'Type')
           propertyRowLis.add(rowInfo(key, value.toString()));
         else if (key == 'Lot Size')
-          propertyRowLis
-              .add(rowInfo(key, Utils.getFormattedStrNum(value.toString())));
+          propertyRowLis.add(rowInfo(key, Utils.getFormattedStrNum(value.toString())));
         else {
           value = double.tryParse(value.toString()) ?? value.toString();
           print(value.toString() + '   ' + value.runtimeType.toString());
@@ -734,8 +668,7 @@ class _PersonalAssetDetailsScreenState
       });
     } else
       details.forEach((key, value) {
-        if (key != 'Year')
-          value = double.tryParse(value.toString()) ?? value.toString();
+        if (key != 'Year') value = double.tryParse(value.toString()) ?? value.toString();
         print(value.toString() + '   ' + value.runtimeType.toString());
         if (value.runtimeType == double) {
           print('dounle');
@@ -805,38 +738,27 @@ class _PersonalAssetDetailsScreenState
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            if (personalAssetPhotos.isNotEmpty)
-                              buildGalleryList(),
-                            if (personalAssetPhotos.isNotEmpty)
-                              SizedBox(height: height * 0.020),
+                            if (personalAssetPhotos.isNotEmpty) buildGalleryList(),
+                            if (personalAssetPhotos.isNotEmpty) SizedBox(height: height * 0.020),
                             // ChartCardItem(chartType: ChartsType.COLUMN_ROUNDED_CORNER,),
                             // SizedBox(height: height* 0.020),
                             // buildExpandableCard(),
                             Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: width * 0.03,
-                                  vertical: height * 0.03),
+                              padding: EdgeInsets.symmetric(horizontal: width * 0.03, vertical: height * 0.03),
                               // height: height / 4,
-                              decoration: BoxDecoration(
-                                  color: AppColors.mainColor,
-                                  borderRadius: BorderRadius.circular(8)),
+                              decoration: BoxDecoration(color: AppColors.mainColor, borderRadius: BorderRadius.circular(8)),
                               child: Column(
                                 children: [
-                                  rowInfo('Purchase Price',
-                                      Utils.getFormattedStrNum(purchasePrice)),
-                                  rowInfo('Estimated Resale Value',
-                                      Utils.getFormattedStrNum(totalBalance)),
-                                  rowInfo('Date of Purchase',
-                                      createdAt == '' ? created_at : createdAt),
+                                  rowInfo('Purchase Price', Utils.getFormattedStrNum(purchasePrice)),
+                                  rowInfo('Estimated Resale Value', Utils.getFormattedStrNum(totalBalance)),
+                                  rowInfo('Date of Purchase', createdAt == '' ? created_at : createdAt),
                                 ],
                               ),
                             ),
                             SizedBox(height: height * 0.020),
                             Container(
                                 width: width,
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: width * 0.03,
-                                    vertical: height * 0.03),
+                                padding: EdgeInsets.symmetric(horizontal: width * 0.03, vertical: height * 0.03),
                                 // height: height / 4,
                                 decoration: BoxDecoration(
                                   color: AppColors.mainColor,
@@ -848,8 +770,7 @@ class _PersonalAssetDetailsScreenState
                                     Text(
                                       'Details',
                                       style: TextStyle(
-                                        fontSize:
-                                            AppFonts.getMediumFontSize(context),
+                                        fontSize: AppFonts.getMediumFontSize(context),
                                         color: Colors.white,
                                         height: 1.0,
                                         fontWeight: FontWeight.w800,
@@ -858,21 +779,14 @@ class _PersonalAssetDetailsScreenState
                                     SizedBox(
                                       height: height * 0.035,
                                     ),
-                                    Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: rowInforList),
+                                    Column(crossAxisAlignment: CrossAxisAlignment.start, children: rowInforList),
                                   ],
                                 )),
                             SizedBox(height: height * 0.020),
-                            if (headQuarterCity != 'Real Estate' &&
-                                type != 'Cryptocurrency' &&
-                                headQuarterCity != 'Savings')
+                            if (headQuarterCity != 'Real Estate' && type != 'Cryptocurrency' && headQuarterCity != 'Savings')
                               Container(
                                 width: width,
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: width * 0.03,
-                                    vertical: height * 0.03),
+                                padding: EdgeInsets.symmetric(horizontal: width * 0.03, vertical: height * 0.03),
                                 // height: height / 4,
                                 decoration: BoxDecoration(
                                   color: AppColors.mainColor,
@@ -884,8 +798,7 @@ class _PersonalAssetDetailsScreenState
                                     Text(
                                       'Description',
                                       style: TextStyle(
-                                        fontSize:
-                                            AppFonts.getMediumFontSize(context),
+                                        fontSize: AppFonts.getMediumFontSize(context),
                                         color: Colors.white,
                                         height: 1.0,
                                         fontWeight: FontWeight.w800,
@@ -898,8 +811,7 @@ class _PersonalAssetDetailsScreenState
                                       description,
                                       style: TextStyle(
                                         wordSpacing: 2,
-                                        fontSize:
-                                            AppFonts.getSmallFontSize(context),
+                                        fontSize: AppFonts.getSmallFontSize(context),
                                         color: Colors.white,
                                         height: 1.6,
 
@@ -909,16 +821,12 @@ class _PersonalAssetDetailsScreenState
                                   ],
                                 ),
                               ),
-                            if (headQuarterCity != 'Real Estate' &&
-                                type != 'Cryptocurrency')
-                              SizedBox(height: height * 0.020),
+                            if (headQuarterCity != 'Real Estate' && type != 'Cryptocurrency') SizedBox(height: height * 0.020),
 
                             if (headQuarterCity == 'Real Estate')
                               Container(
                                 width: width,
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: width * 0.03,
-                                    vertical: height * 0.03),
+                                padding: EdgeInsets.symmetric(horizontal: width * 0.03, vertical: height * 0.03),
                                 // height: height / 4,
                                 decoration: BoxDecoration(
                                   color: AppColors.mainColor,
@@ -930,8 +838,7 @@ class _PersonalAssetDetailsScreenState
                                     Text(
                                       'Loan Metrics',
                                       style: TextStyle(
-                                        fontSize:
-                                            AppFonts.getMediumFontSize(context),
+                                        fontSize: AppFonts.getMediumFontSize(context),
                                         color: Colors.white,
                                         height: 1.0,
                                         fontWeight: FontWeight.w800,
@@ -946,15 +853,12 @@ class _PersonalAssetDetailsScreenState
                                   ],
                                 ),
                               ),
-                            if (headQuarterCity == 'Real Estate')
-                              SizedBox(height: height * 0.020),
+                            if (headQuarterCity == 'Real Estate') SizedBox(height: height * 0.020),
 
                             if (headQuarterCity == 'Real Estate')
                               Container(
                                 width: width,
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: width * 0.03,
-                                    vertical: height * 0.03),
+                                padding: EdgeInsets.symmetric(horizontal: width * 0.03, vertical: height * 0.03),
                                 // height: height / 4,
                                 decoration: BoxDecoration(
                                   color: AppColors.mainColor,
@@ -966,8 +870,7 @@ class _PersonalAssetDetailsScreenState
                                     Text(
                                       'Property Metrics',
                                       style: TextStyle(
-                                        fontSize:
-                                            AppFonts.getMediumFontSize(context),
+                                        fontSize: AppFonts.getMediumFontSize(context),
                                         color: Colors.white,
                                         height: 1.0,
                                         fontWeight: FontWeight.w800,
@@ -982,8 +885,7 @@ class _PersonalAssetDetailsScreenState
                                   ],
                                 ),
                               ),
-                            if (headQuarterCity == 'Real Estate')
-                              SizedBox(height: height * 0.020),
+                            if (headQuarterCity == 'Real Estate') SizedBox(height: height * 0.020),
                           ],
                         ),
                       ),
@@ -997,8 +899,7 @@ class _PersonalAssetDetailsScreenState
 
   Padding rowInfo(leftText, rightText) {
     return Padding(
-      padding: EdgeInsets.symmetric(
-          horizontal: width * .005, vertical: height * .004),
+      padding: EdgeInsets.symmetric(horizontal: width * .005, vertical: height * .004),
       child: Column(
         children: [
           Row(
@@ -1181,75 +1082,7 @@ class _PersonalAssetDetailsScreenState
     );
   }
 
-  galleryItem(List<PersonalAssetPhotos> photos, index, itemSize) {
-    List<String> urls = personalAssetPhotos
-        .map((e) => '${UrlsContainer.baseUrl}/${e.link}')
-        .toList(); //ggg
-
-    return GestureDetector(
-      onTap: () {
-        print(photos[index].link);
-        RoutesHelper.navigateToGalleryScreen(
-            gallery: urls, index: index, context: context);
-      },
-      child: Stack(
-        children: [
-          Positioned(
-            child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(8.0)),
-              child: ImageWidget(
-                  url: '${UrlsContainer.baseUrl}/${photos[index].link}',
-                  width: itemSize,
-                  height: itemSize,
-                  fit: BoxFit.cover),
-            ),
-          ),
-          Positioned(
-            right: 0,
-            top: 0,
-            // top: 0,
-            child: GestureDetector(
-              onTap: () {
-                print(photos[index].link! + index.toString());
-
-                print(photosUrl);
-
-                print(photosUrl.length);
-                photosUrl.removeWhere((element) {
-                  if (element == photos[index].link) {
-                    print('found and delete( $element)');
-                  }
-
-                  return element == photos[index].link!;
-                });
-
-                updateAsset(() {});
-
-                print(photosUrl.length);
-              },
-              child: Container(
-                alignment: Alignment.center,
-                padding: EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.white, width: .5),
-                  shape: BoxShape.circle,
-                  color: AppColors.mainColor,
-                ),
-                child: Icon(
-                  Icons.delete_outline_outlined,
-                  color: AppColors.gray,
-                  size: width * .04,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildTextFieldGridItem(AddPersonalAssetOptionModel option, type,
-      AddPersonalAssetHoldingTypeOptionType optionType) {
+  Widget buildTextFieldGridItem(AddPersonalAssetOptionModel option, type, AddPersonalAssetHoldingTypeOptionType optionType) {
     return AddAssetTextFormField(
         initialValue: option.value,
 
@@ -1457,8 +1290,7 @@ class _PersonalAssetDetailsScreenState
                         SizedBox(height: height * .020),
                         Container(
                           margin: const EdgeInsets.all(1),
-                          padding:
-                              EdgeInsets.symmetric(horizontal: width * .08),
+                          padding: EdgeInsets.symmetric(horizontal: width * .08),
                           decoration: BoxDecoration(
                             color: AppColors.black,
                             borderRadius: BorderRadius.only(
@@ -1488,8 +1320,7 @@ class _PersonalAssetDetailsScreenState
                                     appLocal.trans('edit_asset_info'),
                                     style: TextStyle(
                                       color: Colors.white,
-                                      fontSize:
-                                          AppFonts.getMediumFontSize(context),
+                                      fontSize: AppFonts.getMediumFontSize(context),
                                       height: 1.0,
                                     ),
                                   ),
@@ -1515,8 +1346,7 @@ class _PersonalAssetDetailsScreenState
                                     appLocal.trans('add_images'),
                                     style: TextStyle(
                                       color: Colors.white,
-                                      fontSize:
-                                          AppFonts.getMediumFontSize(context),
+                                      fontSize: AppFonts.getMediumFontSize(context),
                                       height: 1.0,
                                     ),
                                   ),
@@ -1573,8 +1403,7 @@ class _PersonalAssetDetailsScreenState
         itemBuilder: (context, index) {
           return Row(
             children: [
-              galleryItem(personalAssetPhotos, index,
-                  (width - 2 * width * .05 - 2 * width * .02) / 3),
+              galleryItem(personalAssetPhotos, index, (width - 2 * width * .05 - 2 * width * .02) / 3),
               if (index != (personalAssetPhotos.length) - 1)
                 SizedBox(
                   width: width * .02,
@@ -1582,6 +1411,66 @@ class _PersonalAssetDetailsScreenState
             ],
           );
         },
+      ),
+    );
+  }
+
+  galleryItem(List<PersonalAssetPhotos> photos, index, itemSize) {
+    List<String> urls = personalAssetPhotos.map((e) => '${UrlsContainer.baseUrl}/${e.link}').toList(); //ggg
+
+    return GestureDetector(
+      onTap: () {
+        print(photos[index].link);
+        RoutesHelper.navigateToGalleryScreen(gallery: urls, index: index, context: context);
+      },
+      child: Stack(
+        children: [
+          Positioned(
+            child: ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(8.0)),
+              child: ImageWidget(url: '${UrlsContainer.baseUrl}/${photos[index].link}', width: itemSize, height: itemSize, fit: BoxFit.cover),
+            ),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            // top: 0,
+            child: GestureDetector(
+              onTap: () {
+                print(photos[index].link! + index.toString());
+
+                print(photosUrl);
+
+                print(photosUrl.length);
+                photosUrl.removeWhere((element) {
+                  if (element == photos[index].link) {
+                    print('found and delete( $element)');
+                  }
+
+                  return element == photos[index].link!;
+                });
+
+                updateAsset(() {});
+
+                print(photosUrl.length);
+              },
+              child: Container(
+                alignment: Alignment.center,
+                padding: EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppColors.white, width: .5),
+                  shape: BoxShape.circle,
+                  color: AppColors.mainColor,
+                ),
+                child: Icon(
+                  Icons.delete_outline_outlined,
+                  color: AppColors.gray,
+                  size: width * .04,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1609,8 +1498,7 @@ class _PersonalAssetDetailsScreenState
             ),
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(
-                  8.0 /*topLeft: Radius.circular(8), topRight: Radius.circular(8),*/),
+              borderRadius: BorderRadius.circular(8.0 /*topLeft: Radius.circular(8), topRight: Radius.circular(8),*/),
               color: AppColors.mainColor,
             ),
             child: Row(
@@ -1635,8 +1523,7 @@ class _PersonalAssetDetailsScreenState
   }
 
   Widget buildCardWidget() {
-    List<PersonalAssetTypeOptionModel>? typeOptions =
-        widget.assetModel.personalAssetType?.personalAssetTypeOptions;
+    List<PersonalAssetTypeOptionModel>? typeOptions = widget.assetModel.personalAssetType?.personalAssetTypeOptions;
     return Container(
         padding: EdgeInsets.only(
           bottom: height * .03,
@@ -1660,16 +1547,10 @@ class _PersonalAssetDetailsScreenState
               itemBuilder: (context, index) {
                 String title = typeOptions![index].name;
                 String? value;
-                if (typeOptions[index].typeEnum ==
-                    AddPersonalAssetHoldingTypeOptionType.choose)
-                  value = typeOptions[index]
-                      .userPersonalAssetTypeOptionValue
-                      ?.personalAssetTypeOptionValues
-                      ?.value;
+                if (typeOptions[index].typeEnum == AddPersonalAssetHoldingTypeOptionType.choose)
+                  value = typeOptions[index].userPersonalAssetTypeOptionValue?.personalAssetTypeOptionValues?.value;
                 else
-                  value = typeOptions[index]
-                      .userPersonalAssetTypeOptionValue
-                      ?.value;
+                  value = typeOptions[index].userPersonalAssetTypeOptionValue?.value;
 
                 return Column(
                   children: [

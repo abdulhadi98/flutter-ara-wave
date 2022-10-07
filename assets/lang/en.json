@@ -12,6 +12,8 @@
   "news_feed": "News Feed",
   "wave_fund": "Wave Fund",
   "logout": "Logout",
+  "delete_account": "Delete Account",
+  
   "premium_account": "Premium Account",
   "wave_fund_member": "Wave Fund Member",
   "settings_privacy": "Settings and Privacy",
@@ -144,6 +146,8 @@
   "loan_amount": "Loan Amount",
   "interest_rate": "Interest Rate %",
   "acquisition_date": "Acquisition Date",
+  "are_you_sure":"Are You Sure?",
+  "remove_account_msg":"Your account and all of your information will permanently deleted from the app!",
   "asset_name": "Asset Name",
   "add_more_data": "Add More Data",
   "add_personal_asset_message": "Please fill all fields",

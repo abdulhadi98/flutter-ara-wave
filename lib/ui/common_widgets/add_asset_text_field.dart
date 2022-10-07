@@ -40,9 +40,7 @@ class AddAssetTextField extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         child: TextField(
           //   controller: ,
-          inputFormatters: (optioType != 'text' && optioType != 'year')
-              ? [ThousandsSeparatorInputFormatter()]
-              : [],
+          inputFormatters: (optioType != 'text' && optioType != 'year') ? [ThousandsSeparatorInputFormatter()] : [],
           textCapitalization: TextCapitalization.sentences,
           autofocus: false,
           enabled: true,
@@ -110,7 +108,7 @@ class AddAssetTextField extends StatelessWidget {
             // ): null,
             hintText: hintKey,
             hintStyle: TextStyle(
-              color: AppColors.white.withOpacity(.3),
+              color: AppColors.white.withOpacity(.65),
               fontSize: AppFonts.getXSmallFontSize(context),
             ),
             border: InputBorder.none,
@@ -159,13 +157,9 @@ class AddAssetTextFormField extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: TextFormField(
-          initialValue: (optioType != 'text' && optioType != 'year')
-              ? Utils.getFormattedStrNum(initialValue)
-              : initialValue,
+          initialValue: (optioType != 'text' && optioType != 'year') ? Utils.getFormattedStrNum(initialValue) : initialValue,
           //   controller: ,
-          inputFormatters: (optioType != 'text' && optioType != 'year')
-              ? [ThousandsSeparatorInputFormatter()]
-              : [],
+          inputFormatters: (optioType != 'text' && optioType != 'year') ? [ThousandsSeparatorInputFormatter()] : [],
           textCapitalization: TextCapitalization.sentences,
           autofocus: false,
           enabled: true,

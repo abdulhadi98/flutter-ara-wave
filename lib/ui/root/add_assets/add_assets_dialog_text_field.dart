@@ -31,10 +31,7 @@ class AddAssetsDialogTextField extends StatelessWidget {
     this.isNumber,
   });
 
-  var maskFormatter = new MaskTextInputFormatter(
-      mask: '#',
-      filter: {"#": RegExp(r'[0-9]')},
-      type: MaskAutoCompletionType.lazy);
+  var maskFormatter = new MaskTextInputFormatter(mask: '#', filter: {"#": RegExp(r'[0-9]')}, type: MaskAutoCompletionType.lazy);
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -116,7 +113,7 @@ class AddAssetsDialogTextField extends StatelessWidget {
             hintText: hint,
             hintStyle: hint != null
                 ? TextStyle(
-                    color: AppColors.white.withOpacity(.3),
+                    color: AppColors.white.withOpacity(.55),
                     fontSize: AppFonts.getSmallFontSize(context),
                   )
                 : null,
@@ -158,10 +155,7 @@ class AddAssetsDialogTextFormField extends StatelessWidget {
     this.isNumber,
   });
 
-  var maskFormatter = new MaskTextInputFormatter(
-      mask: '#',
-      filter: {"#": RegExp(r'[0-9]')},
-      type: MaskAutoCompletionType.lazy);
+  var maskFormatter = new MaskTextInputFormatter(mask: '#', filter: {"#": RegExp(r'[0-9]')}, type: MaskAutoCompletionType.lazy);
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -261,8 +255,7 @@ class ThousandsSeparatorInputFormatter extends TextInputFormatter {
   static const separator = ','; // Change this to '.' for other locales
 
   @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     // Short-circuit if the new value is empty
 
     // print(oldValue.text);
@@ -280,21 +273,18 @@ class ThousandsSeparatorInputFormatter extends TextInputFormatter {
     String oldValueText = oldValue.text.replaceAll(separator, '');
     String newValueText = newValue.text.replaceAll(separator, '');
 
-    if (oldValue.text.endsWith(separator) &&
-        oldValue.text.length == newValue.text.length + 1) {
+    if (oldValue.text.endsWith(separator) && oldValue.text.length == newValue.text.length + 1) {
       newValueText = newValueText.substring(0, newValueText.length - 1);
     }
 
     // Only process if the old value and new value are different
     if (oldValueText != newValueText) {
-      int selectionIndex =
-          newValue.text.length - newValue.selection.extentOffset;
+      int selectionIndex = newValue.text.length - newValue.selection.extentOffset;
       final chars = newValueText.split('');
 
       String newString = '';
       for (int i = chars.length - 1; i >= 0; i--) {
-        if ((chars.length - 1 - i) % 3 == 0 && i != chars.length - 1)
-          newString = separator + newString;
+        if ((chars.length - 1 - i) % 3 == 0 && i != chars.length - 1) newString = separator + newString;
         newString = chars[i] + newString;
       }
 

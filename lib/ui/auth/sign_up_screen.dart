@@ -20,8 +20,7 @@ class SignUpScreen extends BaseStateFullWidget {
   _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen>
-    with SignUpScreenDi {
+class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen> with SignUpScreenDi {
   @override
   void initState() {
     super.initState();
@@ -113,8 +112,7 @@ class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen>
                   'UK',
                   'GE',
                 ],
-                onChanged: (newValue) =>
-                    uiController.setSelectedCountry(newValue),
+                onChanged: (newValue) => uiController.setSelectedCountry(newValue),
               ),
               SizedBox(
                 height: height * .030,
@@ -145,23 +143,14 @@ class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen>
                         onClick: () {
                           if (validateInputs()) {
                             submitSignUp(UserModel(
-                              email:
-                                  uiController.emailTextEditingController.text,
-                              password: uiController
-                                  .passwordTextEditingController.text,
-                              firstName: uiController
-                                  .firstNameTextEditingController.text,
-                              lastName: uiController
-                                  .lastNameTextEditingController.text,
+                              email: uiController.emailTextEditingController.text,
+                              password: uiController.passwordTextEditingController.text,
+                              firstName: uiController.firstNameTextEditingController.text,
+                              lastName: uiController.lastNameTextEditingController.text,
                               country: uiController.getSelectedCountry(),
-                              phone:
-                                  uiController.phoneTextEditingController.text,
+                              phone: uiController.phoneTextEditingController.text,
                               //TODO
-                              name: uiController
-                                      .firstNameTextEditingController.text +
-                                  ' ' +
-                                  uiController
-                                      .lastNameTextEditingController.text,
+                              name: uiController.firstNameTextEditingController.text + ' ' + uiController.lastNameTextEditingController.text,
                               joinDate: DateTime.now(),
                               city: 'Damas',
                             ));
@@ -175,8 +164,7 @@ class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen>
               ),
               InkWell(
                 onTap: () {
-                  RoutesHelper.navigateTo(
-                      classToNavigate: LoginScreen(), context: context);
+                  RoutesHelper.navigateTo(classToNavigate: LoginScreen(), context: context);
                 },
                 child: Text(
                   appLocal.trans('back_to_login'),
@@ -200,37 +188,30 @@ class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen>
   bool validateInputs() {
     var validationMessage = '';
 
-    if (uiController.emailTextEditingController.text.isEmpty ||
-        !uiController.emailTextEditingController.text.contains('@')) {
-      if (validationMessage.isNotEmpty)
-        validationMessage = validationMessage + '\nInvalid email';
+    if (uiController.emailTextEditingController.text.isEmpty || !uiController.emailTextEditingController.text.contains('@')) {
+      if (validationMessage.isNotEmpty) validationMessage = validationMessage + '\nInvalid email';
       validationMessage = 'Invalid email';
     }
-    if (uiController.passwordTextEditingController.text.isEmpty ||
-        uiController.passwordTextEditingController.text.length < 5) {
+    if (uiController.passwordTextEditingController.text.isEmpty || uiController.passwordTextEditingController.text.length < 5) {
       if (validationMessage.isNotEmpty)
         validationMessage = validationMessage + '\nPassword is too short!';
       else
         validationMessage = 'Password is too short!';
     }
     if (uiController.firstNameTextEditingController.text.isEmpty) {
-      if (validationMessage.isNotEmpty)
-        validationMessage = validationMessage + '\nfirst name required';
+      if (validationMessage.isNotEmpty) validationMessage = validationMessage + '\nfirst name required';
       validationMessage = 'first name required';
     }
     if (uiController.lastNameTextEditingController.text.isEmpty) {
-      if (validationMessage.isNotEmpty)
-        validationMessage = validationMessage + '\nlast name required';
+      if (validationMessage.isNotEmpty) validationMessage = validationMessage + '\nlast name required';
       validationMessage = 'last name required';
     }
     if (uiController.phoneTextEditingController.text.isEmpty) {
-      if (validationMessage.isNotEmpty)
-        validationMessage = validationMessage + '\nphone number required';
+      if (validationMessage.isNotEmpty) validationMessage = validationMessage + '\nphone number required';
       validationMessage = 'phone number required';
     }
     if (uiController.getSelectedCountry() == null) {
-      if (validationMessage.isNotEmpty)
-        validationMessage = validationMessage + '\ncountry required';
+      if (validationMessage.isNotEmpty) validationMessage = validationMessage + '\ncountry required';
       validationMessage = 'country required';
     }
 
@@ -250,8 +231,7 @@ class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen>
         user: user,
         onData: () {
           uiController.setLoadingSignUpState(false);
-          RoutesHelper.navigateReplacementTo(
-              classToNavigate: SplashScreen(), context: context);
+          RoutesHelper.navigateReplacementTo(classToNavigate: SplashScreen(), context: context);
         },
         onError: (error) {
           uiController.setLoadingSignUpState(false);
@@ -259,18 +239,12 @@ class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen>
         });
   }
 
-  Widget buildCustomDropDownMenu(
-      {required screenWidth,
-      required stream,
-      required hintKey,
-      required menuItems,
-      required onChanged}) {
+  Widget buildCustomDropDownMenu({required screenWidth, required stream, required hintKey, required menuItems, required onChanged}) {
     return StreamBuilder<String?>(
         stream: stream,
         builder: (context, companySnapshot) {
           return Container(
-            padding: EdgeInsets.only(
-                left: screenWidth * .05, right: screenWidth * .05),
+            padding: EdgeInsets.only(left: screenWidth * .05, right: screenWidth * .05),
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: AppColors.mainColor,
@@ -283,8 +257,7 @@ class _SignUpScreenState extends BaseStateFullWidgetState<SignUpScreen>
                 textAlign: TextAlign.left,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                    height: 1.0, color: AppColors.white.withOpacity(.3)),
+                style: TextStyle(height: 1.0, color: AppColors.white.withOpacity(.65)),
               ),
               isExpanded: true,
               icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white),

@@ -58,33 +58,28 @@ class Xclass {
     print('///////////////////////////////////////////////////');
     List payload = x['data'];
 
-    SalesData? other;
+    SalesData? other = SalesData('Other', 0);
     payload.forEach((element) {
       if (element['personal_asset_type'] != 'Other') {
         var personalAassetTtype = element['personal_asset_type'];
         num growth = element['growth'];
         // int intGrowth = growth.toInt();
         print('$growth' + 'aloalo');
-        // if (growth == 0) growth = 0.01;
-        xList!.add(SalesData(personalAassetTtype, growth));
-
+        if (growth != 0) // growth =0;
+          xList!.add(SalesData(personalAassetTtype, growth));
         print('personalAassetTtype = $personalAassetTtype');
         print('growth = $growth');
       } else {
         other = SalesData(element['personal_asset_type'], element['growth']);
       }
     });
-    xList!.add(other!);
+    if (other!.sales != 0) xList!.add(other!);
+    print(xList!.length);
   }
 }
 
 List<SalesData>? xList = [
   // SalesData('0.1', 0.1),
-  // SalesData('1', 1),
-  // SalesData('2', 2),
-  // SalesData('100', 100),
-  // SalesData('200', 200),
-  // SalesData('300', 300),
 ]; //1
 
 class ChartCardItem extends BaseStateFullWidget {
@@ -142,22 +137,7 @@ class _ChartCardItemState extends BaseStateFullWidgetState<ChartCardItem> {
   }
   // final List<SalesData> chartData = [
   //   //   SalesData('Property', getRandomInt(0, 100)),
-  //   //   SalesData('Vehicle', getRandomInt(0, 100)),
-  //   SalesData('Luxury', getRandomInt(0, 100)), //1
-  //   SalesData('Electronics', getRandomInt(0, 100)),
 
-  //   SalesData('Digital Asset', getRandomInt(0, 100)), //1
-  //   SalesData('Saving', getRandomInt(0, 100)), //1
-  //   SalesData('Automobile', 100), //1
-  //   SalesData('House', getRandomInt(0, 100)), //1
-
-  //   //SalesData('Currency', getRandomInt(0, 100)),
-  //   // SalesData('Metals', getRandomInt(0, 100)),
-  //   // SalesData('Collectable', getRandomInt(0, 100)),
-  //   SalesData('Other', getRandomInt(0, 100)),
-  //   SalesData('AAAAAAAAAA', getRandomInt(0, 100)),
-  //   SalesData('BBBBBBBBBBB', getRandomInt(0, 100)),
-  //   SalesData('CCCCCCCCCCC', getRandomInt(0, 100)),
   // ];
   Widget buildColumnsChartItem() {
     return Container(
@@ -168,12 +148,19 @@ class _ChartCardItemState extends BaseStateFullWidgetState<ChartCardItem> {
           ColumnSeries<SalesData, String>(
             dataSource: xList!,
 
-            xValueMapper: (SalesData sales, _) => sales.category,
+            xValueMapper: (SalesData sales, _) {
+              String cat = sales.category.toString();
+              if (cat.length >= 12 && xList!.length >= 8)
+                return cat.substring(0, 12) + '..';
+              else
+                return cat;
+            },
+
             yValueMapper: (SalesData sales, _) => sales.sales,
             color: AppColors.blue,
             borderColor: AppColors.white,
 
-            width: 0.3, // Width of the bars
+            width: xList!.length > 3 ? 0.3 : 0.2, // Width of the bars
             // spacing: 0.5,
           ),
         ],
@@ -188,10 +175,14 @@ class _ChartCardItemState extends BaseStateFullWidgetState<ChartCardItem> {
           majorTickLines: MajorTickLines(width: 0),
           //  maximumLabelWidth: width * 0.09,
           labelPlacement: LabelPlacement.betweenTicks,
-          maximumLabelWidth: width * 0.13,
+          //    labelAlignment: LabelAlignment.,
+
+          maximumLabelWidth: xList!.length >= 8 ? width * 0.1 : width * 0.2,
           labelStyle: TextStyle(
             fontSize: AppFonts.getXXSmallFontSize(context),
             overflow: TextOverflow.fade,
+            wordSpacing: 0,
+            letterSpacing: 0,
           ),
         ),
         primaryYAxis: NumericAxis(isVisible: false),

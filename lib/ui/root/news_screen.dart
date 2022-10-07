@@ -17,8 +17,7 @@ class NewsScreen extends BaseStateFullWidget {
   _NewsScreenState createState() => _NewsScreenState();
 }
 
-class _NewsScreenState extends BaseStateFullWidgetState<NewsScreen>
-    with NewsScreenDi {
+class _NewsScreenState extends BaseStateFullWidgetState<NewsScreen> with NewsScreenDi {
   @override
   void initState() {
     super.initState();
@@ -43,8 +42,7 @@ class _NewsScreenState extends BaseStateFullWidgetState<NewsScreen>
     return Scaffold(
       backgroundColor: Colors.black,
       body: WillPopScope(
-        onWillPop: () =>
-            rootScreenController.setCurrentScreen(AppMainScreens.HOME_SCREEN),
+        onWillPop: () => rootScreenController.setCurrentScreen(AppMainScreens.HOME_SCREEN),
         child: Container(
           padding: EdgeInsets.only(
             top: mediaQuery.padding.top,
@@ -75,8 +73,7 @@ class _NewsScreenState extends BaseStateFullWidgetState<NewsScreen>
               children: [
                 SizedBox(width: width * .04),
                 GestureDetector(
-                  onTap: () => rootScreenController
-                      .setCurrentScreen(AppMainScreens.HOME_SCREEN),
+                  onTap: () => rootScreenController.setCurrentScreen(AppMainScreens.HOME_SCREEN),
                   child: Icon(
                     Icons.arrow_back_ios_rounded,
                     color: AppColors.gray,
@@ -132,10 +129,8 @@ class _NewsScreenState extends BaseStateFullWidgetState<NewsScreen>
                   vertical: height * .012,
                 ),
                 tabs: [
-                  buildNewsTypeTabItem(
-                      'world', newsTypeSnapshot.data == NewsType.WORLD),
-                  buildNewsTypeTabItem(
-                      'my_assets', newsTypeSnapshot.data == NewsType.MY_ASSETS),
+                  buildNewsTypeTabItem('world', newsTypeSnapshot.data == NewsType.WORLD),
+                  buildNewsTypeTabItem('my_assets', newsTypeSnapshot.data == NewsType.MY_ASSETS),
                 ],
                 controller: uiController.newsTypeTabController,
               ),
@@ -152,7 +147,7 @@ class _NewsScreenState extends BaseStateFullWidgetState<NewsScreen>
       appLocal.trans(titleKey),
       style: TextStyle(
         fontSize: AppFonts.getMediumFontSize(context),
-        color: isSelected ? Colors.white : Colors.white.withOpacity(.3),
+        color: isSelected ? Colors.white : Colors.white.withOpacity(.6),
         height: 1.0,
       ),
     );
@@ -176,16 +171,14 @@ class _NewsScreenState extends BaseStateFullWidgetState<NewsScreen>
       initialData: HoldingsType.PRIVATE,
       stream: uiController.holdingsTypeWorldStream,
       builder: (context, holdingsTypeSnapshot) {
-        uiController.setScreenTitleKey(
-            uiController.getScreenTitle(holdingsTypeSnapshot.data));
+        uiController.setScreenTitleKey(uiController.getScreenTitle(holdingsTypeSnapshot.data));
 
         return StreamBuilder<DataResource<List<NewsModel>>>(
           stream: newsBloc.newsWorldStream,
           builder: (context, newsSnapshot) {
             return Column(
               children: [
-                buildHoldingTypeTaps(
-                    NewsType.WORLD, holdingsTypeSnapshot.data!),
+                buildHoldingTypeTaps(NewsType.WORLD, holdingsTypeSnapshot.data!),
                 SizedBox(height: height * .030),
                 buildNewsListResult(newsSnapshot),
               ],
@@ -201,15 +194,13 @@ class _NewsScreenState extends BaseStateFullWidgetState<NewsScreen>
       initialData: HoldingsType.PRIVATE,
       stream: uiController.holdingsTypeAssetStream,
       builder: (context, holdingsTypeSnapshot) {
-        uiController.setScreenTitleKey(
-            uiController.getScreenTitle(holdingsTypeSnapshot.data));
+        uiController.setScreenTitleKey(uiController.getScreenTitle(holdingsTypeSnapshot.data));
         return StreamBuilder<DataResource<List<NewsModel>>>(
           stream: newsBloc.newsAssetsStream,
           builder: (context, newsSnapshot) {
             return Column(
               children: [
-                buildHoldingTypeTaps(
-                    NewsType.MY_ASSETS, holdingsTypeSnapshot.data!),
+                buildHoldingTypeTaps(NewsType.MY_ASSETS, holdingsTypeSnapshot.data!),
                 SizedBox(height: height * .030),
                 buildNewsListResult(newsSnapshot),
               ],
@@ -232,13 +223,9 @@ class _NewsScreenState extends BaseStateFullWidgetState<NewsScreen>
         case Status.SUCCESS:
           return buildNewsList(news: newsSnapshot.data!.data);
         case Status.NO_RESULTS:
-          return ErrorMessageWidget(
-              messageKey: 'no_result_found_message',
-              image: 'assets/images/ic_not_found.png');
+          return ErrorMessageWidget(messageKey: 'no_result_found_message', image: 'assets/images/ic_not_found.png');
         case Status.FAILURE:
-          return ErrorMessageWidget(
-              messageKey: newsSnapshot.data?.message ?? '',
-              image: 'assets/images/ic_error.png');
+          return ErrorMessageWidget(messageKey: newsSnapshot.data?.message ?? '', image: 'assets/images/ic_error.png');
 
         default:
           return Container();
@@ -273,23 +260,11 @@ class _NewsScreenState extends BaseStateFullWidgetState<NewsScreen>
 
     return Row(
       children: [
-        HoldingsTypeTapItem(
-            HoldingsType.PRIVATE,
-            holdingsType == HoldingsType.PRIVATE,
-            appLocal.trans("private"),
-            onClick),
+        HoldingsTypeTapItem(HoldingsType.PRIVATE, holdingsType == HoldingsType.PRIVATE, appLocal.trans("private"), onClick),
         SizedBox(width: width * .020),
-        HoldingsTypeTapItem(
-            HoldingsType.PUBLIC,
-            holdingsType == HoldingsType.PUBLIC,
-            appLocal.trans("public"),
-            onClick),
+        HoldingsTypeTapItem(HoldingsType.PUBLIC, holdingsType == HoldingsType.PUBLIC, appLocal.trans("public"), onClick),
         SizedBox(width: width * .020),
-        HoldingsTypeTapItem(
-            HoldingsType.PERSONAL,
-            holdingsType == HoldingsType.PERSONAL,
-            appLocal.trans("personal"),
-            onClick),
+        HoldingsTypeTapItem(HoldingsType.PERSONAL, holdingsType == HoldingsType.PERSONAL, appLocal.trans("personal"), onClick),
       ],
     );
   }
@@ -317,29 +292,22 @@ class _NewsScreenState extends BaseStateFullWidgetState<NewsScreen>
   void fetchResults(NewsType newsType, holdingType) {
     switch (holdingType) {
       case HoldingsType.PRIVATE:
-        newsType == NewsType.MY_ASSETS
-            ? newsBloc.fetchNewsPrivateAssets()
-            : newsBloc.fetchNewsPrivateWorld();
+        newsType == NewsType.MY_ASSETS ? newsBloc.fetchNewsPrivateAssets() : newsBloc.fetchNewsPrivateWorld();
         break;
 
       case HoldingsType.PUBLIC:
-        newsType == NewsType.MY_ASSETS
-            ? newsBloc.fetchNewsPublicAssets()
-            : newsBloc.fetchNewsPublicWorld();
+        newsType == NewsType.MY_ASSETS ? newsBloc.fetchNewsPublicAssets() : newsBloc.fetchNewsPublicWorld();
         break;
 
       case HoldingsType.PERSONAL:
-        newsType == NewsType.MY_ASSETS
-            ? newsBloc.fetchNewsPersonalAssets()
-            : newsBloc.fetchNewsPersonalWorld();
+        newsType == NewsType.MY_ASSETS ? newsBloc.fetchNewsPersonalAssets() : newsBloc.fetchNewsPersonalWorld();
         break;
     }
   }
 }
 
 class CustomPageViewScrollPhysics extends ScrollPhysics {
-  const CustomPageViewScrollPhysics({ScrollPhysics? parent})
-      : super(parent: parent);
+  const CustomPageViewScrollPhysics({ScrollPhysics? parent}) : super(parent: parent);
 
   @override
   CustomPageViewScrollPhysics applyTo(ScrollPhysics? ancestor) {

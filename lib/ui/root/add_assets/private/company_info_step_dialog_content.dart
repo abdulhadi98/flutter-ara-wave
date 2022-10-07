@@ -20,14 +20,11 @@ class CompanyInfoStepDialogContent extends BaseStateFullWidget {
   createState() => _CompanyInfoStepDialogContentState();
 }
 
-class _CompanyInfoStepDialogContentState
-    extends BaseStateFullWidgetState<CompanyInfoStepDialogContent>
-    with CompanyInfoStepDialogContentDi {
+class _CompanyInfoStepDialogContentState extends BaseStateFullWidgetState<CompanyInfoStepDialogContent> with CompanyInfoStepDialogContentDi {
   @override
   void initState() {
     initScreenDi();
-    uiController.companyNameTextEditingController.text =
-        widget.initialCompanyName ?? '';
+    uiController.companyNameTextEditingController.text = widget.initialCompanyName ?? '';
 
     super.initState();
   }
@@ -86,8 +83,7 @@ class _CompanyInfoStepDialogContentState
           validationStream: uiController.validationStream,
           titleKey: 'next',
           iconUrl: 'assets/icons/ic_arrow_next.svg',
-          onClicked: () => uiController.onNextClicked(
-              onDoneCallback: widget.onNextButtonClicked),
+          onClicked: () => uiController.onNextClicked(onDoneCallback: widget.onNextButtonClicked),
         ),
         SizedBox(height: height * .03),
       ],
@@ -100,12 +96,9 @@ class _CompanyInfoStepDialogContentState
         builder: (context, yearSnapshot) {
           return GestureDetector(
             onTap: () async => showYearPicker(
-              initialDate: yearSnapshot.data != null
-                  ? DateTime(yearSnapshot.data!)
-                  : null,
+              initialDate: yearSnapshot.data != null ? DateTime(yearSnapshot.data!) : null,
               context: context,
-              onDatePicked: (dateTime) =>
-                  uiController.onInitialInvestmentYearSelected(dateTime),
+              onDatePicked: (dateTime) => uiController.onInitialInvestmentYearSelected(dateTime),
             ),
             child: Container(
               height: height * .07,
@@ -117,9 +110,7 @@ class _CompanyInfoStepDialogContentState
               child: Text(
                 '${yearSnapshot.data ?? appLocal.trans('year_of_initial_investment')}',
                 style: TextStyle(
-                  color: yearSnapshot.data != null
-                      ? Colors.white
-                      : Colors.white.withOpacity(.25),
+                  color: yearSnapshot.data != null ? Colors.white : Colors.white.withOpacity(.6),
                   fontSize: AppFonts.getMediumFontSize(context),
                   height: 1.0,
                 ),

@@ -24,9 +24,7 @@ class MyPortfolioScreen extends BaseStateFullWidget {
   _MyPortfolioScreenState createState() => _MyPortfolioScreenState();
 }
 
-class _MyPortfolioScreenState
-    extends BaseStateFullWidgetState<MyPortfolioScreen>
-    with MyPortfolioScreenDi {
+class _MyPortfolioScreenState extends BaseStateFullWidgetState<MyPortfolioScreen> with MyPortfolioScreenDi {
   @override
   void initState() {
     super.initState();
@@ -171,11 +169,12 @@ class _MyPortfolioScreenState
           ),
           tickPosition: TickPosition.outside,
           labelAlignment: LabelAlignment.center,
-
+          labelStyle: TextStyle(color: AppColors.white),
           majorTickLines: MajorTickLines(width: 0),
           autoScrollingMode: AutoScrollingMode.end,
         ),
         primaryYAxis: NumericAxis(
+          labelStyle: TextStyle(color: AppColors.white),
           edgeLabelPlacement: EdgeLabelPlacement.shift,
           labelFormat: '{value}',
           // numberFormat: NumberFormat.simpleCurrency(decimalDigits: 0),
@@ -196,8 +195,7 @@ class _MyPortfolioScreenState
     return Scaffold(
       backgroundColor: Colors.black,
       body: WillPopScope(
-        onWillPop: () =>
-            rootScreenController.setCurrentScreen(AppMainScreens.HOME_SCREEN),
+        onWillPop: () => rootScreenController.setCurrentScreen(AppMainScreens.HOME_SCREEN),
         child: SingleChildScrollView(
           padding: EdgeInsets.only(
             top: mediaQuery.padding.top,
@@ -225,10 +223,7 @@ class _MyPortfolioScreenState
                       height: height * .225,
                       width: height * .225,
                       child: Center(
-                        child: Container(
-                            height: height * .04,
-                            width: height * .04,
-                            child: CircularProgressIndicator()),
+                        child: Container(height: height * .04, width: height * .04, child: CircularProgressIndicator()),
                       ),
                     )
                   : protfolioChartData.isEmpty
@@ -274,8 +269,7 @@ class _MyPortfolioScreenState
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 GestureDetector(
-                  onTap: () => rootScreenController
-                      .setCurrentScreen(AppMainScreens.HOME_SCREEN),
+                  onTap: () => rootScreenController.setCurrentScreen(AppMainScreens.HOME_SCREEN),
                   child: Row(
                     children: [
                       Icon(
@@ -312,12 +306,12 @@ class _MyPortfolioScreenState
                       ),
                       SizedBox(height: height * .010),
                       Padding(
-                        padding: EdgeInsets.only(left: width * .02),
+                        padding: EdgeInsets.only(left: width * .0),
                         child: Text(
-                          'Estimated NET balance in USD',
+                          'Estimated NET balance (USD)',
                           style: TextStyle(
-                            fontSize: AppFonts.getXXSmallFontSize(context),
-                            color: Colors.white.withOpacity(.35),
+                            fontSize: AppFonts.getXSmallFontSize(context),
+                            color: Colors.white.withOpacity(.9),
                             height: 1.0,
                           ),
                         ),
@@ -332,10 +326,8 @@ class _MyPortfolioScreenState
             context: context,
             appLocal: appLocal,
             logoTitleKey: '',
-            netWorth:
-                '${userPortfolioFinancialsSnapshot.data?.data?.formattedNetWorth ?? 0.0}',
-            growth:
-                '${userPortfolioFinancialsSnapshot.data?.data?.formattedProfitPercentage ?? 0.0}',
+            netWorth: '${userPortfolioFinancialsSnapshot.data?.data?.formattedNetWorth ?? 0.0}',
+            growth: '${userPortfolioFinancialsSnapshot.data?.data?.formattedProfitPercentage ?? 0.0}',
           );
         });
   }
@@ -346,24 +338,15 @@ class _MyPortfolioScreenState
         builder: (context, userPortfolioFinancialsSnapshot) {
           return Row(
             children: [
-              ChartInfoCardItem(
-                  title: appLocal.trans('invested'),
-                  value:
-                      '\$ ${userPortfolioFinancialsSnapshot.data?.data?.formattedInvested ?? 0.0}'),
+              ChartInfoCardItem(title: appLocal.trans('invested'), value: '\$ ${userPortfolioFinancialsSnapshot.data?.data?.formattedInvested ?? 0.0}'),
               SizedBox(
                 width: width * 0.025,
               ),
-              ChartInfoCardItem(
-                  title: appLocal.trans('profit'),
-                  value:
-                      '\$ ${userPortfolioFinancialsSnapshot.data?.data?.formattedProfit ?? 0.0}'),
+              ChartInfoCardItem(title: appLocal.trans('profit'), value: '\$ ${userPortfolioFinancialsSnapshot.data?.data?.formattedProfit ?? 0.0}'),
               SizedBox(
                 width: width * 0.025,
               ),
-              ChartInfoCardItem(
-                  title: '${appLocal.trans('profit')} %',
-                  value:
-                      '${userPortfolioFinancialsSnapshot.data?.data?.formattedProfitPercentage ?? 0.0}'),
+              ChartInfoCardItem(title: '${appLocal.trans('profit')} %', value: '${userPortfolioFinancialsSnapshot.data?.data?.formattedProfitPercentage ?? 0.0}'),
             ],
           );
         });
@@ -375,8 +358,7 @@ class _MyPortfolioScreenState
         buildHoldingAssetsItem(
           titleKey: 'private_holdings',
           stream: myPortfolioScreenBloc.privateAssetsFinancialsStream,
-          onClick: () =>
-              rootScreenController.setSharedData(HoldingsType.PRIVATE),
+          onClick: () => rootScreenController.setSharedData(HoldingsType.PRIVATE),
         ),
         SizedBox(
           height: height * .015,
@@ -384,8 +366,7 @@ class _MyPortfolioScreenState
         buildHoldingAssetsItem(
           titleKey: 'public_holdings',
           stream: myPortfolioScreenBloc.publicAssetsFinancialsStream,
-          onClick: () =>
-              rootScreenController.setSharedData(HoldingsType.PUBLIC),
+          onClick: () => rootScreenController.setSharedData(HoldingsType.PUBLIC),
         ),
         SizedBox(
           height: height * .014,
@@ -393,8 +374,7 @@ class _MyPortfolioScreenState
         buildHoldingAssetsItem(
           titleKey: 'personal_holdings',
           stream: myPortfolioScreenBloc.personalAssetsFinancialsStream,
-          onClick: () =>
-              rootScreenController.setSharedData(HoldingsType.PERSONAL),
+          onClick: () => rootScreenController.setSharedData(HoldingsType.PERSONAL),
         ),
         SizedBox(
           height: height * .015,
@@ -414,8 +394,7 @@ class _MyPortfolioScreenState
           return GestureDetector(
             onTap: () {
               onClick();
-              rootScreenController
-                  .setCurrentScreen(AppMainScreens.HOLDINGS_SCREEN);
+              rootScreenController.setCurrentScreen(AppMainScreens.HOLDINGS_SCREEN);
             },
             child: Container(
               height: height * 0.085,
@@ -446,12 +425,7 @@ class _MyPortfolioScreenState
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        Utils.getFormattedNum(financialsSnapshot
-                                        .data?.data?.assetNetworth ??
-                                    0.0) ==
-                                '0'
-                            ? ''
-                            : '${Utils.getFormattedNum(financialsSnapshot.data?.data?.assetNetworth ?? 0.0)}',
+                        Utils.getFormattedNum(financialsSnapshot.data?.data?.assetNetworth ?? 0.0) == '0' ? '' : '${Utils.getFormattedNum(financialsSnapshot.data?.data?.assetNetworth ?? 0.0)}',
                         // '${financialsSnapshot.data?.data?.assetNetworth??''}',
                         style: TextStyle(
                           fontSize: AppFonts.getMediumFontSize(context),
@@ -471,13 +445,7 @@ class _MyPortfolioScreenState
                             // ),
                             // SizedBox(width: width*.02),
                             Text(
-                              financialsSnapshot.data?.data
-                                          ?.getAssetGrowthRounded() ==
-                                      '+0%'
-                                  ? ''
-                                  : financialsSnapshot.data?.data
-                                          ?.getAssetGrowthRounded() ??
-                                      '',
+                              financialsSnapshot.data?.data?.getAssetGrowthRounded() == '+0%' ? '' : financialsSnapshot.data?.data?.getAssetGrowthRounded() ?? '',
                               style: TextStyle(
                                 fontSize: AppFonts.getSmallFontSize(context),
                                 color: AppColors.blue,

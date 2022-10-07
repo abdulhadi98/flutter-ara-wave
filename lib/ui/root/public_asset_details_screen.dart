@@ -34,9 +34,6 @@ import '../common_widgets/show_date_picker.dart';
 import 'add_assets/add_asset_action_button.dart';
 import 'add_assets/add_assets_dialog_text_field.dart';
 import 'add_assets/loading_indicator.dart';
-import 'add_assets/private/add_private_asset_dialog_content.dart';
-import '../../di/add_public_asset_holding_dialog_content_di.dart';
-import 'package:wave_flutter/services/api_handler.dart';
 
 class PublicAssetDetailsScreen extends BaseStateFullWidget {
   static String? companyId;
@@ -46,13 +43,10 @@ class PublicAssetDetailsScreen extends BaseStateFullWidget {
   PublicAssetDetailsScreen({required this.assetModel});
 
   @override
-  _PublicAssetDetailsScreenState createState() =>
-      _PublicAssetDetailsScreenState();
+  _PublicAssetDetailsScreenState createState() => _PublicAssetDetailsScreenState();
 }
 
-class _PublicAssetDetailsScreenState
-    extends BaseStateFullWidgetState<PublicAssetDetailsScreen>
-    with PublicAssetDetailsScreenDi {
+class _PublicAssetDetailsScreenState extends BaseStateFullWidgetState<PublicAssetDetailsScreen> with PublicAssetDetailsScreenDi {
   @override
   void initState() {
     super.initState();
@@ -104,19 +98,13 @@ class _PublicAssetDetailsScreenState
       var url = Uri.parse(
         'https://wave.aratech.co/api/public-asset-holding/${HoldingsScreen.assetId}',
       );
-      print('///////////' +
-          url.toString() +
-          '//tokennnnnn///' +
-          apiToken! +
-          '//////' +
-          assetId.toString());
+      print('///////////' + url.toString() + '//tokennnnnn///' + apiToken! + '//////' + assetId.toString());
 
       //  response= dio.delete(
       //       'https://wave.aratech.co/api/public-asset-holding/${HoldingsScreen.assetId}',
       //       data: formData);
       http.Response response = await http.delete(
-        Uri.parse(
-            'https://wave.aratech.co/api/public-asset-holding/${HoldingsScreen.assetId}'),
+        Uri.parse('https://wave.aratech.co/api/public-asset-holding/${HoldingsScreen.assetId}'),
         body: <String, String>{
           "api_token": apiToken,
         },
@@ -172,25 +160,17 @@ class _PublicAssetDetailsScreenState
       var url = Uri.parse(
         'https://wave.aratech.co/api/edit-public-asset-holding',
       );
-      print('///////////' +
-          url.toString() +
-          '//tokennnnnn///' +
-          apiToken! +
-          '//////' +
-          assetId.toString());
+      print('///////////' + url.toString() + '//tokennnnnn///' + apiToken! + '//////' + assetId.toString());
 
       request = http.MultipartRequest('POST', url);
       request.fields['api_token'] = apiToken;
       request.fields['asset_holding_id'] = assetId.toString();
-      request.fields['public_asset_id'] =
-          PublicAssetDetailsScreen.companyId.toString();
-      request.fields['quantity'] =
-          quantityController!.text.replaceAll(RegExp('[^0-9.]'), '');
+      request.fields['public_asset_id'] = PublicAssetDetailsScreen.companyId.toString();
+      request.fields['quantity'] = quantityController!.text.replaceAll(RegExp('[^0-9.]'), '');
       request.fields['purchased_at'] = purchasedAt.toString();
       //   request.fields['stock_exchange'] = stockExchangeController!.text;
 
-      request.fields['purchased_price'] =
-          purchasedPriceController!.text.replaceAll(RegExp('[^0-9.]'), '');
+      request.fields['purchased_price'] = purchasedPriceController!.text.replaceAll(RegExp('[^0-9.]'), '');
 
       response = await request.send();
       var xx = await http.Response.fromStream(response);
@@ -414,8 +394,7 @@ class _PublicAssetDetailsScreenState
                               SizedBox(height: height * .020),
                               GestureDetector(
                                 onTap: () async {
-                                  DateTime? pickedDateTime =
-                                      await showCustomDatePicker(
+                                  DateTime? pickedDateTime = await showCustomDatePicker(
                                     initialDate: purchasedAt,
                                     context: context,
                                     locale: appLocal.locale,
@@ -423,23 +402,20 @@ class _PublicAssetDetailsScreenState
                                   setState(() {
                                     purchasedAt = pickedDateTime!;
                                   });
-                                  print(
-                                      purchasedAt.toString().substring(0, 10));
+                                  print(purchasedAt.toString().substring(0, 10));
                                 },
                                 child: Container(
                                   height: height * .07,
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
                                     color: AppColors.mainColor,
-                                    borderRadius:
-                                        BorderRadius.circular(width * 0.019),
+                                    borderRadius: BorderRadius.circular(width * 0.019),
                                   ),
                                   child: Text(
                                     purchasedAt.toString().substring(0, 10),
                                     style: TextStyle(
                                       color: Colors.white,
-                                      fontSize:
-                                          AppFonts.getSmallFontSize(context),
+                                      fontSize: AppFonts.getSmallFontSize(context),
                                       //height: 1.0,
                                     ),
                                   ),
@@ -480,10 +456,8 @@ class _PublicAssetDetailsScreenState
                                   });
                                   if (code == 'ok') {
                                     Navigator.pop(context);
-                                    rootScreenController
-                                        .setSharedData(HoldingsType.PUBLIC);
-                                    rootScreenController.setCurrentScreen(
-                                        AppMainScreens.HOLDINGS_SCREEN);
+                                    rootScreenController.setSharedData(HoldingsType.PUBLIC);
+                                    rootScreenController.setCurrentScreen(AppMainScreens.HOLDINGS_SCREEN);
                                   }
                                 },
                               ),
@@ -546,12 +520,7 @@ class _PublicAssetDetailsScreenState
     var url = Uri.parse(
       'https://wave.aratech.co/api/get-public-asset-holding',
     );
-    print('///////////' +
-        url.toString() +
-        '//tokennnnnn///' +
-        apiToken! +
-        '//////' +
-        assetId.toString());
+    print('///////////' + url.toString() + '//tokennnnnn///' + apiToken! + '//////' + assetId.toString());
 
     request = http.MultipartRequest('POST', url);
     request.fields['api_token'] = apiToken;
@@ -580,8 +549,7 @@ class _PublicAssetDetailsScreenState
       purchasedAt = DateTime.parse(payload['purchased_at']);
 
       totalBalance = payload['netWorth'].toString();
-      PublicAssetDetailsScreen.companyId =
-          payload['public_asset_id'].toString();
+      PublicAssetDetailsScreen.companyId = payload['public_asset_id'].toString();
 
       profit = payload['profit'].toString(); //check
       profitPercentage = payload['profitPercentage'].toString();
@@ -623,12 +591,7 @@ class _PublicAssetDetailsScreenState
     var url = Uri.parse(
       'https://wave.aratech.co/api/get-public-asset-holding',
     );
-    print('///////////' +
-        url.toString() +
-        '//tokennnnnn///' +
-        apiToken! +
-        '//////' +
-        assetId.toString());
+    print('///////////' + url.toString() + '//tokennnnnn///' + apiToken! + '//////' + assetId.toString());
 
     request = http.MultipartRequest('POST', url);
     request.fields['api_token'] = apiToken;
@@ -706,12 +669,10 @@ class _PublicAssetDetailsScreenState
             child: Column(
               children: [
                 Container(
-                  child:
-                      StreamBuilder<DataResource<List<PublicAssetGraphModel>>?>(
+                  child: StreamBuilder<DataResource<List<PublicAssetGraphModel>>?>(
                     stream: holdingsBloc.publicAssetGraphStream,
                     builder: (context, historicalSnapshot) {
-                      if (historicalSnapshot.hasData &&
-                          historicalSnapshot.data != null) {
+                      if (historicalSnapshot.hasData && historicalSnapshot.data != null) {
                         switch (historicalSnapshot.data!.status) {
                           case Status.LOADING:
                             return Container(
@@ -724,21 +685,13 @@ class _PublicAssetDetailsScreenState
                             return ChartCardItem(
                               chartType: ChartsType.AREA,
                               filter: uiController.chartFilter,
-                              historicalDataList:
-                                  historicalSnapshot.data!.data!,
-                              onFilterChanged: (filter) => uiController
-                                  .fetchPublicAssetHistoricalDetails(
-                                      filter: filter),
+                              historicalDataList: historicalSnapshot.data!.data!,
+                              onFilterChanged: (filter) => uiController.fetchPublicAssetHistoricalDetails(filter: filter),
                             );
                           case Status.NO_RESULTS:
-                            return ErrorMessageWidget(
-                                messageKey: 'no_result_found_message',
-                                image: 'assets/images/ic_not_found.png');
+                            return ErrorMessageWidget(messageKey: 'no_result_found_message', image: 'assets/images/ic_not_found.png');
                           case Status.FAILURE:
-                            return ErrorMessageWidget(
-                                messageKey:
-                                    historicalSnapshot.data?.message ?? '',
-                                image: 'assets/images/ic_error.png');
+                            return ErrorMessageWidget(messageKey: historicalSnapshot.data?.message ?? '', image: 'assets/images/ic_error.png');
 
                           default:
                             return Container();
@@ -771,8 +724,7 @@ class _PublicAssetDetailsScreenState
                     ),
                     ChartInfoCardItem(
                       title: appLocal.trans('Profit'),
-                      value:
-                          '\$${Utils.getFormattedStrNum(profitPercentage.substring(0, profitPercentage.length - 1))}',
+                      value: '\$${Utils.getFormattedStrNum(profitPercentage.substring(0, profitPercentage.length - 1))}',
                       //   bottomLabel: widget.assetModel.assetGrowth ?? '312'),
                     )
                   ],
@@ -782,23 +734,18 @@ class _PublicAssetDetailsScreenState
                 SizedBox(height: height * 0.020),
                 //   buildCardList(asset.assetMetasMap),
                 Container(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: width * 0.03, vertical: height * 0.03),
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.03, vertical: height * 0.03),
                   // height: height / 4,
-                  decoration: BoxDecoration(
-                      color: AppColors.mainColor,
-                      borderRadius: BorderRadius.circular(width * 0.019)),
+                  decoration: BoxDecoration(color: AppColors.mainColor, borderRadius: BorderRadius.circular(width * 0.019)),
                   child: Column(
                     children: [
-                      rowInfo(
-                          'Shares Owned', Utils.getFormattedStrNum(quantity)),
+                      rowInfo('Shares Owned', Utils.getFormattedStrNum(quantity)),
                       Divider(
                         color: AppColors.black.withOpacity(0.6),
                         thickness: 1.5,
                         height: 10,
                       ),
-                      rowInfo('Total Amount Invested',
-                          "\$${Utils.getFormattedStrNum(purchasePrice)}"),
+                      rowInfo('Total Amount Invested', "\$${Utils.getFormattedStrNum(purchasePrice)}"),
                       Divider(
                         color: AppColors.black.withOpacity(0.6),
                         thickness: 1.5,
@@ -806,24 +753,20 @@ class _PublicAssetDetailsScreenState
                       ),
                       rowInfo(
                         'Return On Investment (ROI)',
-                        Utils.getFormattedStrNum(profitPercentage.substring(
-                                0, profitPercentage.length - 1)) +
-                            '%',
+                        Utils.getFormattedStrNum(profitPercentage.substring(0, profitPercentage.length - 1)) + '%',
                       ),
                       Divider(
                         color: AppColors.black.withOpacity(0.6),
                         thickness: 1.5,
                         height: 10,
                       ),
-                      rowInfo('Market Capitalization',
-                          '\$ ${Utils.getFormattedStrNum(marketCapitaliztion)}'),
+                      rowInfo('Market Capitalization', '\$ ${Utils.getFormattedStrNum(marketCapitaliztion)}'),
                       Divider(
                         color: AppColors.black.withOpacity(0.6),
                         thickness: 1.5,
                         height: 10,
                       ),
-                      rowInfo('Shares Outstanding',
-                          Utils.getFormattedStrNum(sharesOutstanding)),
+                      rowInfo('Shares Outstanding', Utils.getFormattedStrNum(sharesOutstanding)),
                       Divider(
                         color: AppColors.black.withOpacity(0.6),
                         thickness: 1.5,
@@ -841,8 +784,7 @@ class _PublicAssetDetailsScreenState
                 SizedBox(height: height * 0.020),
                 Container(
                   width: width,
-                  padding: EdgeInsets.symmetric(
-                      horizontal: width * 0.03, vertical: height * 0.03),
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.03, vertical: height * 0.03),
                   // height: height / 4,
                   decoration: BoxDecoration(
                     color: AppColors.mainColor,
@@ -889,8 +831,7 @@ class _PublicAssetDetailsScreenState
 
   Padding rowInfo(leftText, rightText) {
     return Padding(
-      padding: EdgeInsets.symmetric(
-          horizontal: width * .005, vertical: height * .01),
+      padding: EdgeInsets.symmetric(horizontal: width * .005, vertical: height * .01),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -956,8 +897,7 @@ class _PublicAssetDetailsScreenState
                             ),
                           ),
                           Padding(
-                            padding:
-                                EdgeInsets.symmetric(horizontal: width * 0.013),
+                            padding: EdgeInsets.symmetric(horizontal: width * 0.013),
                             child: Container(
                               width: width * 0.003,
                               height: height * 0.012,
@@ -995,9 +935,7 @@ class _PublicAssetDetailsScreenState
       },
       totalTextKey: 'estimated_total_asset_equity',
       netWorth: '${Utils.getFormattedStrNum(totalBalance)}', //netWorth from api
-      growth: Utils.getFormattedStrNum(
-              profitPercentage.substring(0, profitPercentage.length - 1)) +
-          '%',
+      growth: Utils.getFormattedStrNum(profitPercentage.substring(0, profitPercentage.length - 1)) + '%',
     );
   }
 
@@ -1017,8 +955,7 @@ class _PublicAssetDetailsScreenState
             child: DropdownButton<String>(
               value: yearSnapshot.data,
               isExpanded: false,
-              icon:
-                  const Icon(Icons.keyboard_arrow_down, color: AppColors.blue),
+              icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.blue),
               iconSize: width * .04,
               elevation: 0,
               underline: SizedBox(),
@@ -1029,8 +966,7 @@ class _PublicAssetDetailsScreenState
                 if (newValue != null) onChanged(newValue);
               },
               dropdownColor: AppColors.black,
-              items: ['2020', '2019', '2018', '2017', '2016', '2015']
-                  .map<DropdownMenuItem<String>>((String value) {
+              items: ['2020', '2019', '2018', '2017', '2016', '2015'].map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Center(
@@ -1039,9 +975,7 @@ class _PublicAssetDetailsScreenState
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          height: 1.0,
-                          fontSize: AppFonts.getSmallFontSize(context)),
+                      style: TextStyle(height: 1.0, fontSize: AppFonts.getSmallFontSize(context)),
                     ),
                   ),
                 );
@@ -1051,8 +985,7 @@ class _PublicAssetDetailsScreenState
         });
   }
 
-  Widget buildCardList(
-      Map<String, Map<String, List<PrivateAssetMeta>>> assetMetasMap) {
+  Widget buildCardList(Map<String, Map<String, List<PrivateAssetMeta>>> assetMetasMap) {
     return ListView.builder(
       physics: NeverScrollableScrollPhysics(),
       scrollDirection: Axis.vertical,
@@ -1071,8 +1004,7 @@ class _PublicAssetDetailsScreenState
     );
   } //xxx
 
-  Widget buildExpandableCard(
-      {required title, required Map<String, List<PrivateAssetMeta>> map}) {
+  Widget buildExpandableCard({required title, required Map<String, List<PrivateAssetMeta>> map}) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(width * 0.019),
       child: Container(
@@ -1095,8 +1027,7 @@ class _PublicAssetDetailsScreenState
             ),
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(width *
-                  0.019 /*topLeft: Radius.circular(8), topRight: Radius.circular(8),*/),
+              borderRadius: BorderRadius.circular(width * 0.019 /*topLeft: Radius.circular(8), topRight: Radius.circular(8),*/),
               color: AppColors.mainColor,
             ),
             child: Row(
@@ -1123,8 +1054,7 @@ class _PublicAssetDetailsScreenState
     );
   }
 
-  Widget buildCardWidget(
-      {required title, required Map<String, List<PrivateAssetMeta>> map}) {
+  Widget buildCardWidget({required title, required Map<String, List<PrivateAssetMeta>> map}) {
     return Container(
         padding: EdgeInsets.only(
           bottom: height * .03,
@@ -1158,8 +1088,7 @@ class _PublicAssetDetailsScreenState
               itemCount: map.length,
               padding: EdgeInsets.zero,
               itemBuilder: (context, index) {
-                List<PrivateAssetMeta> items =
-                    map.values.toList().elementAt(index);
+                List<PrivateAssetMeta> items = map.values.toList().elementAt(index);
                 String title = map.keys.toList().elementAt(index);
                 return Column(
                   children: [

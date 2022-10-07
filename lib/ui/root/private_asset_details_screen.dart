@@ -878,6 +878,8 @@ class _PrivateAssetDetailsScreenState
     Map payload = x['data'];
     // var id = payload['id'];
     setState(() {
+      PublicAssetDetailsScreen.companyId =
+          payload['private_asset_id'].toString();
       headQuarterCity = payload['headquarter_city'];
       yearOfInvestment = payload['purchased_at'].toString().substring(0, 4);
       totalBalance = payload['totalBalance'].toString();

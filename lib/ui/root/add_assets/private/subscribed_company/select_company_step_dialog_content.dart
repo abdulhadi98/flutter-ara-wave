@@ -26,9 +26,7 @@ class SelectCompanyStepDialogContent extends BaseStateFullWidget {
   createState() => _SelectCompanyStepDialogContentState();
 }
 
-class _SelectCompanyStepDialogContentState
-    extends BaseStateFullWidgetState<SelectCompanyStepDialogContent>
-    with SelectCompanyStepDialogContentDi {
+class _SelectCompanyStepDialogContentState extends BaseStateFullWidgetState<SelectCompanyStepDialogContent> with SelectCompanyStepDialogContentDi {
   @override
   void initState() {
     initScreenDi();
@@ -116,19 +114,13 @@ class _SelectCompanyStepDialogContentState
             padding: EdgeInsets.symmetric(vertical: height * .020),
             decoration: BoxDecoration(
               color: AppColors.mainColor,
-              border: Border.all(
-                  color: isValidSnapshot.data!
-                      ? Colors.white
-                      : AppColors.mainColor,
-                  width: .5),
+              border: Border.all(color: isValidSnapshot.data! ? Colors.white : AppColors.mainColor, width: .5),
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Text(
               appLocal.trans(titleKey),
               style: TextStyle(
-                color: isValidSnapshot.data!
-                    ? AppColors.white
-                    : AppColors.white.withOpacity(.25),
+                color: isValidSnapshot.data! ? AppColors.white : AppColors.white.withOpacity(.55),
                 fontSize: AppFonts.getMediumFontSize(context),
                 height: 1.0,
               ),

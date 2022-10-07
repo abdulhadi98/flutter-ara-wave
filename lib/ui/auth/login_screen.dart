@@ -20,8 +20,7 @@ class LoginScreen extends BaseStateFullWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen>
-    with LoginScreenDi {
+class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen> with LoginScreenDi {
   @override
   void initState() {
     super.initState();
@@ -80,8 +79,7 @@ class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen>
                 height: height * .030,
               ),
               InkWell(
-                onTap: () => RoutesHelper.navigateTo(
-                    classToNavigate: ForgetPasswordScreen(), context: context),
+                onTap: () => RoutesHelper.navigateTo(classToNavigate: ForgetPasswordScreen(), context: context),
                 child: Text(
                   appLocal.trans('forget_password'),
                   style: TextStyle(
@@ -95,8 +93,7 @@ class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen>
                 height: height * .030,
               ),
               InkWell(
-                onTap: () => RoutesHelper.navigateTo(
-                    classToNavigate: ResetPasswordScreen(), context: context),
+                onTap: () => RoutesHelper.navigateTo(classToNavigate: ResetPasswordScreen(), context: context),
                 child: Text(
                   appLocal.trans('reset_password'),
                   style: TextStyle(
@@ -124,10 +121,8 @@ class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen>
                         onClick: () {
                           if (validateInputs()) {
                             submitLoginIn(UserModel(
-                              email:
-                                  uiController.emailTextEditingController.text,
-                              password: uiController
-                                  .passwordTextEditingController.text,
+                              email: uiController.emailTextEditingController.text,
+                              password: uiController.passwordTextEditingController.text,
                             ));
                           }
                         },
@@ -148,7 +143,7 @@ class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen>
                 appLocal.trans('no_account_no_problem'),
                 style: TextStyle(
                   fontSize: AppFonts.getSmallFontSize(context),
-                  color: Colors.white.withOpacity(.3),
+                  color: Colors.white.withOpacity(.55),
                 ),
               ),
               SizedBox(
@@ -160,8 +155,7 @@ class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen>
                 height: height,
                 btnWidth: width * .4,
                 onClick: () {
-                  RoutesHelper.navigateTo(
-                      classToNavigate: SignUpScreen(), context: context);
+                  RoutesHelper.navigateTo(classToNavigate: SignUpScreen(), context: context);
                 },
               ),
               SizedBox(
@@ -171,7 +165,7 @@ class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen>
                 appLocal.trans('login_message'),
                 style: TextStyle(
                   fontSize: AppFonts.getXSmallFontSize(context),
-                  color: Colors.white.withOpacity(.3),
+                  color: Colors.white.withOpacity(.55),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -188,14 +182,11 @@ class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen>
   bool validateInputs() {
     var validationMessage = '';
 
-    if (uiController.emailTextEditingController.text.isEmpty ||
-        !uiController.emailTextEditingController.text.contains('@')) {
-      if (validationMessage.isNotEmpty)
-        validationMessage = validationMessage + '\nInvalid email';
+    if (uiController.emailTextEditingController.text.isEmpty || !uiController.emailTextEditingController.text.contains('@')) {
+      if (validationMessage.isNotEmpty) validationMessage = validationMessage + '\nInvalid email';
       validationMessage = 'Invalid email';
     }
-    if (uiController.passwordTextEditingController.text.isEmpty ||
-        uiController.passwordTextEditingController.text.length < 5) {
+    if (uiController.passwordTextEditingController.text.isEmpty || uiController.passwordTextEditingController.text.length < 5) {
       if (validationMessage.isNotEmpty)
         validationMessage = validationMessage + '\nPassword is too short!';
       else
@@ -218,8 +209,7 @@ class _LoginScreenState extends BaseStateFullWidgetState<LoginScreen>
         user: user,
         onData: () {
           uiController.setLoadingLoginState(false);
-          RoutesHelper.navigateReplacementTo(
-              classToNavigate: SplashScreen(), context: context);
+          RoutesHelper.navigateReplacementTo(classToNavigate: SplashScreen(), context: context);
         },
         onError: (error) {
           uiController.setLoadingLoginState(false);

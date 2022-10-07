@@ -17,18 +17,14 @@ class DatePickerPlaceholderWidget extends BaseStateFullWidget {
   }) : super(key: key);
 
   @override
-  BaseStateFullWidgetState<DatePickerPlaceholderWidget> createState() =>
-      _DatePickerPlaceholderWidgetState();
+  BaseStateFullWidgetState<DatePickerPlaceholderWidget> createState() => _DatePickerPlaceholderWidgetState();
 }
 
-class _DatePickerPlaceholderWidgetState
-    extends BaseStateFullWidgetState<DatePickerPlaceholderWidget> {
-  final BehaviorSubject<DateTime?> _purchaseDateController =
-      BehaviorSubject<DateTime?>();
+class _DatePickerPlaceholderWidgetState extends BaseStateFullWidgetState<DatePickerPlaceholderWidget> {
+  final BehaviorSubject<DateTime?> _purchaseDateController = BehaviorSubject<DateTime?>();
   get purchaseDateStream => _purchaseDateController.stream;
   DateTime? getPurchaseDate() => _purchaseDateController.valueOrNull;
-  setPurchaseDate(DateTime? dateTime) =>
-      _purchaseDateController.sink.add(dateTime);
+  setPurchaseDate(DateTime? dateTime) => _purchaseDateController.sink.add(dateTime);
 
   @override
   void dispose() {
@@ -48,9 +44,7 @@ class _DatePickerPlaceholderWidgetState
                 context: context,
                 locale: appLocal.locale,
               );
-              if (pickedDateTime != null)
-                widget
-                    .onDatedPicked(pickedDateTime.toString().substring(0, 10));
+              if (pickedDateTime != null) widget.onDatedPicked(pickedDateTime.toString().substring(0, 10));
               setPurchaseDate(pickedDateTime);
             },
             child: Container(
@@ -61,15 +55,13 @@ class _DatePickerPlaceholderWidgetState
                 borderRadius: BorderRadius.circular(8.0),
               ),
               child: Text(
-                dateTimeSnapshot.data == null
-                    ? widget.hint
-                    : dateTimeSnapshot.data.toString().substring(0, 10),
+                dateTimeSnapshot.data == null ? widget.hint : dateTimeSnapshot.data.toString().substring(0, 10),
                 style: TextStyle(
                   color: (dateTimeSnapshot.data != null || widget.color != null)
                       ? Colors.white
                       : widget.color != null
                           ? widget.color
-                          : Colors.white.withOpacity(.25),
+                          : Colors.white.withOpacity(.65),
                   //fontSize: AppFonts.getSmallFontSize(context),
                   fontSize: AppFonts.getXSmallFontSize(context),
                   height: 1.0,

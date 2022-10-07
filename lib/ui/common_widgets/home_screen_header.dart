@@ -30,7 +30,7 @@ Widget buildHeaderComponents({
             Expanded(
               child: Container(
                 padding: EdgeInsets.symmetric(
-                  vertical: height * 0.013,
+                  vertical: height * 0.019,
                   horizontal: width * .005,
                 ),
                 decoration: BoxDecoration(
@@ -124,9 +124,7 @@ Widget buildHeaderComponents({
                                 children: [
                                   growth == null
                                       ? SizedBox()
-                                      : growth.contains('+') ||
-                                              (!growth.contains('+') &&
-                                                  !growth.contains('-'))
+                                      : growth.contains('+') || (!growth.contains('+') && !growth.contains('-'))
                                           ? Icon(
                                               Icons.keyboard_double_arrow_up,
                                               color: AppColors.blue,
@@ -139,13 +137,11 @@ Widget buildHeaderComponents({
                                             ),
                                   Expanded(
                                     child: Padding(
-                                      padding:
-                                          EdgeInsets.only(left: width * 0.007),
+                                      padding: EdgeInsets.only(left: width * 0.007),
                                       child: Text(
                                         netWorth ?? '',
                                         style: TextStyle(
-                                          fontSize: AppFonts.getXLargeFontSize(
-                                              context),
+                                          fontSize: AppFonts.getXLargeFontSize(context),
                                           color: Colors.white,
                                           height: 1.0,
                                         ),
@@ -158,8 +154,7 @@ Widget buildHeaderComponents({
                                   Text(
                                     growth ?? '',
                                     style: TextStyle(
-                                      fontSize:
-                                          AppFonts.getSmallFontSize(context),
+                                      fontSize: AppFonts.getSmallFontSize(context),
                                       color: AppColors.blue,
                                       height: 1.0,
                                     ),
@@ -172,9 +167,8 @@ Widget buildHeaderComponents({
                                 child: Text(
                                   appLocal.trans(totalTextKey),
                                   style: TextStyle(
-                                    fontSize:
-                                        AppFonts.getXSmallFontSize(context),
-                                    color: Colors.white.withOpacity(.35),
+                                    fontSize: AppFonts.getSmallFontSize(context),
+                                    color: Colors.white.withOpacity(.9),
                                     height: 1.0,
                                   ),
                                 ),
@@ -187,15 +181,13 @@ Widget buildHeaderComponents({
                   ),
                 ),
               ),
-              if (isAddProgressExist && onAddEditClick != null)
-                SizedBox(width: width * .015),
+              if (isAddProgressExist && onAddEditClick != null) SizedBox(width: width * .015),
               if (isAddProgressExist && onAddEditClick != null)
                 GestureDetector(
                   onTap: onAddEditClick,
                   child: Container(
                     width: width * .26,
-                    padding: EdgeInsets.symmetric(
-                        vertical: height * 0.01, horizontal: width * .025),
+                    padding: EdgeInsets.symmetric(vertical: height * 0.01, horizontal: width * .025),
                     decoration: BoxDecoration(
                       color: AppColors.mainColor,
                       borderRadius: BorderRadius.circular(width * 0.019),
@@ -352,8 +344,7 @@ Widget buildHeaderComponentsHome({
                                     child: Text(
                                       netWorth ?? '',
                                       style: TextStyle(
-                                        fontSize: AppFonts.getXXLargeFontSize(
-                                            context),
+                                        fontSize: AppFonts.getXXLargeFontSize(context),
                                         color: Colors.white,
                                         height: 1.0,
                                       ),
@@ -365,8 +356,7 @@ Widget buildHeaderComponentsHome({
                                   Text(
                                     growth ?? '',
                                     style: TextStyle(
-                                      fontSize:
-                                          AppFonts.getMediumFontSize(context),
+                                      fontSize: AppFonts.getMediumFontSize(context),
                                       color: AppColors.blue,
                                       height: 1.0,
                                     ),
@@ -377,10 +367,9 @@ Widget buildHeaderComponentsHome({
                               Padding(
                                 padding: EdgeInsets.only(left: width * 0.01),
                                 child: Text(
-                                  appLocal.trans(totalTextKey),
+                                  'appLocal.trans(totalTextKey)',
                                   style: TextStyle(
-                                    fontSize:
-                                        AppFonts.getXSmallFontSize(context),
+                                    fontSize: AppFonts.getXSmallFontSize(context),
                                     color: Colors.white.withOpacity(.35),
                                     height: 1.0,
                                   ),
@@ -394,15 +383,13 @@ Widget buildHeaderComponentsHome({
                   ),
                 ),
               ),
-              if (isAddProgressExist && onAddEditClick != null)
-                SizedBox(width: width * .015),
+              if (isAddProgressExist && onAddEditClick != null) SizedBox(width: width * .015),
               if (isAddProgressExist && onAddEditClick != null)
                 GestureDetector(
                   onTap: onAddEditClick,
                   child: Container(
                     width: width * .26,
-                    padding: EdgeInsets.symmetric(
-                        vertical: height * 0.01, horizontal: width * .025),
+                    padding: EdgeInsets.symmetric(vertical: height * 0.01, horizontal: width * .025),
                     decoration: BoxDecoration(
                       color: AppColors.mainColor,
                       borderRadius: BorderRadius.circular(width * 0.019),
